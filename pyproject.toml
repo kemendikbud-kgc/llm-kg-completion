@@ -1,0 +1,21 @@
+[project]
+name = "llm-kg-completion"
+version = "0.1.0"
+description = "LLM-Assisted Knowledge Graph Completion for Curriculum Analysis"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.40.0",
+    "neo4j>=5.0.0",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "openai>=1.0.0",
+    "pypdf2>=3.0.0",
+    "scikit-learn>=1.5.0",
+    "pandas>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest",
+]
