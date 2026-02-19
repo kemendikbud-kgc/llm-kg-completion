@@ -1,24 +1,25 @@
 """Step E: Knowledge Graph Completion via semantic similarity."""
 
 from sklearn.metrics.pairwise import cosine_similarity
-from openai import OpenAI
+import litellm
 import numpy as np
 
-from src.config import OPENAI_API_KEY
-
-client = OpenAI(api_key=OPENAI_API_KEY)
+from src.config import DEFAULT_EMBEDDING_MODEL
 
 
-def get_embeddings(texts: list[str]) -> np.ndarray:
-    response = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=texts,
-    )
-    return np.array([e.embedding for e in response.data])
+def get_embeddings(texts: list[str], model: str | None = None) -> np.ndarray:
+    model = model or DEFAULT_EMBEDDING_MODEL
+    response = litellm.embedding(model=model, input=texts)
+    return np.array([item["embedding"] for item in response.data])
 
 
-def find_similar_pairs(names: list[str], descriptions: list[str], threshold: float = 0.8) -> list[dict]:
-    embeddings = get_embeddings(descriptions)
+def find_similar_pairs(
+    names: list[str],
+    descriptions: list[str],
+    threshold: float = 0.8,
+    embedding_model: str | None = None,
+) -> list[dict]:
+    embeddings = get_embeddings(descriptions, model=embedding_model)
     sim_matrix = cosine_similarity(embeddings)
 
     pairs = []
