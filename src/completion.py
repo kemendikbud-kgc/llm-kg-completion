@@ -1,9 +1,15 @@
 """Step E: Knowledge Graph Completion via semantic similarity."""
 
-from llama_index.core.embeddings import similarity
+import numpy as np
 
 from src.config import DEFAULT_EMBEDDING_MODEL
 from src.llama_setup import get_embed_model
+
+
+def cosine_similarity(a: list[float], b: list[float]) -> float:
+    a_arr = np.array(a)
+    b_arr = np.array(b)
+    return float(np.dot(a_arr, b_arr) / (np.linalg.norm(a_arr) * np.linalg.norm(b_arr)))
 
 
 def get_embeddings(texts: list[str], model: str | None = None) -> list[list[float]]:
@@ -24,11 +30,13 @@ def find_similar_pairs(
     pairs = []
     for i in range(len(names)):
         for j in range(i + 1, len(names)):
-            score = similarity(embeddings[i], embeddings[j])
+            score = cosine_similarity(embeddings[i], embeddings[j])
             if score >= threshold:
-                pairs.append({
-                    "source": names[i],
-                    "target": names[j],
-                    "similarity": float(score),
-                })
+                pairs.append(
+                    {
+                        "source": names[i],
+                        "target": names[j],
+                        "similarity": float(score),
+                    }
+                )
     return pairs

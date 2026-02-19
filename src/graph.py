@@ -5,7 +5,12 @@ from src.config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD
 
 
 def get_driver():
-    return GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+    if not NEO4J_URI or not NEO4J_PASSWORD:
+        raise ValueError("NEO4J_URI and NEO4J_PASSWORD must be set")
+    uri: str = NEO4J_URI
+    user: str = NEO4J_USERNAME or "neo4j"
+    pwd: str = NEO4J_PASSWORD
+    return GraphDatabase.driver(uri, auth=(user, pwd))
 
 
 def insert_topics(driver, data: dict):
