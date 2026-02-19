@@ -16,9 +16,7 @@ NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
 
 # --- Chat Model Choices (display name -> LiteLLM model string) ---
 MODEL_CHOICES = {
-    "Gemini 2.0 Flash": "gemini/gemini-2.0-flash",
-    "Gemini 2.0 Flash Lite": "gemini/gemini-2.0-flash-lite",
-    "Gemini 1.5 Flash": "gemini/gemini-1.5-flash",
+    "Gemini 2.5 Flash": "gemini/gemini-2.5-flash",
     "GPT-4o Mini": "openai/gpt-4o-mini",
     "GPT-4o": "openai/gpt-4o",
     "Claude 3.5 Haiku": "anthropic/claude-3-5-haiku-latest",
@@ -26,13 +24,13 @@ MODEL_CHOICES = {
     "GLM-4-Flash": "zhipuai/glm-4-flash",
 }
 
-DEFAULT_CHAT_MODEL = "gemini/gemini-2.0-flash"
+DEFAULT_CHAT_MODEL = "gemini/gemini-2.5-flash"
 
 # --- Embedding Model Choices ---
 EMBEDDING_CHOICES = {
-    "Google text-embedding-004": "gemini/text-embedding-004",
+    "Gemini Embedding": "gemini/gemini-embedding-001",
     "OpenAI text-embedding-3-small": "openai/text-embedding-3-small",
     "OpenAI text-embedding-3-large": "openai/text-embedding-3-large",
 }
 
-DEFAULT_EMBEDDING_MODEL = "gemini/text-embedding-004"
+DEFAULT_EMBEDDING_MODEL = "gemini/gemini-embedding-001"

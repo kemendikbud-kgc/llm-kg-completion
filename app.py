@@ -2,9 +2,10 @@
 
 import streamlit as st
 import json
+from pathlib import Path
 
 from src.ingestion import extract_text_from_pdf
-from src.extraction import extract_topics
+from src.extraction import extract_topics, CACHE_DIR, _merge_topics  # noqa: F401
 from src.graph import get_driver, insert_topics, get_all_nodes
 from src.completion import find_similar_pairs
 from src.config import MODEL_CHOICES, EMBEDDING_CHOICES, DEFAULT_CHAT_MODEL, DEFAULT_EMBEDDING_MODEL
@@ -32,6 +33,44 @@ with st.sidebar:
     selected_embedding_model = EMBEDDING_CHOICES[embedding_model_name]
     st.caption(f"`{selected_embedding_model}`")
 
+    # --- Load from cache ---
+    st.divider()
+    st.header("Load Cached Result")
+    cache_files = sorted(CACHE_DIR.glob("*.json")) if CACHE_DIR.exists() else []
+    # Only show final merged results (no _chunk files)
+    cache_files = [f for f in cache_files if "_chunk" not in f.name]
+    if cache_files:
+        selected_cache = st.selectbox(
+            "Cached extractions",
+            options=cache_files,
+            format_func=lambda f: f.stem[:12] + "...",
+        )
+        if st.button("Load cached result"):
+            data = json.loads(selected_cache.read_text(encoding="utf-8"))
+            st.session_state["extracted"] = data
+            st.success("Loaded from cache file.")
+    else:
+        # Collect chunk groups and offer to merge them
+        chunk_files = sorted(CACHE_DIR.glob("*_chunk*.json")) if CACHE_DIR.exists() else []
+        if chunk_files:
+            # Group by base hash
+            hashes = sorted(set(f.stem.rsplit("_chunk", 1)[0] for f in chunk_files))
+            selected_hash = st.selectbox("Cached chunk groups", options=hashes,
+                                         format_func=lambda h: h[:12] + "...")
+            group = sorted([f for f in chunk_files if f.stem.startswith(selected_hash)],
+                           key=lambda f: int(f.stem.rsplit("_chunk", 1)[1]))
+            st.caption(f"{len(group)} chunks cached")
+            if st.button("Merge & load chunks"):
+                all_topics = []
+                for cf in group:
+                    parsed = json.loads(cf.read_text(encoding="utf-8"))
+                    all_topics.extend(parsed.get("topics", []))
+                result = {"topics": _merge_topics(all_topics)}
+                st.session_state["extracted"] = result
+                st.success(f"Merged {len(group)} chunks.")
+        else:
+            st.caption("No cached results found.")
+
 # Step 1: Upload PDF
 st.header("1. Upload Curriculum Document")
 uploaded_file = st.file_uploader("Upload a PDF (Capaian Pembelajaran)", type="pdf")
@@ -49,10 +88,20 @@ if uploaded_file:
 
     # Step 2: LLM Extraction
     st.header("2. Extract Topics (LLM)")
+    use_cache = st.checkbox("Use cached results (if available)", value=True)
     if st.button("Run Extraction"):
         with st.spinner("Calling LLM..."):
-            result = extract_topics(raw_text, model=selected_chat_model)
+            result, from_cache = extract_topics(raw_text, model=selected_chat_model, use_cache=use_cache)
         st.session_state["extracted"] = result
+        if from_cache:
+            st.info("Loaded from cache.")
+        elif result.get("_partial"):
+            st.warning(
+                f"Rate limited — extracted {result['_completed_chunks']}/{result['_total_chunks']} chunks. "
+                "Cached chunks are saved. Click **Run Extraction** again later to continue."
+            )
+        else:
+            st.success("Fresh LLM extraction complete.")
 
     # Step 3: Human-in-the-loop validation
     if "extracted" in st.session_state:

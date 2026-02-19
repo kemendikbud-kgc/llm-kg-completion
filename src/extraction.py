@@ -1,75 +1,31 @@
 """Step B: LLM-based extraction of Topics and Sub-Topics from curriculum text."""
 
+import hashlib
 import json
-import re
 import time
 import logging
-import litellm
+from pathlib import Path
+
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.program import LLMTextCompletionProgram
+
 from src.config import DEFAULT_CHAT_MODEL
+from src.llama_setup import get_llm
+from src.schemas import TopicExtraction
+
+CACHE_DIR = Path("data/cache")
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are an expert curriculum designer. I will give you a text from a science curriculum.
+SYSTEM_PROMPT = """\
+You are an expert curriculum designer. I will give you a text from a science curriculum.
 
 Definitions:
 - Topic: An abstract concept taught in a session.
 - Sub-Topic: Fine-grained content explained in detail.
 
 Task: Extract all Topics and Sub-Topics from the text below.
-Output strictly in JSON format:
-{
-  "topics": [
-    {
-      "name": "...",
-      "description": "...",
-      "sub_topics": [
-        {"name": "...", "description": "..."}
-      ]
-    }
-  ]
-}"""
-
-
-def chunk_text(text: str, max_chars: int = 12000, overlap: int = 500) -> list[str]:
-    """Split text into overlapping chunks."""
-    if len(text) <= max_chars:
-        return [text]
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = start + max_chars
-        chunks.append(text[start:end])
-        start = end - overlap
-    return chunks
-
-
-def _strip_code_fences(text: str) -> str:
-    """Strip markdown code fences (```json ... ```) from LLM output."""
-    text = text.strip()
-    text = re.sub(r"^```(?:json)?\s*\n?", "", text)
-    text = re.sub(r"\n?```\s*$", "", text)
-    return text.strip()
-
-
-def _call_llm_with_retry(model: str, text: str, max_retries: int = 8) -> str:
-    """Call LLM with exponential backoff retry."""
-    for attempt in range(max_retries):
-        try:
-            response = litellm.completion(
-                model=model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": text},
-                ],
-                temperature=0.1,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            if attempt == max_retries - 1:
-                raise
-            wait = min(5 * (2 ** attempt), 120)
-            logger.warning(f"LLM call failed (attempt {attempt + 1}): {e}. Retrying in {wait}s...")
-            time.sleep(wait)
+Output strictly in JSON format matching the schema."""
 
 
 def _merge_topics(all_topics: list[dict]) -> list[dict]:
@@ -88,17 +44,73 @@ def _merge_topics(all_topics: list[dict]) -> list[dict]:
     return list(merged.values())
 
 
-def extract_topics(text: str, model: str | None = None) -> dict:
+def _cache_key(text: str, model: str) -> str:
+    """Return SHA-256 hash of text + model for cache keying."""
+    return hashlib.sha256((text + model).encode()).hexdigest()
+
+
+def _chunk_text(text: str) -> list[str]:
+    """Split text into token-aware chunks using SentenceSplitter."""
+    splitter = SentenceSplitter(chunk_size=2048, chunk_overlap=128)
+    return splitter.split_text(text)
+
+
+def _extract_from_chunk(llm, chunk: str) -> dict:
+    """Use LLMTextCompletionProgram to extract structured topics from a chunk."""
+    program = LLMTextCompletionProgram.from_defaults(
+        llm=llm,
+        output_cls=TopicExtraction,
+        prompt_template_str=SYSTEM_PROMPT + "\n\nText:\n{text}",
+    )
+    result: TopicExtraction = program(text=chunk)
+    return result.model_dump()
+
+
+def extract_topics(text: str, model: str | None = None, use_cache: bool = True) -> tuple[dict, bool]:
+    """Extract topics from text. Returns (result_dict, from_cache)."""
     model = model or DEFAULT_CHAT_MODEL
 
-    chunks = chunk_text(text)
-    all_topics = []
+    cache_file = CACHE_DIR / f"{_cache_key(text, model)}.json"
+
+    if use_cache and cache_file.exists():
+        logger.info("Loading cached extraction result from %s", cache_file)
+        return json.loads(cache_file.read_text(encoding="utf-8")), True
+
+    chunks = _chunk_text(text)
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    base_hash = _cache_key(text, model)
+    all_topics: list[dict] = []
+    llm = get_llm(model)
+
+    completed = 0
     for i, chunk in enumerate(chunks):
-        if i > 0:
-            time.sleep(2)
-        raw = _call_llm_with_retry(model, chunk)
-        raw = _strip_code_fences(raw)
-        parsed = json.loads(raw)
+        chunk_file = CACHE_DIR / f"{base_hash}_chunk{i}.json"
+        if chunk_file.exists():
+            logger.info("Loaded cached chunk %d/%d", i + 1, len(chunks))
+            parsed = json.loads(chunk_file.read_text(encoding="utf-8"))
+        else:
+            if completed > 0:
+                time.sleep(5)
+            try:
+                parsed = _extract_from_chunk(llm, chunk)
+            except Exception:
+                if all_topics:
+                    logger.warning(
+                        "Failed after %d/%d chunks. Re-run later to continue.",
+                        i, len(chunks),
+                    )
+                    result = {"topics": _merge_topics(all_topics), "_partial": True,
+                              "_completed_chunks": i, "_total_chunks": len(chunks)}
+                    return result, False
+                raise
+            chunk_file.write_text(json.dumps(parsed, indent=2, ensure_ascii=False), encoding="utf-8")
+            logger.info("Cached chunk %d/%d", i + 1, len(chunks))
+            completed += 1
         all_topics.extend(parsed.get("topics", []))
 
-    return {"topics": _merge_topics(all_topics)}
+    result = {"topics": _merge_topics(all_topics)}
+
+    cache_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    logger.info("Cached final extraction result to %s", cache_file)
+
+    return result, False
