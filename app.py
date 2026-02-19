@@ -54,7 +54,6 @@ with st.sidebar:
     st.divider()
     st.header("Load Cached Result")
     cache_files = sorted(CACHE_DIR.glob("*.json")) if CACHE_DIR.exists() else []
-    # Only show final merged results (no _chunk files)
     cache_files = [f for f in cache_files if "_chunk" not in f.name]
     if cache_files:
         selected_cache = st.selectbox(
@@ -67,12 +66,10 @@ with st.sidebar:
             st.session_state["extracted"] = data
             st.success("Loaded from cache file.")
     else:
-        # Collect chunk groups and offer to merge them
         chunk_files = (
             sorted(CACHE_DIR.glob("*_chunk*.json")) if CACHE_DIR.exists() else []
         )
         if chunk_files:
-            # Group by base hash
             hashes = sorted(set(f.stem.rsplit("_chunk", 1)[0] for f in chunk_files))
             selected_hash = st.selectbox(
                 "Cached chunk groups",
@@ -100,7 +97,8 @@ st.header("1. Upload Curriculum Document")
 uploaded_file = st.file_uploader("Upload a PDF (Capaian Pembelajaran)", type="pdf")
 
 if uploaded_file:
-    import tempfile, os
+    import tempfile
+    import os
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(uploaded_file.read())
@@ -130,63 +128,63 @@ if uploaded_file:
         else:
             st.success("Fresh LLM extraction complete.")
 
-    # Step 3: Human-in-the-loop validation
-    if "extracted" in st.session_state:
-        st.header("3. Validate & Edit")
-        edited = st.text_area(
-            "Edit JSON if needed:",
-            json.dumps(st.session_state["extracted"], indent=2),
-            height=400,
-        )
+# Step 3: Human-in-the-loop validation (outside uploaded_file block)
+if "extracted" in st.session_state:
+    st.header("3. Validate & Edit")
+    edited = st.text_area(
+        "Edit JSON if needed:",
+        json.dumps(st.session_state["extracted"], indent=2),
+        height=400,
+    )
 
-        # Step 4: Push to Neo4j
-        st.header("4. Save to Knowledge Graph")
-        if st.button("Save to Neo4j"):
-            data = json.loads(edited)
-            driver = get_driver()
-            insert_topics(driver, data)
-            driver.close()
-            st.success("Data saved to Neo4j!")
-            st.session_state["neo4j_saved"] = True
+    # Step 4: Push to Neo4j
+    st.header("4. Save to Knowledge Graph")
+    if st.button("Save to Neo4j"):
+        data = json.loads(edited)
+        driver = get_driver()
+        insert_topics(driver, data)
+        driver.close()
+        st.success("Data saved to Neo4j!")
+        st.session_state["neo4j_saved"] = True
 
-        # Step 5: Knowledge Graph Completion
-        if st.session_state.get("neo4j_saved"):
-            st.header("5. Knowledge Graph Completion")
-            threshold = st.slider("Similarity threshold", 0.5, 1.0, 0.8, 0.05)
-            if st.button("Find Similar Topics"):
-                with st.spinner("Computing embeddings..."):
-                    driver = get_driver()
-                    nodes = get_all_nodes(driver)
-                    driver.close()
+    # Step 5: Knowledge Graph Completion
+    if st.session_state.get("neo4j_saved"):
+        st.header("5. Knowledge Graph Completion")
+        threshold = st.slider("Similarity threshold", 0.5, 1.0, 0.8, 0.05)
+        if st.button("Find Similar Topics"):
+            with st.spinner("Computing embeddings..."):
+                driver = get_driver()
+                nodes = get_all_nodes(driver)
+                driver.close()
 
-                    names = [n["name"] for n in nodes if n["name"]]
-                    descriptions = names
-                    pairs = find_similar_pairs(
-                        names,
-                        descriptions,
-                        threshold=threshold,
-                        embedding_model=selected_embedding_model,
+                names = [n["name"] for n in nodes if n["name"]]
+                descriptions = names
+                pairs = find_similar_pairs(
+                    names,
+                    descriptions,
+                    threshold=threshold,
+                    embedding_model=selected_embedding_model,
+                )
+
+            if pairs:
+                st.success(f"Found {len(pairs)} similar pair(s)!")
+                for p in pairs:
+                    st.write(
+                        f"**{p['source']}** ↔ **{p['target']}** (similarity: {p['similarity']:.3f})"
                     )
 
-                if pairs:
-                    st.success(f"Found {len(pairs)} similar pair(s)!")
-                    for p in pairs:
-                        st.write(
-                            f"**{p['source']}** ↔ **{p['target']}** (similarity: {p['similarity']:.3f})"
-                        )
-
-                    if st.button("Save relationships to Neo4j"):
-                        driver = get_driver()
-                        with driver.session() as session:
-                            for p in pairs:
-                                session.run(
-                                    "MATCH (a {name: $src}), (b {name: $tgt}) "
-                                    "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
-                                    src=p["source"],
-                                    tgt=p["target"],
-                                    score=p["similarity"],
-                                )
-                        driver.close()
-                        st.success("Relationships saved!")
-                else:
-                    st.info("No similar pairs found above the threshold.")
+                if st.button("Save relationships to Neo4j"):
+                    driver = get_driver()
+                    with driver.session() as session:
+                        for p in pairs:
+                            session.run(
+                                "MATCH (a {name: $src}), (b {name: $tgt}) "
+                                "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
+                                src=p["source"],
+                                tgt=p["target"],
+                                score=p["similarity"],
+                            )
+                    driver.close()
+                    st.success("Relationships saved!")
+            else:
+                st.info("No similar pairs found above the threshold.")

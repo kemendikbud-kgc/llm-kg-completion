@@ -23,10 +23,14 @@ class HealthStatus:
 
 
 def check_neo4j() -> HealthStatus:
+    if not NEO4J_URI or not NEO4J_PASSWORD:
+        return HealthStatus("Neo4j", False, "Missing NEO4J_URI or NEO4J_PASSWORD")
     try:
         from neo4j import GraphDatabase
 
-        driver = GraphDatabase.driver(NEO4J_URI, auth=("neo4j", NEO4J_PASSWORD))
+        uri: str = NEO4J_URI
+        pwd: str = NEO4J_PASSWORD
+        driver = GraphDatabase.driver(uri, auth=("neo4j", pwd))
         with driver.session() as session:
             session.run("RETURN 1").single()
         driver.close()
