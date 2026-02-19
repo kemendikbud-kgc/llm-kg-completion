@@ -7,6 +7,7 @@ from src.config import (
     OPENAI_API_KEY,
     ANTHROPIC_API_KEY,
     ZHIPUAI_API_KEY,
+    HUGGINGFACE_API_KEY,
     NEO4J_URI,
     NEO4J_PASSWORD,
     DEFAULT_CHAT_MODEL,
@@ -64,15 +65,20 @@ def check_embedding(model: str = DEFAULT_EMBEDDING_MODEL) -> HealthStatus:
     key_map = {
         "gemini": ("Google", GOOGLE_API_KEY),
         "openai": ("OpenAI", OPENAI_API_KEY),
+        "huggingface": ("HuggingFace", HUGGINGFACE_API_KEY),
     }
     name, key = key_map.get(provider, (provider, None))
-    if not key:
+    if not key and provider != "huggingface":
         return HealthStatus(f"Embedding ({name})", False, f"Missing {name} API key")
 
     try:
         embed = get_embed_model(model)
         embed.get_text_embedding("test")
-        return HealthStatus(f"Embedding ({name})", True, "API key valid")
+        return HealthStatus(
+            f"Embedding ({name})",
+            True,
+            "API key valid" if key else "Connected (free tier)",
+        )
     except Exception as e:
         return HealthStatus(f"Embedding ({name})", False, str(e)[:100])
 

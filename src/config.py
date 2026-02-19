@@ -8,6 +8,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 ZHIPUAI_API_KEY = os.getenv("ZHIPUAI_API_KEY")
+HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 # --- Neo4j ---
 NEO4J_URI = os.getenv("NEO4J_URI")
@@ -29,8 +30,10 @@ DEFAULT_CHAT_MODEL = "gemini/gemini-2.5-flash"
 # --- Embedding Model Choices ---
 EMBEDDING_CHOICES = {
     "Gemini Embedding": "gemini/gemini-embedding-001",
+    "HF Multilingual E5-small": "huggingface/intfloat/multilingual-e5-small",
+    "HF BGE-small-en": "huggingface/BAAI/bge-small-en-v1.5",
     "OpenAI text-embedding-3-small": "openai/text-embedding-3-small",
     "OpenAI text-embedding-3-large": "openai/text-embedding-3-large",
 }
 
-DEFAULT_EMBEDDING_MODEL = "gemini/gemini-embedding-001"
+DEFAULT_EMBEDDING_MODEL = "huggingface/intfloat/multilingual-e5-small"
