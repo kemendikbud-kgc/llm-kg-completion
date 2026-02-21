@@ -96,3 +96,145 @@ def get_document_topics(driver, document_name: str) -> list:
             doc_name=document_name,
         )
         return [dict(r) for r in result]
+
+
+def get_graph_stats(driver) -> dict:
+    """Get statistics about the knowledge graph."""
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (d:Document) WITH count(d) AS documents
+            MATCH (t:Topic) WITH documents, count(t) AS topics
+            MATCH (s:SubTopic) WITH documents, topics, count(s) AS subtopics
+            MATCH ()-[r:CONTAINS]->() WITH documents, topics, subtopics, count(r) AS contains_rels
+            MATCH ()-[r:INCLUDES]->() WITH documents, topics, subtopics, contains_rels, count(r) AS includes_rels
+            MATCH ()-[r:SIMILAR_TO]->()
+            RETURN documents, topics, subtopics, contains_rels, includes_rels, count(r) AS similar_rels
+            """
+        )
+        row = result.single()
+        if row:
+            return {
+                "documents": row["documents"],
+                "topics": row["topics"],
+                "subtopics": row["subtopics"],
+                "contains_rels": row["contains_rels"],
+                "includes_rels": row["includes_rels"],
+                "similar_rels": row["similar_rels"],
+            }
+        return {
+            "documents": 0,
+            "topics": 0,
+            "subtopics": 0,
+            "contains_rels": 0,
+            "includes_rels": 0,
+            "similar_rels": 0,
+        }
+
+
+def get_all_topics_with_subtopics(driver) -> list:
+    """Get all topics with their subtopics across all documents."""
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (t:Topic)
+            OPTIONAL MATCH (t)-[:INCLUDES]->(s:SubTopic)
+            OPTIONAL MATCH (d:Document)-[:CONTAINS]->(t)
+            RETURN t.name AS name, t.description AS description,
+                   collect(DISTINCT {name: s.name, description: s.description}) AS subtopics,
+                   collect(DISTINCT d.name) AS documents
+            ORDER BY t.name
+            """
+        )
+        return [dict(r) for r in result]
+
+
+def get_similar_relationships(driver) -> list:
+    """Get all SIMILAR_TO relationships."""
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (a)-[r:SIMILAR_TO]->(b)
+            RETURN a.name AS source, b.name AS target, r.score AS score
+            ORDER BY r.score DESC
+            """
+        )
+        return [dict(r) for r in result]
+
+
+def get_nodes_with_descriptions(
+    driver,
+    document_name: str | None = None,
+    include_cross_doc: bool = False,
+) -> list[dict]:
+    """Get nodes with their names and descriptions for embedding.
+
+    Args:
+        driver: Neo4j driver
+        document_name: If provided, filter to this document only
+        include_cross_doc: If True with document_name, also include nodes from other
+                          documents that share topics with the selected document
+
+    Returns list of dicts with 'name', 'description', 'labels', and 'document'.
+    Falls back to name as description if description is empty.
+    """
+    with driver.session() as session:
+        if document_name and not include_cross_doc:
+            # Single document mode - only topics from this document
+            result = session.run(
+                """
+                MATCH (d:Document {name: $doc_name})-[:CONTAINS]->(t:Topic)
+                OPTIONAL MATCH (t)-[:INCLUDES]->(s:SubTopic)
+                WITH t, s, d
+                RETURN t.name AS name, t.description AS description, labels(t) AS labels, d.name AS doc_name
+                UNION
+                MATCH (d:Document {name: $doc_name})-[:CONTAINS]->(:Topic)-[:INCLUDES]->(s:SubTopic)
+                RETURN s.name AS name, s.description AS description, labels(s) AS labels, d.name AS doc_name
+                ORDER BY name
+                """,
+                doc_name=document_name,
+            )
+        elif document_name and include_cross_doc:
+            # Cross-document mode - topics from selected doc + related topics from other docs
+            result = session.run(
+                """
+                MATCH (d:Document {name: $doc_name})-[:CONTAINS]->(t:Topic)
+                WITH collect(DISTINCT t) AS selected_topics
+                MATCH (n)
+                WHERE n:Topic OR n:SubTopic
+                RETURN n.name AS name, n.description AS description, labels(n) AS labels, NULL AS doc_name
+                ORDER BY name
+                """,
+                doc_name=document_name,
+            )
+        else:
+            # All documents mode
+            result = session.run(
+                """
+                MATCH (n)
+                WHERE n:Topic OR n:SubTopic
+                OPTIONAL MATCH (d:Document)-[:CONTAINS]->(n)
+                OPTIONAL MATCH (d2:Document)-[:CONTAINS]->(:Topic)-[:INCLUDES]->(n)
+                WITH n, COALESCE(d.name, d2.name) AS doc_name
+                RETURN n.name AS name, n.description AS description, labels(n) AS labels, doc_name
+                ORDER BY n.name
+                """
+            )
+
+        nodes = []
+        seen_names = set()
+        for r in result:
+            name = r["name"]
+            if name in seen_names:
+                continue
+            seen_names.add(name)
+            desc = r["description"] or name
+            nodes.append(
+                {
+                    "name": name,
+                    "description": desc,
+                    "labels": r["labels"],
+                    "document": r.get("doc_name"),
+                }
+            )
+        return nodes

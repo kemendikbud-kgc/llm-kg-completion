@@ -1091,6 +1091,7 @@ dependencies = [
     { name = "pypdf2" },
     { name = "python-dotenv" },
     { name = "streamlit" },
+    { name = "tenacity" },
 ]
 
 [package.optional-dependencies]
@@ -1112,6 +1113,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "streamlit", specifier = ">=1.40.0" },
+    { name = "tenacity", specifier = ">=8.0.0" },
 ]
 provides-extras = ["dev"]
 

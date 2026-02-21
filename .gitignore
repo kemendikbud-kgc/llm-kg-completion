@@ -11,5 +11,6 @@ build/
 data/raw/*
 !data/raw/.gitkeep
 data/cache/*.json
+data/embedding_cache/*.json
 settings.local.json
 nul

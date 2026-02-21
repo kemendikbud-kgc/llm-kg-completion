@@ -7,7 +7,7 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-ZHIPUAI_API_KEY = os.getenv("ZHIPUAI_API_KEY")
+ZAI_API_KEY = os.getenv("ZAI_API_KEY")
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 # --- Neo4j ---
@@ -22,7 +22,8 @@ MODEL_CHOICES = {
     "GPT-4o": "openai/gpt-4o",
     "Claude 3.5 Haiku": "anthropic/claude-3-5-haiku-latest",
     "Claude 3.5 Sonnet": "anthropic/claude-3-5-sonnet-latest",
-    "GLM-4-Flash": "zhipuai/glm-4-flash",
+    "GLM-4.5-Flash (z.ai FREE)": "zai/glm-4.5-flash",
+    "GLM-4.7 (z.ai)": "zai/glm-4.7",
 }
 
 DEFAULT_CHAT_MODEL = "gemini/gemini-2.5-flash"
@@ -37,4 +38,4 @@ EMBEDDING_CHOICES = {
     "OpenAI text-embedding-3-large": "openai/text-embedding-3-large",
 }
 
-DEFAULT_EMBEDDING_MODEL = "huggingface/Qwen/Qwen3-Embedding-8B"
+DEFAULT_EMBEDDING_MODEL = "gemini/gemini-embedding-001"

@@ -6,8 +6,7 @@ from src.config import (
     GOOGLE_API_KEY,
     OPENAI_API_KEY,
     ANTHROPIC_API_KEY,
-    ZHIPUAI_API_KEY,
-    HUGGINGFACE_API_KEY,
+    ZAI_API_KEY,
     NEO4J_URI,
     NEO4J_PASSWORD,
     DEFAULT_CHAT_MODEL,
@@ -46,7 +45,7 @@ def check_llm(model: str = DEFAULT_CHAT_MODEL) -> HealthStatus:
         "gemini": ("Google", GOOGLE_API_KEY),
         "openai": ("OpenAI", OPENAI_API_KEY),
         "anthropic": ("Anthropic", ANTHROPIC_API_KEY),
-        "zhipuai": ("ZhipuAI", ZHIPUAI_API_KEY),
+        "zai": ("z.ai", ZAI_API_KEY),
     }
     name, key = key_map.get(provider, (provider, None))
     if not key:
@@ -65,6 +64,7 @@ def check_embedding(model: str = DEFAULT_EMBEDDING_MODEL) -> HealthStatus:
     key_map = {
         "gemini": ("Google", GOOGLE_API_KEY),
         "openai": ("OpenAI", OPENAI_API_KEY),
+        "zai": ("z.ai", ZAI_API_KEY),
     }
     name, key = key_map.get(provider, ("HuggingFace (local)", None))
 
