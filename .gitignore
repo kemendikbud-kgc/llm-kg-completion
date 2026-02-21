@@ -12,3 +12,4 @@ data/raw/*
 !data/raw/.gitkeep
 data/cache/*.json
 settings.local.json
+nul
