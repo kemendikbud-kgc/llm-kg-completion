@@ -29,11 +29,12 @@ DEFAULT_CHAT_MODEL = "gemini/gemini-2.5-flash"
 
 # --- Embedding Model Choices ---
 EMBEDDING_CHOICES = {
-    "Gemini Embedding": "gemini/gemini-embedding-001",
+    "Qwen3-Embedding-8B": "huggingface/Qwen/Qwen3-Embedding-8B",
     "HF Multilingual E5-small": "huggingface/intfloat/multilingual-e5-small",
     "HF BGE-small-en": "huggingface/BAAI/bge-small-en-v1.5",
+    "Gemini Embedding": "gemini/gemini-embedding-001",
     "OpenAI text-embedding-3-small": "openai/text-embedding-3-small",
     "OpenAI text-embedding-3-large": "openai/text-embedding-3-large",
 }
 
-DEFAULT_EMBEDDING_MODEL = "huggingface/intfloat/multilingual-e5-small"
+DEFAULT_EMBEDDING_MODEL = "huggingface/Qwen/Qwen3-Embedding-8B"

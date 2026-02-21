@@ -65,20 +65,24 @@ def check_embedding(model: str = DEFAULT_EMBEDDING_MODEL) -> HealthStatus:
     key_map = {
         "gemini": ("Google", GOOGLE_API_KEY),
         "openai": ("OpenAI", OPENAI_API_KEY),
-        "huggingface": ("HuggingFace", HUGGINGFACE_API_KEY),
     }
-    name, key = key_map.get(provider, (provider, None))
-    if not key and provider != "huggingface":
+    name, key = key_map.get(provider, ("HuggingFace (local)", None))
+
+    if provider == "huggingface":
+        try:
+            embed = get_embed_model(model)
+            embed.get_text_embedding("test")
+            return HealthStatus("Embedding (HuggingFace)", True, "Model loaded")
+        except Exception as e:
+            return HealthStatus("Embedding (HuggingFace)", False, str(e)[:100])
+
+    if not key:
         return HealthStatus(f"Embedding ({name})", False, f"Missing {name} API key")
 
     try:
         embed = get_embed_model(model)
         embed.get_text_embedding("test")
-        return HealthStatus(
-            f"Embedding ({name})",
-            True,
-            "API key valid" if key else "Connected (free tier)",
-        )
+        return HealthStatus(f"Embedding ({name})", True, "API key valid")
     except Exception as e:
         return HealthStatus(f"Embedding ({name})", False, str(e)[:100])
 

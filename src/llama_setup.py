@@ -2,6 +2,7 @@
 
 from llama_index.llms.litellm import LiteLLM
 from llama_index.embeddings.litellm import LiteLLMEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 
 def get_llm(model: str) -> LiteLLM:
@@ -9,6 +10,9 @@ def get_llm(model: str) -> LiteLLM:
     return LiteLLM(model=model, temperature=0.1)
 
 
-def get_embed_model(model: str) -> LiteLLMEmbedding:
-    """Return a LlamaIndex embedding model backed by litellm."""
+def get_embed_model(model: str):
+    """Return embedding model - uses HuggingFace locally for huggingface/* models."""
+    if model.startswith("huggingface/"):
+        model_name = model.replace("huggingface/", "")
+        return HuggingFaceEmbedding(model_name=model_name)
     return LiteLLMEmbedding(model_name=model)
