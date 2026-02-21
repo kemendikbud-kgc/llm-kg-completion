@@ -6,7 +6,13 @@ from pathlib import Path
 
 from src.ingestion import extract_text_from_pdf
 from src.extraction import extract_topics, CACHE_DIR, _merge_topics  # noqa: F401
-from src.graph import get_driver, insert_topics, get_all_nodes
+from src.graph import (
+    get_driver,
+    insert_topics,
+    get_all_nodes,
+    get_all_documents,
+    get_document_topics,
+)
 from src.completion import find_similar_pairs
 from src.config import (
     MODEL_CHOICES,
@@ -29,6 +35,23 @@ with st.expander("🔍 System Health Check", expanded=False):
                 st.success(f"✅ {r.service}: {r.message}")
             else:
                 st.error(f"❌ {r.service}: {r.message}")
+
+# --- View Documents in Neo4j ---
+with st.expander("📚 Documents in Knowledge Graph", expanded=False):
+    if st.button("View Documents"):
+        try:
+            driver = get_driver()
+            documents = get_all_documents(driver)
+            driver.close()
+
+            if documents:
+                st.write(f"**Total documents:** {len(documents)}")
+                for doc in documents:
+                    st.write(f"- **{doc['name']}** ({doc['topic_count']} topics)")
+            else:
+                st.info("No documents in the knowledge graph yet.")
+        except Exception as e:
+            st.error(f"Error fetching documents: {e}")
 
 # --- Sidebar: Model Selection ---
 with st.sidebar:
@@ -107,6 +130,9 @@ if uploaded_file:
     raw_text = extract_text_from_pdf(tmp_path)
     os.unlink(tmp_path)
 
+    # Store document name in session state for later use
+    st.session_state["document_name"] = uploaded_file.name
+
     st.text_area("Extracted Text", raw_text, height=200)
 
     # Step 2: LLM Extraction
@@ -139,13 +165,26 @@ if "extracted" in st.session_state:
 
     # Step 4: Push to Neo4j
     st.header("4. Save to Knowledge Graph")
+
+    # Document name input (editable, with default from uploaded file or "Unknown Document")
+    default_doc_name = st.session_state.get("document_name", "Unknown Document")
+    document_name = st.text_input(
+        "Document name (e.g., Biology_Curriculum_2024.pdf)",
+        value=default_doc_name,
+        help="This name will be used to create a :Document node in Neo4j",
+    )
+
     if st.button("Save to Neo4j"):
-        data = json.loads(edited)
-        driver = get_driver()
-        insert_topics(driver, data)
-        driver.close()
-        st.success("Data saved to Neo4j!")
-        st.session_state["neo4j_saved"] = True
+        if not document_name.strip():
+            st.error("Please provide a document name!")
+        else:
+            data = json.loads(edited)
+            driver = get_driver()
+            insert_topics(driver, data, document_name=document_name.strip())
+            driver.close()
+            st.success(f"Data saved to Neo4j! Document: {document_name.strip()}")
+            st.session_state["neo4j_saved"] = True
+            st.session_state["document_name"] = document_name.strip()  # Update session state
 
     # Step 5: Knowledge Graph Completion
     if st.session_state.get("neo4j_saved"):
