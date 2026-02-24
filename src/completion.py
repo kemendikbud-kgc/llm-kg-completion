@@ -174,6 +174,7 @@ def find_similar_pairs(
     threshold: float = 0.8,
     embedding_model: str | None = None,
     progress_callback: Callable[[int, int, str], None] | None = None,
+    min_description_length: int = 10,
 ) -> list[dict]:
     """Find similar pairs of nodes based on embedding similarity.
 
@@ -183,10 +184,39 @@ def find_similar_pairs(
         threshold: Minimum similarity score (default 0.8)
         embedding_model: Embedding model to use
         progress_callback: Optional callback(current, total, message) for progress
+        min_description_length: Skip nodes with descriptions shorter than this
 
     Returns:
         List of dicts with 'source', 'target', 'similarity'
     """
+    # Filter out nodes with short descriptions
+    filtered_indices = []
+    filtered_names = []
+    filtered_descriptions = []
+    skipped_count = 0
+
+    for i, (name, desc) in enumerate(zip(names, descriptions)):
+        if desc and len(desc.strip()) >= min_description_length:
+            filtered_indices.append(i)
+            filtered_names.append(name)
+            filtered_descriptions.append(desc)
+        else:
+            skipped_count += 1
+
+    if skipped_count > 0:
+        logger.info(
+            "Skipped %d nodes with descriptions < %d chars",
+            skipped_count,
+            min_description_length,
+        )
+
+    names = filtered_names
+    descriptions = filtered_descriptions
+
+    if len(names) < 2:
+        logger.warning("Not enough nodes with valid descriptions to compare")
+        return []
+
     if progress_callback:
         progress_callback(0, 1, "Computing embeddings...")
 

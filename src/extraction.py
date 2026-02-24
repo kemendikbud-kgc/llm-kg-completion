@@ -17,12 +17,17 @@ from tenacity import (
 )
 
 from src.config import DEFAULT_CHAT_MODEL
+from src.filters import filter_text, filter_chunks, FilterResult
 from src.llama_setup import get_llm
+from src.prompts import get_prompt
 from src.schemas import TopicExtraction
 
 CACHE_DIR = Path("data/cache")
 
 logger = logging.getLogger(__name__)
+
+# Default prompt version (used when no prompt_name specified)
+DEFAULT_PROMPT_NAME = "default"
 
 
 def _is_rate_limit_error(exception: BaseException) -> bool:
@@ -41,44 +46,6 @@ def _is_rate_limit_error(exception: BaseException) -> bool:
     return False
 
 
-SYSTEM_PROMPT = """\
-Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurikulum Indonesia.
-
-## DEFINISI ONTOLOGI
-
-**Topic (Topik):**
-- Konsep abstrak atau tema utama yang diajarkan dalam materi pembelajaran
-- Contoh: "Hukum Newton", "Sistem Pencernaan", "Reaksi Kimia"
-
-**SubTopic (Sub-Topik):**
-- Konten terperinci yang menjelaskan atau mengelaborasi sebuah Topic
-- Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
-
-## ATURAN HIERARKI
-
-1. Setiap Topic HARUS memiliki satu atau lebih SubTopics
-2. SubTopics SELALU berada di bawah Topic induk
-3. Nama Topic dan SubTopic harus unik
-
-## ATURAN DESKRIPSI
-
-1. Tulis deskripsi yang menjelaskan APA yang diajarkan, bukan definisi umum
-2. Gunakan bahasa yang sama dengan teks sumber
-3. Panjang deskripsi: 1-3 kalimat informatif
-
-## INSTRUKSI
-
-1. Ekstrak Topics sebagai konsep-konsep utama
-2. Ekstrak SubTopics sebagai penjelasan detail
-3. Abaikan teks administratif (nomor halaman, header, footer)
-
-Ekstrak semua Topics dan SubTopics dari teks berikut.
-Output dalam format JSON sesuai schema."""
-
-# Prompt version for cache invalidation - increment when prompt changes significantly
-PROMPT_VERSION = "v2"
-
-
 def _merge_topics(all_topics: list[dict]) -> list[dict]:
     """Deduplicate topics by name, merging sub-topics."""
     merged = {}
@@ -95,9 +62,9 @@ def _merge_topics(all_topics: list[dict]) -> list[dict]:
     return list(merged.values())
 
 
-def _cache_key(text: str, model: str) -> str:
+def _cache_key(text: str, model: str, prompt_version: str) -> str:
     """Return SHA-256 hash of text + model + prompt version for cache keying."""
-    return hashlib.sha256((text + model + PROMPT_VERSION).encode()).hexdigest()
+    return hashlib.sha256((text + model + prompt_version).encode()).hexdigest()
 
 
 def _chunk_text(text: str) -> list[str]:
@@ -117,12 +84,12 @@ def _chunk_text(text: str) -> list[str]:
         retry_state.attempt_number,
     ),
 )
-def _extract_from_chunk(llm, chunk: str) -> dict:
+def _extract_from_chunk(llm, chunk: str, system_prompt: str) -> dict:
     """Use LLMTextCompletionProgram to extract structured topics from a chunk."""
     program = LLMTextCompletionProgram.from_defaults(
         llm=llm,
         output_cls=TopicExtraction,
-        prompt_template_str=SYSTEM_PROMPT + "\n\nText:\n{text}",
+        prompt_template_str=system_prompt + "\n\nText:\n{text}",
     )
     result: TopicExtraction = program(text=chunk)
     return result.model_dump()
@@ -133,7 +100,9 @@ def extract_topics(
     model: str | None = None,
     use_cache: bool = True,
     progress_callback: Callable[[int, int, str], None] | None = None,
-) -> tuple[dict, bool]:
+    prompt_name: str = "default",
+    filter_content: bool = True,
+) -> tuple[dict, bool, FilterResult | None]:
     """Extract topics from text.
 
     Args:
@@ -141,28 +110,52 @@ def extract_topics(
         model: LLM model string
         use_cache: Whether to use cached results
         progress_callback: Optional callback(current, total, message) for progress updates
+        prompt_name: Name of the prompt to use from the registry
+        filter_content: Whether to filter administrative content before extraction
 
     Returns:
-        (result_dict, from_cache)
+        (result_dict, from_cache, filter_result)
     """
     model = model or DEFAULT_CHAT_MODEL
+    prompt = get_prompt(prompt_name)
+    prompt_version = prompt.version
 
-    cache_file = CACHE_DIR / f"{_cache_key(text, model)}.json"
+    # Apply text filtering if enabled
+    filter_result: FilterResult | None = None
+    if filter_content:
+        filter_result = filter_text(text)
+        text = filter_result.text
+        logger.info(
+            "Filtered text: %d -> %d chars (%.1f%% reduction)",
+            filter_result.original_length,
+            filter_result.filtered_length,
+            filter_result.reduction_percent,
+        )
+
+    cache_file = CACHE_DIR / f"{_cache_key(text, model, prompt_version)}.json"
 
     if use_cache and cache_file.exists():
         logger.info("Loading cached extraction result from %s", cache_file)
         if progress_callback:
             progress_callback(1, 1, "Loading from cache")
-        return json.loads(cache_file.read_text(encoding="utf-8")), True
+        return json.loads(cache_file.read_text(encoding="utf-8")), True, filter_result
 
     chunks = _chunk_text(text)
+
+    # Apply chunk filtering if content filtering is enabled
+    skipped_chunks: list[str] = []
+    if filter_content:
+        chunks, skipped_chunks = filter_chunks(chunks)
+        if skipped_chunks:
+            logger.info("Skipped %d administrative chunks", len(skipped_chunks))
+
     total_chunks = len(chunks)
 
     if progress_callback:
         progress_callback(0, total_chunks, "Preparing chunks...")
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    base_hash = _cache_key(text, model)
+    base_hash = _cache_key(text, model, prompt_version)
     all_topics: list[dict] = []
     llm = get_llm(model)
 
@@ -184,7 +177,7 @@ def extract_topics(
                     i + 1, total_chunks, f"Extracting chunk {i + 1} with LLM..."
                 )
             try:
-                parsed = _extract_from_chunk(llm, chunk)
+                parsed = _extract_from_chunk(llm, chunk, prompt.system_prompt)
             except Exception:
                 if all_topics:
                     logger.warning(
@@ -198,7 +191,7 @@ def extract_topics(
                         "_completed_chunks": i,
                         "_total_chunks": total_chunks,
                     }
-                    return result, False
+                    return result, False, filter_result
                 raise
             chunk_file.write_text(
                 json.dumps(parsed, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -217,4 +210,4 @@ def extract_topics(
     )
     logger.info("Cached final extraction result to %s", cache_file)
 
-    return result, False
+    return result, False, filter_result

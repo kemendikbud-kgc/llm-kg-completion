@@ -19,12 +19,18 @@ from src.graph import (
     get_nodes_with_descriptions,
 )
 from src.completion import find_similar_pairs
+from src.experiments import (
+    ExperimentRun,
+    generate_experiment_id,
+    save_experiment,
+)
 from src.config import (
     MODEL_CHOICES,
     EMBEDDING_CHOICES,
     DEFAULT_CHAT_MODEL,
     DEFAULT_EMBEDDING_MODEL,
 )
+from src.prompts import PROMPT_REGISTRY, get_prompt
 from src.schemas import SUBJECT_CHOICES, PHASE_CHOICES
 from src.health import check_all
 
@@ -97,6 +103,20 @@ with st.sidebar:
     )
     selected_embedding_model = EMBEDDING_CHOICES[embedding_model_name]
     st.caption(f"`{selected_embedding_model}`")
+
+    st.divider()
+    st.header("Extraction Settings")
+
+    # Prompt selector
+    prompt_names = list(PROMPT_REGISTRY.keys())
+    selected_prompt_name = st.selectbox(
+        "Extraction Prompt",
+        options=prompt_names,
+        index=0,
+        help="Select the prompt template for topic extraction",
+    )
+    selected_prompt = get_prompt(selected_prompt_name)
+    st.caption(f"*{selected_prompt.description}*")
 
     st.divider()
     st.header("Load Cached Result")
@@ -397,7 +417,16 @@ elif step2_done and not st.session_state.get("show_step2", False):
         st.rerun()
 else:
     if has_raw_text:
-        use_cache = st.checkbox("Use cached results (if available)", value=True)
+        col_cache, col_filter = st.columns(2)
+        with col_cache:
+            use_cache = st.checkbox("Use cached results (if available)", value=True)
+        with col_filter:
+            filter_content = st.checkbox(
+                "Filter administrative content",
+                value=True,
+                help="Skip page numbers, table of contents, credits, etc.",
+            )
+
         if st.button("Run Extraction", type="primary"):
             progress_bar = st.progress(0, text="Preparing...")
             status_text = st.empty()
@@ -411,18 +440,24 @@ else:
                 logger.info("[Step 2] %s (%d/%d)", message, current, total)
 
             logger.info(
-                "[Step 2] Starting extraction with model: %s", selected_chat_model
+                "[Step 2] Starting extraction with model: %s, prompt: %s, filter: %s",
+                selected_chat_model,
+                selected_prompt_name,
+                filter_content,
             )
-            result, from_cache = extract_topics(
+            result, from_cache, filter_result = extract_topics(
                 raw_text,
                 model=selected_chat_model,
                 use_cache=use_cache,
                 progress_callback=update_progress,
+                prompt_name=selected_prompt_name,
+                filter_content=filter_content,
             )
             progress_bar.empty()
             status_text.empty()
 
             st.session_state["extracted"] = result
+            st.session_state["filter_result"] = filter_result
             st.session_state["step2_done"] = True
             st.session_state["show_step2"] = False
             if from_cache:
@@ -441,7 +476,10 @@ else:
             else:
                 topic_count = len(result.get("topics", []))
                 logger.info("[Step 2] Extraction complete: %d topics", topic_count)
-                st.success(f"Extraction complete! Found {topic_count} topics.")
+                msg = f"Extraction complete! Found {topic_count} topics."
+                if filter_result:
+                    msg += f" (Filtered {filter_result.reduction_percent:.1f}% admin content)"
+                st.success(msg)
             st.rerun()
     else:
         st.info("Upload a PDF in Step 1 to extract topics.")
@@ -1016,3 +1054,64 @@ else:
                             st.rerun()
         else:
             st.info("No similar pairs found above the threshold.")
+
+    # --- Save as Experiment Section ---
+    st.divider()
+    st.subheader("Save as Experiment")
+    st.write("Save the current extraction and graph quality metrics for comparison.")
+
+    experiment_notes = st.text_area(
+        "Notes (optional)",
+        placeholder="Describe what you're testing or any observations...",
+        key="experiment_notes",
+    )
+
+    if st.button("Save as Experiment", type="secondary"):
+        try:
+            # Get current metrics
+            driver = get_driver()
+            quality = get_graph_quality_metrics(driver)
+            driver.close()
+
+            # Get extraction data
+            extracted = st.session_state.get("extracted", {})
+            topics = extracted.get("topics", [])
+            topic_count = len(topics)
+            subtopic_count = sum(len(t.get("sub_topics", [])) for t in topics)
+
+            # Get filter result if available
+            filter_result = st.session_state.get("filter_result")
+
+            # Create experiment run
+            from datetime import datetime
+
+            exp_run = ExperimentRun(
+                id=generate_experiment_id(),
+                timestamp=datetime.now().isoformat(),
+                document_name=st.session_state.get("document_name", "Unknown"),
+                model=selected_chat_model,
+                prompt_name=selected_prompt_name,
+                embedding_model=selected_embedding_model,
+                similarity_threshold=threshold,
+                topic_count=topic_count,
+                subtopic_count=subtopic_count,
+                adc=quality.get("adc", 0.0),
+                modularity=quality.get("modularity", 0.0),
+                density=quality.get("density", 0.0),
+                similar_pairs_count=len(st.session_state.get("found_pairs") or []),
+                filter_enabled=filter_result is not None,
+                filter_reduction_percent=(
+                    filter_result.reduction_percent if filter_result else 0.0
+                ),
+                notes=experiment_notes,
+            )
+
+            # Save experiment
+            save_path = save_experiment(exp_run)
+            logger.info("[Experiment] Saved experiment %s to %s", exp_run.id, save_path)
+            st.success(f"Experiment saved: **{exp_run.id}**")
+            st.caption("View in the Experiments page for comparison.")
+
+        except Exception as e:
+            st.error(f"Failed to save experiment: {e}")
+            logger.error("[Experiment] Failed to save: %s", e)
