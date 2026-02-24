@@ -190,7 +190,9 @@ def find_similar_pairs(
     if progress_callback:
         progress_callback(0, 1, "Computing embeddings...")
 
-    embeddings = get_embeddings(descriptions, model=embedding_model)
+    # Combine name + description for richer semantic representation (per paper)
+    combined_texts = [f"{name}. {desc}" for name, desc in zip(names, descriptions)]
+    embeddings = get_embeddings(combined_texts, model=embedding_model)
 
     n = len(names)
     total_pairs = n * (n - 1) // 2

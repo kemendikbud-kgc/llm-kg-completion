@@ -42,14 +42,41 @@ def _is_rate_limit_error(exception: BaseException) -> bool:
 
 
 SYSTEM_PROMPT = """\
-You are an expert curriculum designer. I will give you a text from a science curriculum.
+Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurikulum Indonesia.
 
-Definitions:
-- Topic: An abstract concept taught in a session.
-- Sub-Topic: Fine-grained content explained in detail.
+## DEFINISI ONTOLOGI
 
-Task: Extract all Topics and Sub-Topics from the text below.
-Output strictly in JSON format matching the schema."""
+**Topic (Topik):**
+- Konsep abstrak atau tema utama yang diajarkan dalam materi pembelajaran
+- Contoh: "Hukum Newton", "Sistem Pencernaan", "Reaksi Kimia"
+
+**SubTopic (Sub-Topik):**
+- Konten terperinci yang menjelaskan atau mengelaborasi sebuah Topic
+- Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
+
+## ATURAN HIERARKI
+
+1. Setiap Topic HARUS memiliki satu atau lebih SubTopics
+2. SubTopics SELALU berada di bawah Topic induk
+3. Nama Topic dan SubTopic harus unik
+
+## ATURAN DESKRIPSI
+
+1. Tulis deskripsi yang menjelaskan APA yang diajarkan, bukan definisi umum
+2. Gunakan bahasa yang sama dengan teks sumber
+3. Panjang deskripsi: 1-3 kalimat informatif
+
+## INSTRUKSI
+
+1. Ekstrak Topics sebagai konsep-konsep utama
+2. Ekstrak SubTopics sebagai penjelasan detail
+3. Abaikan teks administratif (nomor halaman, header, footer)
+
+Ekstrak semua Topics dan SubTopics dari teks berikut.
+Output dalam format JSON sesuai schema."""
+
+# Prompt version for cache invalidation - increment when prompt changes significantly
+PROMPT_VERSION = "v2"
 
 
 def _merge_topics(all_topics: list[dict]) -> list[dict]:
@@ -69,8 +96,8 @@ def _merge_topics(all_topics: list[dict]) -> list[dict]:
 
 
 def _cache_key(text: str, model: str) -> str:
-    """Return SHA-256 hash of text + model for cache keying."""
-    return hashlib.sha256((text + model).encode()).hexdigest()
+    """Return SHA-256 hash of text + model + prompt version for cache keying."""
+    return hashlib.sha256((text + model + PROMPT_VERSION).encode()).hexdigest()
 
 
 def _chunk_text(text: str) -> list[str]:

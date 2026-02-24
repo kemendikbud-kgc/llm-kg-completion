@@ -1,6 +1,8 @@
 """Step D: Neo4j graph construction and querying."""
 
+import networkx as nx
 from neo4j import GraphDatabase
+
 from src.config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD
 
 
@@ -13,10 +15,16 @@ def get_driver():
     return GraphDatabase.driver(uri, auth=(user, pwd))
 
 
-def insert_topics(driver, data: dict, document_name: str = "Unknown"):
+def insert_topics(
+    driver,
+    data: dict,
+    document_name: str = "Unknown",
+    subject_name: str | None = None,
+    subject_phase: str | None = None,
+):
     """Insert topics into Neo4j following best practices for multi-document KGs.
 
-    Creates a (:Document)-[:CONTAINS]->(:Topic)-[:INCLUDES]->(:SubTopic) structure.
+    Creates a (:Subject)-[:CONTAINS]->(:Document)-[:CONTAINS]->(:Topic)-[:INCLUDES]->(:SubTopic) structure.
     Topics are shared across documents (MERGE on name), enabling cross-document linking.
     """
     with driver.session() as session:
@@ -28,6 +36,21 @@ def insert_topics(driver, data: dict, document_name: str = "Unknown"):
             """,
             doc_name=document_name,
         )
+
+        # Create Subject node and link to Document if provided
+        if subject_name:
+            session.run(
+                """
+                MERGE (s:Subject {name: $subject_name})
+                SET s.phase = $phase
+                WITH s
+                MATCH (d:Document {name: $doc_name})
+                MERGE (s)-[:CONTAINS]->(d)
+                """,
+                subject_name=subject_name,
+                phase=subject_phase or "",
+                doc_name=document_name,
+            )
 
         for topic in data["topics"]:
             # MERGE topic (shared across documents)
@@ -103,18 +126,20 @@ def get_graph_stats(driver) -> dict:
     with driver.session() as session:
         result = session.run(
             """
-            MATCH (d:Document) WITH count(d) AS documents
-            MATCH (t:Topic) WITH documents, count(t) AS topics
-            MATCH (s:SubTopic) WITH documents, topics, count(s) AS subtopics
-            MATCH ()-[r:CONTAINS]->() WITH documents, topics, subtopics, count(r) AS contains_rels
-            MATCH ()-[r:INCLUDES]->() WITH documents, topics, subtopics, contains_rels, count(r) AS includes_rels
-            MATCH ()-[r:SIMILAR_TO]->()
-            RETURN documents, topics, subtopics, contains_rels, includes_rels, count(r) AS similar_rels
+            OPTIONAL MATCH (subj:Subject) WITH count(subj) AS subjects
+            OPTIONAL MATCH (d:Document) WITH subjects, count(d) AS documents
+            OPTIONAL MATCH (t:Topic) WITH subjects, documents, count(t) AS topics
+            OPTIONAL MATCH (s:SubTopic) WITH subjects, documents, topics, count(s) AS subtopics
+            OPTIONAL MATCH ()-[r:CONTAINS]->() WITH subjects, documents, topics, subtopics, count(r) AS contains_rels
+            OPTIONAL MATCH ()-[r:INCLUDES]->() WITH subjects, documents, topics, subtopics, contains_rels, count(r) AS includes_rels
+            OPTIONAL MATCH ()-[r:SIMILAR_TO]->()
+            RETURN subjects, documents, topics, subtopics, contains_rels, includes_rels, count(r) AS similar_rels
             """
         )
         row = result.single()
         if row:
             return {
+                "subjects": row["subjects"],
                 "documents": row["documents"],
                 "topics": row["topics"],
                 "subtopics": row["subtopics"],
@@ -123,6 +148,7 @@ def get_graph_stats(driver) -> dict:
                 "similar_rels": row["similar_rels"],
             }
         return {
+            "subjects": 0,
             "documents": 0,
             "topics": 0,
             "subtopics": 0,
@@ -238,3 +264,57 @@ def get_nodes_with_descriptions(
                 }
             )
         return nodes
+
+
+def get_graph_quality_metrics(driver) -> dict:
+    """Calculate graph quality metrics: ADC (Average Degree Centrality) and Modularity.
+
+    These metrics are used to evaluate the effectiveness of KG completion.
+    ADC measures average connectivity; Modularity measures community structure.
+    """
+    G = nx.Graph()
+
+    with driver.session() as session:
+        # Get nodes (Topics and SubTopics only)
+        nodes = session.run(
+            """
+            MATCH (n) WHERE n:Topic OR n:SubTopic
+            RETURN elementId(n) AS id, n.name AS name
+            """
+        )
+        for r in nodes:
+            G.add_node(r["id"])
+
+        # Get edges (INCLUDES and SIMILAR_TO relationships)
+        edges = session.run(
+            """
+            MATCH (a)-[r]->(b)
+            WHERE (a:Topic OR a:SubTopic) AND (b:Topic OR b:SubTopic)
+            RETURN elementId(a) AS src, elementId(b) AS tgt
+            """
+        )
+        for r in edges:
+            G.add_edge(r["src"], r["tgt"])
+
+    if G.number_of_nodes() == 0:
+        return {"adc": 0.0, "modularity": 0.0, "density": 0.0, "components": 0}
+
+    # Average Degree Centrality (ADC)
+    centrality = nx.degree_centrality(G)
+    adc = sum(centrality.values()) / len(centrality)
+
+    # Modularity (measures community structure quality)
+    try:
+        communities = list(nx.community.greedy_modularity_communities(G))
+        modularity = (
+            nx.community.modularity(G, communities) if len(communities) > 1 else 0.0
+        )
+    except Exception:
+        modularity = 0.0
+
+    return {
+        "adc": round(adc, 3),
+        "modularity": round(modularity, 3),
+        "density": round(nx.density(G), 3),
+        "components": nx.number_connected_components(G),
+    }
