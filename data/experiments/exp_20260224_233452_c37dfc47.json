@@ -1,0 +1,19 @@
+{
+  "id": "exp_20260224_233452_c37dfc47",
+  "timestamp": "2026-02-24T23:34:52.882706",
+  "document_name": "Fisika-BS-KLS-XI.pdf",
+  "model": "gemini/gemini-2.5-flash",
+  "prompt_name": "default",
+  "embedding_model": "gemini/gemini-embedding-001",
+  "similarity_threshold": 0.85,
+  "topic_count": 158,
+  "subtopic_count": 750,
+  "adc": 0.004,
+  "modularity": 0.873,
+  "density": 0.004,
+  "similar_pairs_count": 0,
+  "filter_enabled": false,
+  "filter_reduction_percent": 0.0,
+  "notes": "",
+  "metadata": {}
+}

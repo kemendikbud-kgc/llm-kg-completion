@@ -28,9 +28,10 @@ flowchart LR
 |------|--------|----------------|
 | 1. Ingest | `ingestion.py` | PDF → raw text |
 | 2. Extract | `extraction.py` | Text → Topics/SubTopics (Pydantic) |
-| 3. Validate | `app.py` | Human review & edit |
+| 3. Validate | `app.py` | Human review & edit (skippable) |
 | 4. Construct | `graph.py` | Validated data → Neo4j nodes |
 | 5. Complete | `completion.py` | Embeddings → SIMILAR_TO edges |
+| — | `experiments.py` | Save & compare experiment runs |
 
 ## Detailed Architecture
 
@@ -184,6 +185,16 @@ MODEL_CHOICES = {
 }
 ```
 
+### 4. Experiment Tracking
+
+Each extraction run can be saved as an experiment with:
+- Model and prompt configuration
+- Graph quality metrics (ADC, modularity, density)
+- Topic/subtopic counts
+- Similarity threshold and pair counts
+
+Experiments are stored as JSON in `data/experiments/` for later comparison.
+
 ## Setup
 
 ```bash
@@ -213,8 +224,26 @@ src/
 ├── completion.py     # Embedding-based similarity detection
 ├── schemas.py        # Pydantic models (TopicExtraction, Topic, SubTopic)
 ├── llama_setup.py    # LLM/embedding model factories
-└── config.py         # Environment & model registries
+├── config.py         # Environment & model registries
+├── prompts.py        # Modular prompt system for extraction
+├── experiments.py    # Experiment tracking and comparison
+└── health.py         # System health checks
 ```
+
+## Performance Optimizations
+
+The app includes several optimizations for handling large extractions:
+
+### Cached Graph Metrics
+Graph statistics and quality metrics (ADC, modularity, density) are cached for 60 seconds using `@st.cache_data`, avoiding expensive Neo4j queries and NetworkX computations on every interaction.
+
+### Fragment-Based Validation UI
+The Step 5 validation UI uses Streamlit's `@st.fragment` decorator, allowing button clicks to rerun only the validation section instead of the entire page.
+
+### Lazy Loading Options
+- **Step 3 (Validate & Edit)**: Editing UI is hidden by default. Users see topic/subtopic counts first and can choose to load the full editor only if needed.
+- **Step 5 (KG Completion)**: Option to skip manual validation and save all pairs directly.
+- **KG Explorer**: Collapsed by default with a manual refresh button.
 
 ## Thesis Context
 
@@ -224,6 +253,7 @@ This project demonstrates:
 2. **Pipeline Resilience**: Caching strategies for rate-limited APIs
 3. **Knowledge Engineering**: Converting unstructured educational documents to queryable graphs
 4. **Semantic Completion**: Using embeddings to discover implicit relationships
+5. **Experiment Reproducibility**: Tracking and comparing extraction runs across different configurations
 
 ---
 

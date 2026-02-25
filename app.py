@@ -84,6 +84,76 @@ def step_header(step_num: int, title: str, status: str) -> None:
     )
 
 
+@st.cache_data(ttl=60)
+def get_cached_graph_metrics():
+    """Cache expensive graph metrics for 60 seconds to avoid recomputation on every rerun."""
+    driver = get_driver()
+    stats = get_graph_stats(driver)
+    quality = get_graph_quality_metrics(driver)
+    driver.close()
+    return stats, quality
+
+
+@st.fragment
+def validation_fragment(pairs: list, sample_indices: list, sample_size: int):
+    """Fragment for validation UI - reruns independently without full page reload."""
+    validation_results = st.session_state.get("validation_results", {})
+
+    for idx in sample_indices:
+        p = pairs[idx]
+        pair_key = f"{p['source']}|{p['target']}"
+
+        with st.container(border=True):
+            cols = st.columns([4, 1, 1])
+            with cols[0]:
+                st.write(
+                    f"**{p['source']}** ↔ **{p['target']}** "
+                    f"(score: {p['similarity']:.3f})"
+                )
+            with cols[1]:
+                if st.button("✅ Valid", key=f"valid_{idx}"):
+                    st.session_state["validation_results"][pair_key] = True
+                    st.rerun()  # Only reruns this fragment!
+            with cols[2]:
+                if st.button("❌ Invalid", key=f"invalid_{idx}"):
+                    st.session_state["validation_results"][pair_key] = False
+                    st.rerun()  # Only reruns this fragment!
+
+            # Show current status
+            if pair_key in validation_results:
+                status = "✅ Valid" if validation_results[pair_key] else "❌ Invalid"
+                st.caption(f"Status: {status}")
+
+    # Calculate precision
+    validated_count = len(validation_results)
+    valid_count = sum(1 for v in validation_results.values() if v)
+
+    st.divider()
+    col_prec, col_resample = st.columns(2)
+
+    with col_prec:
+        if validated_count > 0:
+            precision = valid_count / validated_count
+            st.metric(
+                "Estimated Precision",
+                f"{precision:.0%}",
+                help=f"Based on {validated_count}/{sample_size} validated samples",
+            )
+            st.caption(f"Validated: {validated_count}/{sample_size} pairs")
+        else:
+            st.info("Validate some pairs to see precision estimate.")
+
+    with col_resample:
+        if st.button("🔄 New Sample", help="Get a new random sample"):
+            import random
+
+            st.session_state["validation_sample"] = random.sample(
+                range(len(pairs)), sample_size
+            )
+            st.session_state["validation_results"] = {}
+            st.rerun()
+
+
 # --- Sidebar: Model Selection ---
 with st.sidebar:
     st.header("Model Settings")
@@ -165,15 +235,18 @@ with st.sidebar:
         else:
             st.caption("No cached results found.")
 
-# --- Knowledge Graph Explorer (always visible) ---
-with st.expander("🔍 Knowledge Graph Explorer", expanded=True):
+# --- Knowledge Graph Explorer (collapsed by default for performance) ---
+with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
+    col_refresh, _ = st.columns([1, 5])
+    with col_refresh:
+        if st.button("🔄 Refresh", key="refresh_kg_metrics"):
+            get_cached_graph_metrics.clear()
+            st.rerun()
+
     col1, col2, col3, col4 = st.columns(4)
 
     try:
-        driver = get_driver()
-        stats = get_graph_stats(driver)
-        quality = get_graph_quality_metrics(driver)
-        driver.close()
+        stats, quality = get_cached_graph_metrics()
 
         col1.metric("Subjects", stats.get("subjects", 0))
         col2.metric("Documents", stats["documents"])
@@ -494,126 +567,146 @@ if step3_status == "locked":
     st.info("⏳ Extract topics first (Step 2) or load from cache.")
     edited = "{}"
 else:
-    # Card-based validation UI
-    topics = st.session_state.get("extracted", {}).get("topics", [])
+    # Get counts without rendering
+    extracted_data = st.session_state.get("extracted", {})
+    topic_count = len(extracted_data.get("topics", []))
+    subtopic_count = sum(
+        len(t.get("sub_topics", [])) for t in extracted_data.get("topics", [])
+    )
 
-    # Add topic button
-    col_add, col_stats = st.columns([1, 3])
-    with col_add:
-        if st.button("➕ Add Topic", key="add_topic"):
-            topics.append({"name": "New Topic", "description": "", "sub_topics": []})
+    # Ask user FIRST before loading the editing UI
+    st.info(f"📊 Extracted: **{topic_count} topics**, **{subtopic_count} subtopics**")
+
+    load_editor = st.checkbox(
+        "Load editing UI to review and modify topics",
+        value=False,
+        help="Warning: Loading many topics may be slow. Skip if you trust the extraction.",
+    )
+
+    if not load_editor:
+        st.success("✓ Click the checkbox above to edit, or proceed directly to Step 4.")
+        edited = json.dumps(extracted_data, indent=2, ensure_ascii=False)
+    else:
+        # Now load topics for editing
+        topics = extracted_data.get("topics", [])
+
+        # Card-based validation UI
+        # Add topic button
+        col_add, col_stats = st.columns([1, 3])
+        with col_add:
+            if st.button("➕ Add Topic", key="add_topic"):
+                topics.append({"name": "New Topic", "description": "", "sub_topics": []})
+                st.session_state["extracted"]["topics"] = topics
+                st.rerun()
+        with col_stats:
+            st.caption(f"📊 {topic_count} topics, {subtopic_count} subtopics")
+
+        # Track topics to delete (can't modify list while iterating)
+        topics_to_delete = []
+
+        # Render each topic as an expandable card
+        for i, topic in enumerate(topics):
+            with st.container(border=True):
+                col_topic, col_del = st.columns([5, 1])
+
+                with col_topic:
+                    new_name = st.text_input(
+                        f"Topic {i + 1}",
+                        value=topic.get("name", ""),
+                        key=f"topic_name_{i}",
+                        label_visibility="collapsed",
+                        placeholder="Topic name",
+                    )
+                    if new_name != topic.get("name", ""):
+                        topic["name"] = new_name
+
+                with col_del:
+                    if st.button("🗑️", key=f"del_topic_{i}", help="Delete this topic"):
+                        topics_to_delete.append(i)
+
+                new_desc = st.text_area(
+                    "Description",
+                    value=topic.get("description", ""),
+                    key=f"topic_desc_{i}",
+                    height=80,
+                    label_visibility="collapsed",
+                    placeholder="Topic description",
+                )
+                if new_desc != topic.get("description", ""):
+                    topic["description"] = new_desc
+
+                # SubTopics section
+                subtopics = topic.get("sub_topics", [])
+                subtopics_to_delete = []
+
+                with st.expander(f"📑 SubTopics ({len(subtopics)})", expanded=False):
+                    if st.button(
+                        "➕ Add SubTopic", key=f"add_sub_{i}", use_container_width=True
+                    ):
+                        subtopics.append({"name": "New SubTopic", "description": ""})
+                        topic["sub_topics"] = subtopics
+                        st.rerun()
+
+                    for j, sub in enumerate(subtopics):
+                        cols = st.columns([3, 4, 1])
+                        with cols[0]:
+                            new_sub_name = st.text_input(
+                                "Name",
+                                value=sub.get("name", ""),
+                                key=f"sub_name_{i}_{j}",
+                                label_visibility="collapsed",
+                                placeholder="SubTopic name",
+                            )
+                            if new_sub_name != sub.get("name", ""):
+                                sub["name"] = new_sub_name
+                        with cols[1]:
+                            new_sub_desc = st.text_input(
+                                "Description",
+                                value=sub.get("description", ""),
+                                key=f"sub_desc_{i}_{j}",
+                                label_visibility="collapsed",
+                                placeholder="SubTopic description",
+                            )
+                            if new_sub_desc != sub.get("description", ""):
+                                sub["description"] = new_sub_desc
+                        with cols[2]:
+                            if st.button("🗑️", key=f"del_sub_{i}_{j}"):
+                                subtopics_to_delete.append(j)
+
+                    # Delete marked subtopics (reverse order to preserve indices)
+                    for j in reversed(subtopics_to_delete):
+                        subtopics.pop(j)
+                        st.rerun()
+
+        # Delete marked topics (reverse order to preserve indices)
+        if topics_to_delete:
+            for i in reversed(topics_to_delete):
+                topics.pop(i)
             st.session_state["extracted"]["topics"] = topics
             st.rerun()
-    with col_stats:
-        total_subtopics = sum(len(t.get("sub_topics", [])) for t in topics)
-        st.caption(f"📊 {len(topics)} topics, {total_subtopics} subtopics")
 
-    # Track topics to delete (can't modify list while iterating)
-    topics_to_delete = []
-
-    # Render each topic as an expandable card
-    for i, topic in enumerate(topics):
-        with st.container(border=True):
-            col_topic, col_del = st.columns([5, 1])
-
-            with col_topic:
-                new_name = st.text_input(
-                    f"Topic {i + 1}",
-                    value=topic.get("name", ""),
-                    key=f"topic_name_{i}",
-                    label_visibility="collapsed",
-                    placeholder="Topic name",
-                )
-                if new_name != topic.get("name", ""):
-                    topic["name"] = new_name
-
-            with col_del:
-                if st.button("🗑️", key=f"del_topic_{i}", help="Delete this topic"):
-                    topics_to_delete.append(i)
-
-            new_desc = st.text_area(
-                "Description",
-                value=topic.get("description", ""),
-                key=f"topic_desc_{i}",
-                height=80,
-                label_visibility="collapsed",
-                placeholder="Topic description",
-            )
-            if new_desc != topic.get("description", ""):
-                topic["description"] = new_desc
-
-            # SubTopics section
-            subtopics = topic.get("sub_topics", [])
-            subtopics_to_delete = []
-
-            with st.expander(f"📑 SubTopics ({len(subtopics)})", expanded=False):
-                if st.button(
-                    "➕ Add SubTopic", key=f"add_sub_{i}", use_container_width=True
-                ):
-                    subtopics.append({"name": "New SubTopic", "description": ""})
-                    topic["sub_topics"] = subtopics
-                    st.rerun()
-
-                for j, sub in enumerate(subtopics):
-                    cols = st.columns([3, 4, 1])
-                    with cols[0]:
-                        new_sub_name = st.text_input(
-                            "Name",
-                            value=sub.get("name", ""),
-                            key=f"sub_name_{i}_{j}",
-                            label_visibility="collapsed",
-                            placeholder="SubTopic name",
-                        )
-                        if new_sub_name != sub.get("name", ""):
-                            sub["name"] = new_sub_name
-                    with cols[1]:
-                        new_sub_desc = st.text_input(
-                            "Description",
-                            value=sub.get("description", ""),
-                            key=f"sub_desc_{i}_{j}",
-                            label_visibility="collapsed",
-                            placeholder="SubTopic description",
-                        )
-                        if new_sub_desc != sub.get("description", ""):
-                            sub["description"] = new_sub_desc
-                    with cols[2]:
-                        if st.button("🗑️", key=f"del_sub_{i}_{j}"):
-                            subtopics_to_delete.append(j)
-
-                # Delete marked subtopics (reverse order to preserve indices)
-                for j in reversed(subtopics_to_delete):
-                    subtopics.pop(j)
-                    st.rerun()
-
-    # Delete marked topics (reverse order to preserve indices)
-    if topics_to_delete:
-        for i in reversed(topics_to_delete):
-            topics.pop(i)
+        # Update session state with edited data
         st.session_state["extracted"]["topics"] = topics
-        st.rerun()
 
-    # Update session state with edited data
-    st.session_state["extracted"]["topics"] = topics
+        # Generate edited JSON for Step 4 compatibility
+        edited = json.dumps(st.session_state["extracted"], indent=2, ensure_ascii=False)
 
-    # Generate edited JSON for Step 4 compatibility
-    edited = json.dumps(st.session_state["extracted"], indent=2, ensure_ascii=False)
-
-    # Show raw JSON in collapsible section for debugging
-    with st.expander("📝 View/Edit Raw JSON", expanded=False):
-        raw_edited = st.text_area(
-            "Raw JSON (edit with caution):",
-            edited,
-            height=300,
-            key="raw_json_editor",
-        )
-        if raw_edited != edited:
-            try:
-                parsed = json.loads(raw_edited)
-                st.session_state["extracted"] = parsed
-                edited = raw_edited
-                st.success("JSON updated!")
-            except json.JSONDecodeError as e:
-                st.error(f"Invalid JSON: {e}")
+        # Show raw JSON in collapsible section for debugging
+        with st.expander("📝 View/Edit Raw JSON", expanded=False):
+            raw_edited = st.text_area(
+                "Raw JSON (edit with caution):",
+                edited,
+                height=300,
+                key="raw_json_editor",
+            )
+            if raw_edited != edited:
+                try:
+                    parsed = json.loads(raw_edited)
+                    st.session_state["extracted"] = parsed
+                    edited = raw_edited
+                    st.success("JSON updated!")
+                except json.JSONDecodeError as e:
+                    st.error(f"Invalid JSON: {e}")
 
 st.divider()
 
@@ -866,80 +959,32 @@ else:
             SAMPLE_SIZE = 10
             if len(pairs) > SAMPLE_SIZE:
                 st.subheader("🔍 Semi-Supervised Validation")
-                st.write(
-                    f"Review a sample of {SAMPLE_SIZE} pairs to estimate precision. "
-                    "Mark each pair as valid or invalid."
+
+                # Option to skip validation
+                skip_validation = st.checkbox(
+                    "Skip validation (save all pairs directly)",
+                    value=False,
+                    help="Skip manual validation and save all pairs without review",
                 )
 
-                # Initialize validation state if not present
-                if "validation_sample" not in st.session_state:
-                    import random
+                if not skip_validation:
+                    st.write(
+                        f"Review a sample of {SAMPLE_SIZE} pairs to estimate precision. "
+                        "Mark each pair as valid or invalid."
+                    )
 
-                    sample_indices = random.sample(range(len(pairs)), SAMPLE_SIZE)
-                    st.session_state["validation_sample"] = sample_indices
-                    st.session_state["validation_results"] = {}
-
-                sample_indices = st.session_state["validation_sample"]
-                validation_results = st.session_state["validation_results"]
-
-                # Display sample pairs for validation
-                for idx in sample_indices:
-                    p = pairs[idx]
-                    pair_key = f"{p['source']}|{p['target']}"
-
-                    with st.container(border=True):
-                        cols = st.columns([4, 1, 1])
-                        with cols[0]:
-                            st.write(
-                                f"**{p['source']}** ↔ **{p['target']}** "
-                                f"(score: {p['similarity']:.3f})"
-                            )
-                        with cols[1]:
-                            if st.button("✅ Valid", key=f"valid_{idx}"):
-                                validation_results[pair_key] = True
-                                st.rerun()
-                        with cols[2]:
-                            if st.button("❌ Invalid", key=f"invalid_{idx}"):
-                                validation_results[pair_key] = False
-                                st.rerun()
-
-                        # Show current status
-                        if pair_key in validation_results:
-                            status = (
-                                "✅ Valid"
-                                if validation_results[pair_key]
-                                else "❌ Invalid"
-                            )
-                            st.caption(f"Status: {status}")
-
-                # Calculate precision
-                validated_count = len(validation_results)
-                valid_count = sum(1 for v in validation_results.values() if v)
-
-                st.divider()
-                col_prec, col_resample = st.columns(2)
-
-                with col_prec:
-                    if validated_count > 0:
-                        precision = valid_count / validated_count
-                        st.metric(
-                            "Estimated Precision",
-                            f"{precision:.0%}",
-                            help=f"Based on {validated_count}/{SAMPLE_SIZE} validated samples",
-                        )
-                        st.caption(f"Validated: {validated_count}/{SAMPLE_SIZE} pairs")
-                    else:
-                        st.info("Validate some pairs to see precision estimate.")
-
-                with col_resample:
-                    if st.button("🔄 New Sample", help="Get a new random sample"):
+                    # Initialize validation state if not present
+                    if "validation_sample" not in st.session_state:
                         import random
 
-                        st.session_state["validation_sample"] = random.sample(
-                            range(len(pairs)), SAMPLE_SIZE
-                        )
+                        sample_indices = random.sample(range(len(pairs)), SAMPLE_SIZE)
+                        st.session_state["validation_sample"] = sample_indices
                         st.session_state["validation_results"] = {}
-                        st.rerun()
+
+                    sample_indices = st.session_state["validation_sample"]
+
+                    # Use fragment for validation UI to avoid full page reruns
+                    validation_fragment(pairs, sample_indices, SAMPLE_SIZE)
 
                 st.divider()
 
