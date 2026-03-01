@@ -1,4 +1,4 @@
-"""Step E: Knowledge Graph Completion via semantic similarity."""
+"""Step E: Knowledge Graph Completion via semantic similarity and LLM classification."""
 
 import hashlib
 import json
@@ -14,8 +14,8 @@ from tenacity import (
     wait_exponential,
 )
 
-from src.config import DEFAULT_EMBEDDING_MODEL
-from src.llama_setup import get_embed_model
+from src.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_CHAT_MODEL
+from src.llama_setup import get_embed_model, get_llm
 
 logger = logging.getLogger(__name__)
 
@@ -90,17 +90,7 @@ def get_embeddings(
     use_cache: bool = True,
     progress_callback: Callable[[int, int, str], None] | None = None,
 ) -> list[list[float]]:
-    """Get embeddings for a list of texts with optional caching.
-
-    Args:
-        texts: List of texts to embed
-        model: Embedding model string
-        use_cache: Whether to use disk cache (default True)
-        progress_callback: Optional callback(current, total, message) for progress
-
-    Returns:
-        List of embedding vectors
-    """
+    """Get embeddings for a list of texts with optional caching."""
     model = model or DEFAULT_EMBEDDING_MODEL
     total = len(texts)
 
@@ -178,16 +168,7 @@ def find_similar_pairs(
 ) -> list[dict]:
     """Find similar pairs of nodes based on embedding similarity.
 
-    Args:
-        names: List of node names
-        descriptions: List of node descriptions (for embedding)
-        threshold: Minimum similarity score (default 0.8)
-        embedding_model: Embedding model to use
-        progress_callback: Optional callback(current, total, message) for progress
-        min_description_length: Skip nodes with descriptions shorter than this
-
-    Returns:
-        List of dicts with 'source', 'target', 'similarity'
+    Returns list of dicts with 'source', 'target', 'similarity'.
     """
     # Filter out nodes with short descriptions
     filtered_indices = []
@@ -220,7 +201,6 @@ def find_similar_pairs(
     if progress_callback:
         progress_callback(0, 1, "Computing embeddings...")
 
-    # Combine name + description for richer semantic representation (per paper)
     combined_texts = [f"{name}. {desc}" for name, desc in zip(names, descriptions)]
     embeddings = get_embeddings(combined_texts, model=embedding_model)
 
@@ -253,3 +233,123 @@ def find_similar_pairs(
         progress_callback(total_pairs, total_pairs, f"Found {len(pairs)} similar pairs")
 
     return pairs
+
+
+# Classification prompt for typed relationships
+_CLASSIFICATION_PROMPT = """\
+Anda adalah ahli kurikulum yang mengklasifikasikan hubungan antar konsep pembelajaran.
+
+Diberikan dua konsep yang memiliki kemiripan semantik tinggi:
+- Konsep A: "{name_a}"
+  Deskripsi: "{desc_a}"
+- Konsep B: "{name_b}"
+  Deskripsi: "{desc_b}"
+
+Klasifikasikan hubungan antara A dan B sebagai SALAH SATU dari:
+1. **isPrerequisiteOf**: A harus dipelajari sebelum B (ketergantungan urutan ketat)
+   Contoh: "Bilangan Bulat" → "Persamaan Linear"
+2. **supports**: A membantu pemahaman B atau A diterapkan dalam B (ketergantungan fungsional)
+   Contoh: "Hukum Newton" → "Gaya Gesek"
+3. **analogousTo**: A dan B memiliki pola/prinsip yang sama (hubungan struktural, anti-silo)
+   Contoh: "Laju Reaksi Kimia" ↔ "Kecepatan Reaksi Biologis"
+4. **none**: Tidak ada hubungan bermakna meski mirip secara semantik
+
+Jawab HANYA dengan satu kata: isPrerequisiteOf, supports, analogousTo, atau none.
+Jangan tambahkan penjelasan."""
+
+
+def classify_similar_pair(
+    name_a: str,
+    desc_a: str,
+    name_b: str,
+    desc_b: str,
+    llm_model: str | None = None,
+) -> str:
+    """Use LLM to classify the relationship between two similar konsep.
+
+    Returns one of: isPrerequisiteOf, supports, analogousTo, none
+    """
+    model = llm_model or DEFAULT_CHAT_MODEL
+    llm = get_llm(model)
+
+    prompt = _CLASSIFICATION_PROMPT.format(
+        name_a=name_a,
+        desc_a=desc_a or name_a,
+        name_b=name_b,
+        desc_b=desc_b or name_b,
+    )
+
+    response = llm.complete(prompt)
+    answer = response.text.strip().lower()
+
+    # Normalize to valid types
+    if "isprerequisiteof" in answer or "prerequisite" in answer:
+        return "isPrerequisiteOf"
+    elif "supports" in answer or "support" in answer:
+        return "supports"
+    elif "analogousto" in answer or "analogous" in answer:
+        return "analogousTo"
+    else:
+        return "none"
+
+
+def classify_similar_pairs(
+    driver,
+    pairs: list[dict],
+    llm_model: str | None = None,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+) -> list[dict]:
+    """Classify SIMILAR_TO pairs into typed relationships using LLM.
+
+    For each pair, looks up descriptions from Neo4j and calls LLM to classify
+    the relationship as isPrerequisiteOf, supports, analogousTo, or none.
+
+    Args:
+        driver: Neo4j driver (for fetching descriptions)
+        pairs: List of {"source": str, "target": str, "similarity": float}
+        llm_model: LLM model string
+        progress_callback: Optional progress callback
+
+    Returns list of dicts with source, target, similarity, rel_type.
+    """
+    total = len(pairs)
+    results = []
+
+    # Fetch all descriptions in one query for efficiency
+    names = list({p["source"] for p in pairs} | {p["target"] for p in pairs})
+    desc_map: dict[str, str] = {}
+
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n) WHERE n.name IN $names AND (n:Konsep OR n:SubKonsep)
+            RETURN n.name AS name, n.description AS description
+            """,
+            names=names,
+        )
+        for r in result:
+            desc_map[r["name"]] = r["description"] or ""
+
+    for i, pair in enumerate(pairs):
+        if progress_callback:
+            progress_callback(i, total, f"Classifying pair {i + 1}/{total}...")
+
+        source, target = pair["source"], pair["target"]
+        try:
+            rel_type = classify_similar_pair(
+                name_a=source,
+                desc_a=desc_map.get(source, ""),
+                name_b=target,
+                desc_b=desc_map.get(target, ""),
+                llm_model=llm_model,
+            )
+        except Exception as e:
+            logger.warning("Failed to classify %s <-> %s: %s", source, target, e)
+            rel_type = "none"
+
+        results.append({**pair, "rel_type": rel_type})
+
+    if progress_callback:
+        progress_callback(total, total, f"Classified {total} pairs")
+
+    return results

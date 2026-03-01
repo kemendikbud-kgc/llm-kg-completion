@@ -1,4 +1,4 @@
-"""Step B: LLM-based extraction of Topics and Sub-Topics from curriculum text."""
+"""Step B: LLM-based extraction of Konsep and SubKonsep from curriculum text."""
 
 import hashlib
 import json
@@ -46,8 +46,37 @@ def _is_rate_limit_error(exception: BaseException) -> bool:
     return False
 
 
+def _merge_konsep(all_chunks_data: list[dict]) -> dict:
+    """Deduplicate konsep by name across chunks, merging sub_konsep.
+
+    Each chunk dict has keys: bab_name (str|None), konsep (list[dict]).
+    Returns {"konsep": [...]} where each konsep has a "bab" field from its chunk.
+    """
+    merged: dict[str, dict] = {}
+    for chunk in all_chunks_data:
+        bab_name = chunk.get("bab_name")
+        for konsep in chunk.get("konsep", []):
+            name = konsep["name"]
+            if name not in merged:
+                merged[name] = {
+                    **konsep,
+                    "bab": bab_name,
+                    "sub_konsep": list(konsep.get("sub_konsep", [])),
+                }
+            else:
+                existing_sub_names = {
+                    s["name"] for s in merged[name].get("sub_konsep", [])
+                }
+                for sub in konsep.get("sub_konsep", []):
+                    if sub["name"] not in existing_sub_names:
+                        merged[name]["sub_konsep"].append(sub)
+                        existing_sub_names.add(sub["name"])
+    return {"konsep": list(merged.values())}
+
+
+# Keep backward-compat name
 def _merge_topics(all_topics: list[dict]) -> list[dict]:
-    """Deduplicate topics by name, merging sub-topics."""
+    """Legacy: deduplicate topics by name, merging sub-topics. Returns list."""
     merged = {}
     for topic in all_topics:
         name = topic["name"]
@@ -85,7 +114,7 @@ def _chunk_text(text: str) -> list[str]:
     ),
 )
 def _extract_from_chunk(llm, chunk: str, system_prompt: str) -> dict:
-    """Use LLMTextCompletionProgram to extract structured topics from a chunk."""
+    """Use LLMTextCompletionProgram to extract structured konsep from a chunk."""
     program = LLMTextCompletionProgram.from_defaults(
         llm=llm,
         output_cls=TopicExtraction,
@@ -103,7 +132,7 @@ def extract_topics(
     prompt_name: str = "default",
     filter_content: bool = True,
 ) -> tuple[dict, bool, FilterResult | None]:
-    """Extract topics from text.
+    """Extract konsep from text.
 
     Args:
         text: Raw curriculum text
@@ -115,6 +144,7 @@ def extract_topics(
 
     Returns:
         (result_dict, from_cache, filter_result)
+        result_dict has key "konsep": list of konsep dicts (each with optional "bab" field)
     """
     model = model or DEFAULT_CHAT_MODEL
     prompt = get_prompt(prompt_name)
@@ -138,7 +168,10 @@ def extract_topics(
         logger.info("Loading cached extraction result from %s", cache_file)
         if progress_callback:
             progress_callback(1, 1, "Loading from cache")
-        return json.loads(cache_file.read_text(encoding="utf-8")), True, filter_result
+        cached = json.loads(cache_file.read_text(encoding="utf-8"))
+        # Normalize old cache format (topics -> konsep)
+        cached = _normalize_result(cached)
+        return cached, True, filter_result
 
     chunks = _chunk_text(text)
 
@@ -156,7 +189,7 @@ def extract_topics(
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     base_hash = _cache_key(text, model, prompt_version)
-    all_topics: list[dict] = []
+    all_chunks_data: list[dict] = []
     llm = get_llm(model)
 
     completed = 0
@@ -179,14 +212,15 @@ def extract_topics(
             try:
                 parsed = _extract_from_chunk(llm, chunk, prompt.system_prompt)
             except Exception:
-                if all_topics:
+                if all_chunks_data:
+                    partial_konsep = _merge_konsep(all_chunks_data)["konsep"]
                     logger.warning(
                         "Failed after %d/%d chunks. Re-run later to continue.",
                         i,
                         total_chunks,
                     )
                     result = {
-                        "topics": _merge_topics(all_topics),
+                        "konsep": partial_konsep,
                         "_partial": True,
                         "_completed_chunks": i,
                         "_total_chunks": total_chunks,
@@ -198,12 +232,20 @@ def extract_topics(
             )
             logger.info("Cached chunk %d/%d", i + 1, total_chunks)
             completed += 1
-        all_topics.extend(parsed.get("topics", []))
+
+        # Normalize old chunk format (topics -> konsep) for backward compat
+        parsed = _normalize_chunk(parsed)
+        all_chunks_data.append(
+            {
+                "bab_name": parsed.get("bab_name"),
+                "konsep": parsed.get("konsep", []),
+            }
+        )
 
     if progress_callback:
-        progress_callback(total_chunks, total_chunks, "Merging topics...")
+        progress_callback(total_chunks, total_chunks, "Merging konsep...")
 
-    result = {"topics": _merge_topics(all_topics)}
+    result = _merge_konsep(all_chunks_data)
 
     cache_file.write_text(
         json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -211,3 +253,54 @@ def extract_topics(
     logger.info("Cached final extraction result to %s", cache_file)
 
     return result, False, filter_result
+
+
+def _normalize_chunk(parsed: dict) -> dict:
+    """Normalize old chunk format (topics/sub_topics) to new (konsep/sub_konsep)."""
+    if "topics" in parsed and "konsep" not in parsed:
+        konsep = []
+        for t in parsed.get("topics", []):
+            sub_konsep = [
+                {
+                    "name": s["name"],
+                    "description": s.get("description", ""),
+                    "bloom_level": None,
+                }
+                for s in t.get("sub_topics", [])
+            ]
+            konsep.append(
+                {
+                    "name": t["name"],
+                    "description": t.get("description", ""),
+                    "bloom_level": None,
+                    "sub_konsep": sub_konsep,
+                }
+            )
+        return {"bab_name": None, "konsep": konsep}
+    return parsed
+
+
+def _normalize_result(result: dict) -> dict:
+    """Normalize old result format (topics) to new (konsep)."""
+    if "topics" in result and "konsep" not in result:
+        konsep = []
+        for t in result.get("topics", []):
+            sub_konsep = [
+                {
+                    "name": s["name"],
+                    "description": s.get("description", ""),
+                    "bloom_level": None,
+                }
+                for s in t.get("sub_topics", [])
+            ]
+            konsep.append(
+                {
+                    "name": t["name"],
+                    "description": t.get("description", ""),
+                    "bloom_level": None,
+                    "bab": None,
+                    "sub_konsep": sub_konsep,
+                }
+            )
+        return {**result, "konsep": konsep}
+    return result
