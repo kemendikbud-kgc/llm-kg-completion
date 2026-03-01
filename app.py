@@ -7,18 +7,20 @@ import streamlit as st
 from streamlit_agraph import agraph, Node, Edge, Config
 
 from src.ingestion import extract_text_from_pdf
-from src.extraction import extract_topics, CACHE_DIR, _merge_topics
+from src.extraction import extract_topics, CACHE_DIR, _merge_konsep, _normalize_chunk
 from src.graph import (
     get_driver,
-    insert_topics,
+    insert_konsep,
     get_all_documents,
     get_graph_stats,
     get_graph_quality_metrics,
     get_all_topics_with_subtopics,
     get_similar_relationships,
+    get_typed_relationships,
+    create_typed_relationship,
     get_nodes_with_descriptions,
 )
-from src.completion import find_similar_pairs
+from src.completion import find_similar_pairs, classify_similar_pairs
 from src.experiments import (
     ExperimentRun,
     generate_experiment_id,
@@ -31,7 +33,7 @@ from src.config import (
     DEFAULT_EMBEDDING_MODEL,
 )
 from src.prompts import PROMPT_REGISTRY, get_prompt
-from src.schemas import SUBJECT_CHOICES, PHASE_CHOICES
+from src.schemas import SUBJECT_CHOICES, PHASE_CHOICES, KELAS_CHOICES
 from src.health import check_all
 
 logger = logging.getLogger(__name__)
@@ -222,11 +224,17 @@ with st.sidebar:
             )
             st.caption(f"{len(group)} chunks cached")
             if st.button("Merge & load chunks"):
-                all_topics = []
+                all_chunks_data = []
                 for cf in group:
                     parsed = json.loads(cf.read_text(encoding="utf-8"))
-                    all_topics.extend(parsed.get("topics", []))
-                result = {"topics": _merge_topics(all_topics)}
+                    parsed = _normalize_chunk(parsed)
+                    all_chunks_data.append(
+                        {
+                            "bab_name": parsed.get("bab_name"),
+                            "konsep": parsed.get("konsep", []),
+                        }
+                    )
+                result = _merge_konsep(all_chunks_data)
                 st.session_state["extracted"] = result
                 st.session_state["step1_done"] = True
                 st.session_state["step2_done"] = True
@@ -248,14 +256,14 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
     try:
         stats, quality = get_cached_graph_metrics()
 
-        col1.metric("Subjects", stats.get("subjects", 0))
+        col1.metric("MataPelajaran", stats.get("subjects", 0))
         col2.metric("Documents", stats["documents"])
-        col3.metric("Topics", stats["topics"])
-        col4.metric("SubTopics", stats["subtopics"])
+        col3.metric("Konsep", stats.get("konsep", stats.get("topics", 0)))
+        col4.metric("SubKonsep", stats.get("sub_konsep", stats.get("subtopics", 0)))
 
         # Second row: relations and quality metrics
         col5, col6, col7, col8 = st.columns(4)
-        col5.metric("SIMILAR_TO", stats["similar_rels"])
+        col5.metric("SIMILAR_TO", stats.get("similar_rels", 0))
         col6.metric(
             "ADC",
             quality["adc"],
@@ -281,16 +289,27 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
             topics = get_all_topics_with_subtopics(driver)
             documents = get_all_documents(driver)
             similar_rels = get_similar_relationships(driver)
+            typed_rels = get_typed_relationships(driver)
             driver.close()
-
-            tab1, tab2, tab3, tab4 = st.tabs(
-                ["Documents", "Topics", "Similar Relationships", "Graph Visualization"]
+            tab1, tab2, tab3, tab4, tab5 = st.tabs(
+                [
+                    "Documents",
+                    "Konsep",
+                    "SIMILAR_TO",
+                    "Typed Relations",
+                    "Graph Visualization",
+                ]
             )
 
             with tab1:
                 if documents:
                     for doc in documents:
-                        st.write(f"- **{doc['name']}** ({doc['topic_count']} topics)")
+                        kelas_str = (
+                            f" · Kelas {doc['kelas']}" if doc.get("kelas") else ""
+                        )
+                        st.write(
+                            f"- **{doc['name']}**{kelas_str} ({doc['topic_count']} konsep)"
+                        )
                 else:
                     st.info("No documents yet.")
 
@@ -300,20 +319,22 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                         with st.expander(f"**{t['name']}**"):
                             if t.get("description"):
                                 st.write(f"*{t['description']}*")
+                            if t.get("bloom_level"):
+                                st.caption(f"Bloom: {t['bloom_level']}")
                             subtopics = [
                                 s for s in t.get("subtopics", []) if s.get("name")
                             ]
                             if subtopics:
-                                st.write("**SubTopics:**")
+                                st.write("**SubKonsep:**")
                                 for s in subtopics[:5]:
                                     st.write(f"  - {s['name']}")
                             docs = t.get("documents", [])
                             if docs:
                                 st.write(f"**In documents:** {', '.join(docs)}")
                     if len(topics) > 20:
-                        st.info(f"Showing 20 of {len(topics)} topics.")
+                        st.info(f"Showing 20 of {len(topics)} konsep.")
                 else:
-                    st.info("No topics yet.")
+                    st.info("No konsep yet.")
 
             with tab3:
                 if similar_rels:
@@ -330,6 +351,31 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                     )
 
             with tab4:
+                rel_colors = {
+                    "isPrerequisiteOf": "🔴",
+                    "supports": "🟡",
+                    "analogousTo": "🟢",
+                }
+                if typed_rels:
+                    for rel in typed_rels[:30]:
+                        icon = rel_colors.get(rel["rel_type"], "⚪")
+                        conf = (
+                            f" (conf: {rel['confidence']:.2f})"
+                            if rel.get("confidence")
+                            else ""
+                        )
+                        st.write(
+                            f"{icon} **{rel['source']}** →[{rel['rel_type']}]→ **{rel['target']}**{conf}"
+                        )
+                    if len(typed_rels) > 30:
+                        st.info(f"Showing 30 of {len(typed_rels)} typed relationships.")
+                    st.caption("🔴 isPrerequisiteOf · 🟡 supports · 🟢 analogousTo")
+                else:
+                    st.info(
+                        "No typed relationships yet. Run Step 5 classification to create them."
+                    )
+
+            with tab5:
                 if topics:
                     # Build nodes and edges for visualization
                     nodes = []
@@ -337,19 +383,19 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                     seen_nodes = set()
 
                     for t in topics:
-                        topic_name = t["name"]
-                        if topic_name not in seen_nodes:
+                        konsep_name = t["name"]
+                        if konsep_name not in seen_nodes:
                             nodes.append(
                                 Node(
-                                    id=topic_name,
-                                    label=topic_name[:20],
+                                    id=konsep_name,
+                                    label=konsep_name[:20],
                                     size=25,
-                                    color="#4CAF50",  # Green for topics
+                                    color="#4CAF50",  # Green for konsep
                                 )
                             )
-                            seen_nodes.add(topic_name)
+                            seen_nodes.add(konsep_name)
 
-                        # Add subtopics
+                        # Add sub-konsep
                         for s in t.get("subtopics", []):
                             if not s.get("name"):
                                 continue
@@ -360,13 +406,13 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                                         id=sub_name,
                                         label=sub_name[:20],
                                         size=15,
-                                        color="#2196F3",  # Blue for subtopics
+                                        color="#2196F3",  # Blue for sub-konsep
                                     )
                                 )
                                 seen_nodes.add(sub_name)
                             edges.append(
                                 Edge(
-                                    source=topic_name,
+                                    source=konsep_name,
                                     target=sub_name,
                                     color="#9E9E9E",
                                     width=1,
@@ -386,7 +432,23 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                                 )
                             )
 
-                    # Graph config
+                    # Add typed relationship edges
+                    typed_colors = {
+                        "isPrerequisiteOf": "#E91E63",
+                        "supports": "#FFC107",
+                        "analogousTo": "#00BCD4",
+                    }
+                    for rel in typed_rels:
+                        if rel["source"] in seen_nodes and rel["target"] in seen_nodes:
+                            edges.append(
+                                Edge(
+                                    source=rel["source"],
+                                    target=rel["target"],
+                                    color=typed_colors.get(rel["rel_type"], "#9E9E9E"),
+                                    width=2,
+                                )
+                            )
+
                     config = Config(
                         width=800,
                         height=500,
@@ -398,10 +460,13 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                         collapsible=False,
                     )
 
-                    st.caption("🟢 Topics | 🔵 SubTopics | 🟠 SIMILAR_TO (dashed)")
+                    st.caption(
+                        "🟢 Konsep | 🔵 SubKonsep | 🟠 SIMILAR_TO (dashed) | "
+                        "🩷 isPrerequisiteOf | 🟡 supports | 🩵 analogousTo"
+                    )
                     agraph(nodes=nodes, edges=edges, config=config)
                 else:
-                    st.info("No data to visualize. Extract and save topics first.")
+                    st.info("No data to visualize. Extract and save konsep first.")
 
     except Exception as e:
         st.error(f"Could not connect to Neo4j: {e}")
@@ -429,7 +494,7 @@ try:
     _driver = get_driver()
     _stats = get_graph_stats(_driver)
     _driver.close()
-    has_neo4j_data = _stats.get("topics", 0) > 0
+    has_neo4j_data = _stats.get("konsep", _stats.get("topics", 0)) > 0
 except Exception:
     pass
 
@@ -483,8 +548,8 @@ step_header(2, "Extract Topics (LLM)", step2_status)
 if step2_status == "locked":
     st.info("⏳ Upload a PDF first, or load from cache in the sidebar.")
 elif step2_done and not st.session_state.get("show_step2", False):
-    topic_count = len(st.session_state.get("extracted", {}).get("topics", []))
-    st.success(f"✓ Extraction complete: {topic_count} topics")
+    topic_count = len(st.session_state.get("extracted", {}).get("konsep", []))
+    st.success(f"✓ Extraction complete: {topic_count} konsep")
     if st.button("Re-run extraction", key="reopen_step2"):
         st.session_state["show_step2"] = True
         st.rerun()
@@ -547,9 +612,9 @@ else:
                     "Cached chunks are saved. Click **Run Extraction** again later to continue."
                 )
             else:
-                topic_count = len(result.get("topics", []))
-                logger.info("[Step 2] Extraction complete: %d topics", topic_count)
-                msg = f"Extraction complete! Found {topic_count} topics."
+                topic_count = len(result.get("konsep", []))
+                logger.info("[Step 2] Extraction complete: %d konsep", topic_count)
+                msg = f"Extraction complete! Found {topic_count} konsep."
                 if filter_result:
                     msg += f" (Filtered {filter_result.reduction_percent:.1f}% admin content)"
                 st.success(msg)
@@ -569,13 +634,13 @@ if step3_status == "locked":
 else:
     # Get counts without rendering
     extracted_data = st.session_state.get("extracted", {})
-    topic_count = len(extracted_data.get("topics", []))
+    topic_count = len(extracted_data.get("konsep", []))
     subtopic_count = sum(
-        len(t.get("sub_topics", [])) for t in extracted_data.get("topics", [])
+        len(t.get("sub_konsep", [])) for t in extracted_data.get("konsep", [])
     )
 
     # Ask user FIRST before loading the editing UI
-    st.info(f"📊 Extracted: **{topic_count} topics**, **{subtopic_count} subtopics**")
+    st.info(f"📊 Extracted: **{topic_count} konsep**, **{subtopic_count} sub-konsep**")
 
     load_editor = st.checkbox(
         "Load editing UI to review and modify topics",
@@ -587,19 +652,26 @@ else:
         st.success("✓ Click the checkbox above to edit, or proceed directly to Step 4.")
         edited = json.dumps(extracted_data, indent=2, ensure_ascii=False)
     else:
-        # Now load topics for editing
-        topics = extracted_data.get("topics", [])
+        # Now load konsep for editing
+        topics = extracted_data.get("konsep", [])
 
         # Card-based validation UI
         # Add topic button
         col_add, col_stats = st.columns([1, 3])
         with col_add:
-            if st.button("➕ Add Topic", key="add_topic"):
-                topics.append({"name": "New Topic", "description": "", "sub_topics": []})
-                st.session_state["extracted"]["topics"] = topics
+            if st.button("➕ Add Konsep", key="add_topic"):
+                topics.append(
+                    {
+                        "name": "New Konsep",
+                        "description": "",
+                        "bloom_level": None,
+                        "sub_konsep": [],
+                    }
+                )
+                st.session_state["extracted"]["konsep"] = topics
                 st.rerun()
         with col_stats:
-            st.caption(f"📊 {topic_count} topics, {subtopic_count} subtopics")
+            st.caption(f"📊 {topic_count} konsep, {subtopic_count} sub-konsep")
 
         # Track topics to delete (can't modify list while iterating)
         topics_to_delete = []
@@ -635,16 +707,22 @@ else:
                 if new_desc != topic.get("description", ""):
                     topic["description"] = new_desc
 
-                # SubTopics section
-                subtopics = topic.get("sub_topics", [])
+                # SubKonsep section
+                subtopics = topic.get("sub_konsep", [])
                 subtopics_to_delete = []
 
-                with st.expander(f"📑 SubTopics ({len(subtopics)})", expanded=False):
+                with st.expander(f"📑 SubKonsep ({len(subtopics)})", expanded=False):
                     if st.button(
-                        "➕ Add SubTopic", key=f"add_sub_{i}", use_container_width=True
+                        "➕ Add SubKonsep", key=f"add_sub_{i}", use_container_width=True
                     ):
-                        subtopics.append({"name": "New SubTopic", "description": ""})
-                        topic["sub_topics"] = subtopics
+                        subtopics.append(
+                            {
+                                "name": "New SubKonsep",
+                                "description": "",
+                                "bloom_level": None,
+                            }
+                        )
+                        topic["sub_konsep"] = subtopics
                         st.rerun()
 
                     for j, sub in enumerate(subtopics):
@@ -682,11 +760,11 @@ else:
         if topics_to_delete:
             for i in reversed(topics_to_delete):
                 topics.pop(i)
-            st.session_state["extracted"]["topics"] = topics
+            st.session_state["extracted"]["konsep"] = topics
             st.rerun()
 
         # Update session state with edited data
-        st.session_state["extracted"]["topics"] = topics
+        st.session_state["extracted"]["konsep"] = topics
 
         # Generate edited JSON for Step 4 compatibility
         edited = json.dumps(st.session_state["extracted"], indent=2, ensure_ascii=False)
@@ -731,7 +809,7 @@ else:
 
     # Subject metadata (Kurikulum Merdeka alignment)
     st.subheader("📚 Subject Metadata (optional)")
-    col_subj, col_phase = st.columns(2)
+    col_subj, col_phase, col_kelas = st.columns(3)
 
     with col_subj:
         subject_name = st.selectbox(
@@ -754,9 +832,20 @@ else:
         if phase_key == "(None)":
             phase_key = None
 
+    with col_kelas:
+        kelas_value = st.selectbox(
+            "Kelas (Grade)",
+            options=["(None)"] + KELAS_CHOICES,
+            index=0,
+            help="Textbook grade level: X, XI, or XII",
+        )
+        if kelas_value == "(None)":
+            kelas_value = None
+
     if subject_name:
         st.caption(
-            f"Will create: `(:Subject {{name: '{subject_name}', phase: '{phase_key or ''}'}})-[:CONTAINS]->(:Document)`"
+            f"Will create: `(:MataPelajaran {{name: '{subject_name}'}})-[:hasDocument]->"
+            f"(:Document {{name: ..., kelas: '{kelas_value or ''}'}})`"
         )
 
     st.divider()
@@ -766,16 +855,16 @@ else:
             st.error("Please provide a document name!")
         else:
             data = json.loads(edited)
-            if not data.get("topics"):
-                st.error("No topics in the data.")
+            if not data.get("konsep"):
+                st.error("No konsep in the data.")
             else:
                 with st.spinner("Saving to Neo4j..."):
-                    topic_count = len(data.get("topics", []))
+                    topic_count = len(data.get("konsep", []))
                     subtopic_count = sum(
-                        len(t.get("sub_topics", [])) for t in data.get("topics", [])
+                        len(t.get("sub_konsep", [])) for t in data.get("konsep", [])
                     )
                     logger.info(
-                        "[Step 4] Saving to Neo4j: %s (%d topics, %d subtopics, subject: %s)",
+                        "[Step 4] Saving to Neo4j: %s (%d konsep, %d sub-konsep, subject: %s)",
                         document_name.strip(),
                         topic_count,
                         subtopic_count,
@@ -783,10 +872,11 @@ else:
                     )
 
                     driver = get_driver()
-                    insert_topics(
+                    insert_konsep(
                         driver,
                         data,
                         document_name=document_name.strip(),
+                        kelas=kelas_value,
                         subject_name=subject_name,
                         subject_phase=phase_key,
                     )
@@ -796,9 +886,10 @@ else:
                         "[Step 4] Saved successfully: %s", document_name.strip()
                     )
                     subject_info = f", Subject: {subject_name}" if subject_name else ""
+                    kelas_info = f", Kelas {kelas_value}" if kelas_value else ""
                     st.success(
                         f"Saved to Neo4j! Document: **{document_name.strip()}** "
-                        f"({topic_count} topics, {subtopic_count} subtopics{subject_info})"
+                        f"({topic_count} konsep, {subtopic_count} sub-konsep{subject_info}{kelas_info})"
                     )
                     st.session_state["neo4j_saved"] = True
                     st.session_state["show_step4"] = False
@@ -812,9 +903,11 @@ step5_status = "ready" if has_neo4j_data else "locked"
 step_header(5, "Knowledge Graph Completion", step5_status)
 
 if step5_status == "locked":
-    st.info("⏳ Save topics to Neo4j first (Step 4).")
+    st.info("⏳ Save konsep to Neo4j first (Step 4).")
 else:
-    st.write("Discover similar topics using semantic embeddings.")
+    st.write(
+        "Discover similar konsep using semantic embeddings, then classify relationships."
+    )
 
     # Get available documents for selector
     try:
@@ -876,7 +969,7 @@ else:
     col_find, col_save = st.columns(2)
 
     with col_find:
-        if st.button("Find Similar Topics", type="primary"):
+        if st.button("Find Similar Konsep", type="primary"):
             if scope_mode in ["single", "cross"] and not selected_doc:
                 st.error("Please select a document first.")
             else:
@@ -1100,6 +1193,81 @@ else:
         else:
             st.info("No similar pairs found above the threshold.")
 
+    # --- Step 5b: Classify Relationships ---
+    st.divider()
+    st.subheader("5b. Classify Relationships")
+    st.write(
+        "Use LLM to classify SIMILAR_TO pairs into typed relationships: "
+        "`isPrerequisiteOf`, `supports`, `analogousTo`."
+    )
+
+    try:
+        driver = get_driver()
+        existing_similar = get_similar_relationships(driver)
+        driver.close()
+    except Exception:
+        existing_similar = []
+
+    if existing_similar:
+        st.info(f"{len(existing_similar)} SIMILAR_TO relationships found in the graph.")
+
+        col_classify, col_info = st.columns([1, 2])
+        with col_classify:
+            if st.button("Classify Relationships", type="secondary"):
+                progress_bar = st.progress(0, text="Classifying...")
+                status_text = st.empty()
+
+                def update_classify_progress(current: int, total: int, message: str):
+                    if total > 0:
+                        progress_bar.progress(current / total, text=message)
+                    status_text.info(message)
+
+                try:
+                    driver = get_driver()
+                    classified = classify_similar_pairs(
+                        driver,
+                        existing_similar,
+                        llm_model=selected_chat_model,
+                        progress_callback=update_classify_progress,
+                    )
+                    # Save typed relationships to Neo4j
+                    saved_typed = 0
+                    for item in classified:
+                        if item["rel_type"] != "none":
+                            create_typed_relationship(
+                                driver,
+                                source=item["source"],
+                                target=item["target"],
+                                rel_type=item["rel_type"],
+                            )
+                            saved_typed += 1
+                    driver.close()
+                    progress_bar.empty()
+                    status_text.empty()
+                    counts = {}
+                    for item in classified:
+                        counts[item["rel_type"]] = counts.get(item["rel_type"], 0) + 1
+                    st.success(
+                        f"Classified {len(classified)} pairs → "
+                        f"{saved_typed} typed relationships saved. "
+                        f"({counts})"
+                    )
+                    get_cached_graph_metrics.clear()
+                    st.rerun()
+                except Exception as e:
+                    progress_bar.empty()
+                    status_text.error(f"Classification error: {e}")
+                    logger.error("[Step 5b] Error: %s", e)
+
+        with col_info:
+            st.caption(
+                "**isPrerequisiteOf**: A must be learned before B\n\n"
+                "**supports**: A helps with / is applied in B\n\n"
+                "**analogousTo**: A and B share the same pattern (anti-silo signal)"
+            )
+    else:
+        st.info("Run SIMILAR_TO discovery first (above), then classify relationships.")
+
     # --- Save as Experiment Section ---
     st.divider()
     st.subheader("Save as Experiment")
@@ -1120,9 +1288,9 @@ else:
 
             # Get extraction data
             extracted = st.session_state.get("extracted", {})
-            topics = extracted.get("topics", [])
+            topics = extracted.get("konsep", [])
             topic_count = len(topics)
-            subtopic_count = sum(len(t.get("sub_topics", [])) for t in topics)
+            subtopic_count = sum(len(t.get("sub_konsep", [])) for t in topics)
 
             # Get filter result if available
             filter_result = st.session_state.get("filter_result")
