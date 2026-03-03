@@ -39,3 +39,30 @@ EMBEDDING_CHOICES = {
 }
 
 DEFAULT_EMBEDDING_MODEL = "gemini/gemini-embedding-001"
+
+# --- Vision Model Choices (for PDF image extraction) ---
+VISION_MODEL_CHOICES = {
+    "Gemini 2.5 Flash": "gemini/gemini-2.5-flash",
+    "GPT-4o": "openai/gpt-4o",
+    "GPT-4o Mini": "openai/gpt-4o-mini",
+    "Claude 3.5 Sonnet": "anthropic/claude-3-5-sonnet-latest",
+    "Claude 3.5 Haiku": "anthropic/claude-3-5-haiku-latest",
+}
+
+DEFAULT_VISION_MODEL = "gemini/gemini-2.5-flash"
+
+# --- Ingestion Modes ---
+INGESTION_MODES = {
+    "Enhanced": "enhanced",
+    "Full Vision": "full_vision",
+}
+
+# --- Vision Detection Thresholds (for Enhanced mode) ---
+VISION_DENSITY_THRESHOLD = 0.005  # chars per pixel — below this → vision
+VISION_IMAGE_COUNT_THRESHOLD = 2  # pages with >= this many images → vision
+
+# --- Vision Concurrency ---
+VISION_CONCURRENCY = 4  # Max parallel vision LLM calls
+
+# --- Cache Settings ---
+EMBEDDING_CACHE_MAX_AGE_DAYS = 90
