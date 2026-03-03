@@ -6,8 +6,18 @@ import logging
 import streamlit as st
 from streamlit_agraph import agraph, Node, Edge, Config
 
-from src.ingestion import extract_text_from_pdf
-from src.extraction import extract_topics, CACHE_DIR, _merge_konsep, _normalize_chunk
+from src.ingestion import (
+    extract_text_from_pdf,
+    ingest_pdf_enhanced,
+    ingest_pdf_full_vision,
+)
+from src.cache import cache_manager, CACHE_DIR
+from src.extraction import (
+    extract_topics,
+    extract_topics_hybrid,
+    _merge_konsep,
+    _normalize_chunk,
+)
 from src.graph import (
     get_driver,
     insert_konsep,
@@ -29,9 +39,13 @@ from src.experiments import (
 from src.config import (
     MODEL_CHOICES,
     EMBEDDING_CHOICES,
+    VISION_MODEL_CHOICES,
+    INGESTION_MODES,
     DEFAULT_CHAT_MODEL,
     DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_VISION_MODEL,
 )
+from src.notify import send_notification
 from src.prompts import PROMPT_REGISTRY, get_prompt
 from src.schemas import SUBJECT_CHOICES, PHASE_CHOICES, KELAS_CHOICES
 from src.health import check_all
@@ -177,6 +191,29 @@ with st.sidebar:
     st.caption(f"`{selected_embedding_model}`")
 
     st.divider()
+    st.header("Ingestion Settings")
+
+    ingestion_mode_name = st.selectbox(
+        "Ingestion Mode",
+        options=list(INGESTION_MODES.keys()),
+        index=0,
+        help="Enhanced: text + auto-detect pages needing vision. Full Vision: all pages as images.",
+    )
+    selected_ingestion_mode = INGESTION_MODES[ingestion_mode_name]
+
+    # Show vision model selector for Enhanced and Full Vision modes
+    if selected_ingestion_mode in ("enhanced", "full_vision"):
+        vision_model_name = st.selectbox(
+            "Vision Model",
+            options=list(VISION_MODEL_CHOICES.keys()),
+            index=list(VISION_MODEL_CHOICES.values()).index(DEFAULT_VISION_MODEL),
+        )
+        selected_vision_model = VISION_MODEL_CHOICES[vision_model_name]
+        st.caption(f"`{selected_vision_model}`")
+    else:
+        selected_vision_model = DEFAULT_VISION_MODEL
+
+    st.divider()
     st.header("Extraction Settings")
 
     # Prompt selector
@@ -192,22 +229,33 @@ with st.sidebar:
 
     st.divider()
     st.header("Load Cached Result")
-    cache_files = sorted(CACHE_DIR.glob("*.json")) if CACHE_DIR.exists() else []
-    cache_files = [f for f in cache_files if "_chunk" not in f.name]
-    if cache_files:
-        selected_cache = st.selectbox(
+    cache_entries = cache_manager.list_extractions()
+    if cache_entries:
+        selected_entry = st.selectbox(
             "Cached extractions",
-            options=cache_files,
-            format_func=lambda f: f.stem[:12] + "...",
+            options=cache_entries,
+            format_func=lambda e: e["label"],
         )
-        if st.button("Load cached result"):
-            data = json.loads(selected_cache.read_text(encoding="utf-8"))
-            st.session_state["extracted"] = data
-            st.session_state["step1_done"] = True
-            st.session_state["step2_done"] = True
-            st.success("Loaded from cache file.")
-            st.rerun()
+        col_load, col_del = st.columns(2)
+        with col_load:
+            if st.button("Load"):
+                cache_file = CACHE_DIR / f"{selected_entry['hash']}.json"
+                if cache_file.exists():
+                    data = json.loads(cache_file.read_text(encoding="utf-8"))
+                    st.session_state["extracted"] = data
+                    st.session_state["step1_done"] = True
+                    st.session_state["step2_done"] = True
+                    st.success("Loaded from cache.")
+                    st.rerun()
+                else:
+                    st.warning("Cache file missing. Try merging chunks below.")
+        with col_del:
+            if st.button("Delete", type="secondary"):
+                n = cache_manager.delete_extraction(selected_entry["hash"])
+                st.success(f"Deleted {n} file(s).")
+                st.rerun()
     else:
+        # Check for orphan chunk groups not in manifest
         chunk_files = (
             sorted(CACHE_DIR.glob("*_chunk*.json")) if CACHE_DIR.exists() else []
         )
@@ -242,6 +290,21 @@ with st.sidebar:
                 st.rerun()
         else:
             st.caption("No cached results found.")
+
+    with st.expander("Cache Stats"):
+        stats = cache_manager.get_stats()
+        st.markdown(
+            f"**Extractions:** {stats['extraction_count']} "
+            f"({stats['extraction_files']} files, {stats['extraction_size_mb']} MB)\n\n"
+            f"**Embeddings:** {stats['embedding_files']} files, "
+            f"{stats['embedding_size_mb']} MB\n\n"
+            f"**Total:** {stats['total_size_mb']} MB"
+        )
+        age = st.number_input("Max embedding age (days)", value=90, min_value=1)
+        if st.button("Clear old embeddings"):
+            n = cache_manager.cleanup_embeddings(max_age_days=age)
+            st.success(f"Deleted {n} old embedding file(s).")
+            st.rerun()
 
 # --- Knowledge Graph Explorer (collapsed by default for performance) ---
 with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
@@ -524,14 +587,56 @@ else:
             tmp.write(uploaded_file.read())
             tmp_path = tmp.name
 
-        raw_text = extract_text_from_pdf(tmp_path)
-        os.unlink(tmp_path)
-
         st.session_state["document_name"] = uploaded_file.name
-        st.session_state["raw_text"] = raw_text
+        st.session_state["ingestion_mode"] = selected_ingestion_mode
+
+        if selected_ingestion_mode == "enhanced":
+            with st.spinner("Running enhanced ingestion..."):
+                text_content, vision_images, classifications = ingest_pdf_enhanced(
+                    tmp_path
+                )
+            os.unlink(tmp_path)
+
+            st.session_state["raw_text"] = text_content
+            st.session_state["vision_images"] = vision_images
+            st.session_state["page_classifications"] = classifications
+            raw_text = text_content
+
+            # Show classification summary
+            text_count = sum(1 for c in classifications if c.method == "text")
+            vision_count = sum(1 for c in classifications if c.method == "vision")
+            skip_count = sum(1 for c in classifications if c.method == "skip")
+            st.info(
+                f"Page classification: **{text_count}** text, "
+                f"**{vision_count}** vision, **{skip_count}** skipped"
+            )
+            if vision_images:
+                with st.expander("Vision pages detail"):
+                    for c in classifications:
+                        if c.method == "vision":
+                            st.caption(f"Page {c.page_num}: {c.reason}")
+
+            st.text_area("Extracted Text (text pages)", raw_text, height=200)
+
+        elif selected_ingestion_mode == "full_vision":
+            with st.spinner("Rendering all pages as images..."):
+                vision_images = ingest_pdf_full_vision(tmp_path)
+            os.unlink(tmp_path)
+
+            st.session_state["raw_text"] = ""
+            st.session_state["vision_images"] = vision_images
+            raw_text = ""
+            st.info(f"Rendered **{len(vision_images)}** content pages as images.")
+
+        else:
+            raw_text = extract_text_from_pdf(tmp_path)
+            os.unlink(tmp_path)
+            st.session_state["raw_text"] = raw_text
+            st.session_state["vision_images"] = []
+            st.text_area("Extracted Text", raw_text, height=200)
+
         st.session_state["step1_done"] = True
         has_raw_text = True
-        st.text_area("Extracted Text", raw_text, height=200)
 
 # Get raw_text from session if available
 if "raw_text" in st.session_state:
@@ -577,20 +682,39 @@ else:
                 status_text.info(message)
                 logger.info("[Step 2] %s (%d/%d)", message, current, total)
 
+            ingestion_mode = st.session_state.get("ingestion_mode", "enhanced")
+            vision_images = st.session_state.get("vision_images", [])
+
             logger.info(
-                "[Step 2] Starting extraction with model: %s, prompt: %s, filter: %s",
+                "[Step 2] Starting extraction with model: %s, prompt: %s, filter: %s, mode: %s",
                 selected_chat_model,
                 selected_prompt_name,
                 filter_content,
+                ingestion_mode,
             )
-            result, from_cache, filter_result = extract_topics(
-                raw_text,
-                model=selected_chat_model,
-                use_cache=use_cache,
-                progress_callback=update_progress,
-                prompt_name=selected_prompt_name,
-                filter_content=filter_content,
-            )
+
+            if vision_images and ingestion_mode in ("enhanced", "full_vision"):
+                result, from_cache, filter_result = extract_topics_hybrid(
+                    raw_text,
+                    vision_images,
+                    text_model=selected_chat_model,
+                    vision_model=selected_vision_model,
+                    use_cache=use_cache,
+                    progress_callback=update_progress,
+                    prompt_name=selected_prompt_name,
+                    filter_content=filter_content,
+                    document_name=st.session_state.get("document_name"),
+                )
+            else:
+                result, from_cache, filter_result = extract_topics(
+                    raw_text,
+                    model=selected_chat_model,
+                    use_cache=use_cache,
+                    progress_callback=update_progress,
+                    prompt_name=selected_prompt_name,
+                    filter_content=filter_content,
+                    document_name=st.session_state.get("document_name"),
+                )
             progress_bar.empty()
             status_text.empty()
 
@@ -618,6 +742,7 @@ else:
                 if filter_result:
                     msg += f" (Filtered {filter_result.reduction_percent:.1f}% admin content)"
                 st.success(msg)
+                send_notification("Extraction Complete", f"Found {topic_count} konsep")
             st.rerun()
     else:
         st.info("Upload a PDF in Step 1 to extract topics.")
@@ -1028,6 +1153,9 @@ else:
                             len(pairs),
                             len(nodes),
                         )
+                        send_notification(
+                            "Similarity Search Done", f"Found {len(pairs)} pairs"
+                        )
                         st.rerun()
 
                 except Exception as e:
@@ -1247,10 +1375,14 @@ else:
                     counts = {}
                     for item in classified:
                         counts[item["rel_type"]] = counts.get(item["rel_type"], 0) + 1
-                    st.success(
+                    msg = (
                         f"Classified {len(classified)} pairs → "
                         f"{saved_typed} typed relationships saved. "
                         f"({counts})"
+                    )
+                    st.success(msg)
+                    send_notification(
+                        "Classification Done", f"{saved_typed} relationships"
                     )
                     get_cached_graph_metrics.clear()
                     st.rerun()
