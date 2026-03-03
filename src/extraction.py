@@ -1,11 +1,8 @@
 """Step B: LLM-based extraction of Konsep and SubKonsep from curriculum text."""
 
-import hashlib
-import json
 import logging
 import time
 from collections.abc import Callable
-from pathlib import Path
 
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.program import LLMTextCompletionProgram
@@ -16,13 +13,12 @@ from tenacity import (
     wait_exponential,
 )
 
-from src.config import DEFAULT_CHAT_MODEL
+from src.cache import cache_manager
+from src.config import DEFAULT_CHAT_MODEL, DEFAULT_VISION_MODEL
 from src.filters import filter_text, filter_chunks, FilterResult
 from src.llama_setup import get_llm
 from src.prompts import get_prompt
 from src.schemas import TopicExtraction
-
-CACHE_DIR = Path("data/cache")
 
 logger = logging.getLogger(__name__)
 
@@ -91,11 +87,6 @@ def _merge_topics(all_topics: list[dict]) -> list[dict]:
     return list(merged.values())
 
 
-def _cache_key(text: str, model: str, prompt_version: str) -> str:
-    """Return SHA-256 hash of text + model + prompt version for cache keying."""
-    return hashlib.sha256((text + model + prompt_version).encode()).hexdigest()
-
-
 def _chunk_text(text: str) -> list[str]:
     """Split text into token-aware chunks using SentenceSplitter."""
     splitter = SentenceSplitter(chunk_size=2048, chunk_overlap=128)
@@ -131,6 +122,7 @@ def extract_topics(
     progress_callback: Callable[[int, int, str], None] | None = None,
     prompt_name: str = "default",
     filter_content: bool = True,
+    document_name: str | None = None,
 ) -> tuple[dict, bool, FilterResult | None]:
     """Extract konsep from text.
 
@@ -162,16 +154,14 @@ def extract_topics(
             filter_result.reduction_percent,
         )
 
-    cache_file = CACHE_DIR / f"{_cache_key(text, model, prompt_version)}.json"
-
-    if use_cache and cache_file.exists():
-        logger.info("Loading cached extraction result from %s", cache_file)
-        if progress_callback:
-            progress_callback(1, 1, "Loading from cache")
-        cached = json.loads(cache_file.read_text(encoding="utf-8"))
-        # Normalize old cache format (topics -> konsep)
-        cached = _normalize_result(cached)
-        return cached, True, filter_result
+    if use_cache:
+        cached = cache_manager.get_extraction(text, model, prompt_version)
+        if cached is not None:
+            logger.info("Loading cached extraction result")
+            if progress_callback:
+                progress_callback(1, 1, "Loading from cache")
+            cached = _normalize_result(cached)
+            return cached, True, filter_result
 
     chunks = _chunk_text(text)
 
@@ -187,21 +177,20 @@ def extract_topics(
     if progress_callback:
         progress_callback(0, total_chunks, "Preparing chunks...")
 
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    base_hash = _cache_key(text, model, prompt_version)
+    base_hash = cache_manager.get_extraction_hash(text, model, prompt_version)
     all_chunks_data: list[dict] = []
     llm = get_llm(model)
 
     completed = 0
     for i, chunk in enumerate(chunks):
-        chunk_file = CACHE_DIR / f"{base_hash}_chunk{i}.json"
-        if chunk_file.exists():
+        cached_chunk = cache_manager.get_chunk(base_hash, i)
+        if cached_chunk is not None:
             logger.info("Loaded cached chunk %d/%d", i + 1, total_chunks)
             if progress_callback:
                 progress_callback(
                     i + 1, total_chunks, f"Loading chunk {i + 1} from cache"
                 )
-            parsed = json.loads(chunk_file.read_text(encoding="utf-8"))
+            parsed = cached_chunk
         else:
             if completed > 0:
                 time.sleep(5)
@@ -227,9 +216,7 @@ def extract_topics(
                     }
                     return result, False, filter_result
                 raise
-            chunk_file.write_text(
-                json.dumps(parsed, indent=2, ensure_ascii=False), encoding="utf-8"
-            )
+            cache_manager.put_chunk(base_hash, i, parsed)
             logger.info("Cached chunk %d/%d", i + 1, total_chunks)
             completed += 1
 
@@ -247,12 +234,106 @@ def extract_topics(
 
     result = _merge_konsep(all_chunks_data)
 
-    cache_file.write_text(
-        json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
+    cache_manager.put_extraction(
+        text, model, prompt_version, result, document_name=document_name
     )
-    logger.info("Cached final extraction result to %s", cache_file)
 
     return result, False, filter_result
+
+
+def extract_topics_hybrid(
+    text: str,
+    vision_images: list[str],
+    text_model: str | None = None,
+    vision_model: str | None = None,
+    use_cache: bool = True,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+    prompt_name: str = "default",
+    filter_content: bool = True,
+    document_name: str | None = None,
+) -> tuple[dict, bool, FilterResult | None]:
+    """Hybrid extraction: text extraction + vision extraction, merged.
+
+    Args:
+        text: Raw text from text-classified pages
+        vision_images: Base64 PNGs from vision-classified pages
+        text_model: LLM model for text extraction
+        vision_model: Vision model for image extraction
+        use_cache: Whether to use cached results
+        progress_callback: Optional callback(current, total, message)
+        prompt_name: Prompt name for text extraction
+        filter_content: Whether to filter administrative content
+        document_name: Document name for cache metadata
+
+    Returns:
+        (result_dict, from_cache, filter_result) — same format as extract_topics()
+    """
+    from src.vision_extraction import extract_from_images
+
+    vision_model = vision_model or DEFAULT_VISION_MODEL
+    text_model = text_model or DEFAULT_CHAT_MODEL
+
+    # Run text extraction if there's text content
+    text_result: dict = {"konsep": []}
+    text_from_cache = False
+    filter_result: FilterResult | None = None
+
+    if text.strip():
+        text_result, text_from_cache, filter_result = extract_topics(
+            text,
+            model=text_model,
+            use_cache=use_cache,
+            progress_callback=progress_callback,
+            prompt_name=prompt_name,
+            filter_content=filter_content,
+            document_name=document_name,
+        )
+
+    # Run vision extraction if there are images
+    vision_chunks: list[dict] = []
+    if vision_images:
+        # Generate cache key for vision extraction
+        prompt = get_prompt(prompt_name)
+        vision_cache_key = None
+        if use_cache:
+            import hashlib
+
+            # Cache key based on image count + vision model + prompt version
+            vision_hash_input = (
+                f"vision_{len(vision_images)}_{vision_model}_{prompt.version}"
+            )
+            if document_name:
+                vision_hash_input += f"_{document_name}"
+            vision_cache_key = hashlib.sha256(vision_hash_input.encode()).hexdigest()
+
+        if progress_callback:
+            progress_callback(0, len(vision_images), "Starting vision extraction...")
+
+        vision_chunks = extract_from_images(
+            vision_images,
+            model=vision_model,
+            cache_key=vision_cache_key,
+            progress_callback=progress_callback,
+        )
+
+    # Merge text and vision results
+    if vision_chunks:
+        all_chunks = []
+        # Add text konsep as a chunk
+        if text_result.get("konsep"):
+            all_chunks.append({"bab_name": None, "konsep": text_result["konsep"]})
+        # Add vision chunks
+        for chunk in vision_chunks:
+            all_chunks.append(
+                {
+                    "bab_name": chunk.get("bab_name"),
+                    "konsep": chunk.get("konsep", []),
+                }
+            )
+        merged = _merge_konsep(all_chunks)
+        return merged, text_from_cache, filter_result
+
+    return text_result, text_from_cache, filter_result
 
 
 def _normalize_chunk(parsed: dict) -> dict:

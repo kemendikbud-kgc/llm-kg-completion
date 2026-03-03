@@ -1,10 +1,7 @@
 """Step E: Knowledge Graph Completion via semantic similarity and LLM classification."""
 
-import hashlib
-import json
 import logging
 from collections.abc import Callable
-from pathlib import Path
 
 import numpy as np
 from tenacity import (
@@ -14,35 +11,11 @@ from tenacity import (
     wait_exponential,
 )
 
+from src.cache import cache_manager
 from src.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_CHAT_MODEL
 from src.llama_setup import get_embed_model, get_llm
 
 logger = logging.getLogger(__name__)
-
-EMBEDDING_CACHE_DIR = Path("data/embedding_cache")
-
-
-def _embedding_cache_key(text: str, model: str) -> str:
-    """Return SHA-256 hash of text + model for cache keying."""
-    return hashlib.sha256((text + model).encode()).hexdigest()
-
-
-def _load_embedding_from_cache(cache_key: str) -> list[float] | None:
-    """Load embedding from cache if exists."""
-    cache_file = EMBEDDING_CACHE_DIR / f"{cache_key}.json"
-    if cache_file.exists():
-        data = json.loads(cache_file.read_text(encoding="utf-8"))
-        return data.get("embedding")
-    return None
-
-
-def _save_embedding_to_cache(cache_key: str, embedding: list[float]) -> None:
-    """Save embedding to cache."""
-    EMBEDDING_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_file = EMBEDDING_CACHE_DIR / f"{cache_key}.json"
-    cache_file.write_text(
-        json.dumps({"embedding": embedding}, indent=2), encoding="utf-8"
-    )
 
 
 def _is_rate_limit_error(exception: BaseException) -> bool:
@@ -108,8 +81,7 @@ def get_embeddings(
     cached_count = 0
 
     for i, text in enumerate(texts):
-        cache_key = _embedding_cache_key(text, model)
-        cached = _load_embedding_from_cache(cache_key)
+        cached = cache_manager.get_embedding(text, model)
         if cached is not None:
             embeddings.append(cached)
             cached_count += 1
@@ -142,8 +114,7 @@ def get_embeddings(
 
         for idx, emb in zip(uncached_indices, new_embeddings):
             embeddings[idx] = emb
-            cache_key = _embedding_cache_key(texts[idx], model)
-            _save_embedding_to_cache(cache_key, emb)
+            cache_manager.put_embedding(texts[idx], model, emb)
             cached_count += 1
             if progress_callback:
                 progress_callback(
