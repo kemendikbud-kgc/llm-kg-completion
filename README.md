@@ -43,14 +43,17 @@ graph LR
     MP["<b>MataPelajaran</b><br/>name<br/>phase"]
     DOC["<b>Document</b><br/>name<br/>kelas<br/>uploaded_at"]
     BAB["<b>Bab</b><br/>name<br/>description"]
+    SB["<b>SubBab</b><br/>name"]
     KA["<b>Konsep A</b><br/>name<br/>description<br/>bloom_level"]
     KB["<b>Konsep B</b><br/>name<br/>description<br/>bloom_level"]
     SK["<b>SubKonsep</b><br/>name<br/>description<br/>bloom_level"]
 
     MP -->|hasDocument| DOC
     DOC -->|hasBab| BAB
-    BAB -->|hasKonsep| KA
-    BAB -->|hasKonsep| KB
+    BAB -->|hasSubBab| SB
+    SB -->|hasKonsep| KA
+    SB -->|hasKonsep| KB
+    BAB -.->|hasKonsep| KA
     KA -->|hasSubKonsep| SK
     KB -->|hasSubKonsep| SK
 
@@ -62,6 +65,7 @@ graph LR
     style MP fill:#7B68EE,color:#fff,rx:8
     style DOC fill:#4A90D9,color:#fff,rx:8
     style BAB fill:#5BA85B,color:#fff,rx:8
+    style SB  fill:#48B088,color:#fff,rx:8
     style KA  fill:#E8A838,color:#fff,rx:8
     style KB  fill:#E8A838,color:#fff,rx:8
     style SK  fill:#D95B5B,color:#fff,rx:8
@@ -74,6 +78,7 @@ graph LR
 | `MataPelajaran` | `name`, `phase` | Subject (Fisika/Kimia/Biologi), Fase E or F |
 | `Document` | `name`, `kelas` | Textbook PDF, Kelas X/XI/XII |
 | `Bab` | `name` | Chapter detected from text |
+| `SubBab` | `name` | Sub-chapter section (optional; when absent, Konsep links directly to Bab) |
 | `Konsep` | `name`, `description`, `bloom_level` | Main concept (was: Topic) |
 | `SubKonsep` | `name`, `description`, `bloom_level` | Sub-concept (was: SubTopic) |
 
@@ -81,7 +86,7 @@ graph LR
 
 | Relationship | Type | Meaning |
 |-------------|------|---------|
-| `hasDocument`, `hasBab`, `hasKonsep`, `hasSubKonsep` | Structural | Curriculum hierarchy |
+| `hasDocument`, `hasBab`, `hasSubBab`, `hasKonsep`, `hasSubKonsep` | Structural | Curriculum hierarchy |
 | `isPrerequisiteOf` | Typed | "Must learn A before B" |
 | `supports` | Typed | "A helps with / is applied in B" |
 | `analogousTo` | Typed | "A and B share the same pattern" — key anti-silo signal |
