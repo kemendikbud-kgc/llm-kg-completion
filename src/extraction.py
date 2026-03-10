@@ -45,18 +45,23 @@ def _is_rate_limit_error(exception: BaseException) -> bool:
 def _merge_konsep(all_chunks_data: list[dict]) -> dict:
     """Deduplicate konsep by name across chunks, merging sub_konsep.
 
-    Each chunk dict has keys: bab_name (str|None), konsep (list[dict]).
-    Returns {"konsep": [...]} where each konsep has a "bab" field from its chunk.
+    Each chunk dict has keys: bab_name (str|None), sub_bab_name (str|None),
+    sub_sub_bab_name (str|None), konsep (list[dict]).
+    Returns {"konsep": [...]} where each konsep has "bab", "sub_bab", and "sub_sub_bab" fields.
     """
     merged: dict[str, dict] = {}
     for chunk in all_chunks_data:
         bab_name = chunk.get("bab_name")
+        sub_bab_name = chunk.get("sub_bab_name")
+        sub_sub_bab_name = chunk.get("sub_sub_bab_name")
         for konsep in chunk.get("konsep", []):
             name = konsep["name"]
             if name not in merged:
                 merged[name] = {
                     **konsep,
                     "bab": bab_name,
+                    "sub_bab": sub_bab_name,
+                    "sub_sub_bab": sub_sub_bab_name,
                     "sub_konsep": list(konsep.get("sub_konsep", [])),
                 }
             else:
@@ -93,6 +98,25 @@ def _chunk_text(text: str) -> list[str]:
     return splitter.split_text(text)
 
 
+def _chunk_pages(
+    pages: list[tuple[int, str]],
+) -> list[tuple[str, int]]:
+    """Split page-aware text into chunks, preserving the starting page number.
+
+    Returns list of (chunk_text, page_num) tuples where page_num is the
+    1-based page number of the first page contributing to that chunk.
+    """
+    splitter = SentenceSplitter(chunk_size=2048, chunk_overlap=128)
+    result: list[tuple[str, int]] = []
+    for page_num, page_text in pages:
+        if not page_text.strip():
+            continue
+        chunks = splitter.split_text(page_text)
+        for chunk in chunks:
+            result.append((chunk, page_num))
+    return result
+
+
 @retry(
     retry=retry_if_exception(_is_rate_limit_error),
     wait=wait_exponential(multiplier=2, min=10, max=120),
@@ -123,6 +147,9 @@ def extract_topics(
     prompt_name: str = "default",
     filter_content: bool = True,
     document_name: str | None = None,
+    doc_structure=None,  # DocumentStructure | None — avoids circular import
+    pages: list[tuple[int, str]] | None = None,
+    glossary: dict[str, str] | None = None,
 ) -> tuple[dict, bool, FilterResult | None]:
     """Extract konsep from text.
 
@@ -141,6 +168,13 @@ def extract_topics(
     model = model or DEFAULT_CHAT_MODEL
     prompt = get_prompt(prompt_name)
     prompt_version = prompt.version
+
+    # Build system prompt, optionally enriched with glossary context
+    from src.prompts import build_glossary_context
+
+    system_prompt = prompt.system_prompt
+    if glossary:
+        system_prompt = system_prompt + build_glossary_context(glossary)
 
     # Apply text filtering if enabled
     filter_result: FilterResult | None = None
@@ -163,16 +197,24 @@ def extract_topics(
             cached = _normalize_result(cached)
             return cached, True, filter_result
 
-    chunks = _chunk_text(text)
+    # Build page-aware chunks if pages + structure provided; fall back to plain text
+    from src.ingestion import get_structure_for_page
+
+    if pages and doc_structure and doc_structure.found:
+        chunks_with_pages: list[tuple[str, int]] = _chunk_pages(pages)
+    else:
+        chunks_with_pages = [(_c, 0) for _c in _chunk_text(text)]
 
     # Apply chunk filtering if content filtering is enabled
-    skipped_chunks: list[str] = []
     if filter_content:
-        chunks, skipped_chunks = filter_chunks(chunks)
+        plain_chunks = [c for c, _ in chunks_with_pages]
+        filtered_plain, skipped_chunks = filter_chunks(plain_chunks)
+        filtered_set = set(filtered_plain)
+        chunks_with_pages = [(c, p) for c, p in chunks_with_pages if c in filtered_set]
         if skipped_chunks:
             logger.info("Skipped %d administrative chunks", len(skipped_chunks))
 
-    total_chunks = len(chunks)
+    total_chunks = len(chunks_with_pages)
 
     if progress_callback:
         progress_callback(0, total_chunks, "Preparing chunks...")
@@ -182,7 +224,7 @@ def extract_topics(
     llm = get_llm(model)
 
     completed = 0
-    for i, chunk in enumerate(chunks):
+    for i, (chunk, page_num) in enumerate(chunks_with_pages):
         cached_chunk = cache_manager.get_chunk(base_hash, i)
         if cached_chunk is not None:
             logger.info("Loaded cached chunk %d/%d", i + 1, total_chunks)
@@ -199,7 +241,7 @@ def extract_topics(
                     i + 1, total_chunks, f"Extracting chunk {i + 1} with LLM..."
                 )
             try:
-                parsed = _extract_from_chunk(llm, chunk, prompt.system_prompt)
+                parsed = _extract_from_chunk(llm, chunk, system_prompt)
             except Exception:
                 if all_chunks_data:
                     partial_konsep = _merge_konsep(all_chunks_data)["konsep"]
@@ -222,9 +264,22 @@ def extract_topics(
 
         # Normalize old chunk format (topics -> konsep) for backward compat
         parsed = _normalize_chunk(parsed)
+
+        # Stamp bab/sub_bab/sub_sub_bab from ToC structure if available, else use LLM-detected bab_name
+        if doc_structure and doc_structure.found and page_num > 0:
+            stamped_bab, stamped_sub_bab, stamped_sub_sub_bab = get_structure_for_page(
+                doc_structure, page_num
+            )
+        else:
+            stamped_bab = parsed.get("bab_name")
+            stamped_sub_bab = None
+            stamped_sub_sub_bab = None
+
         all_chunks_data.append(
             {
-                "bab_name": parsed.get("bab_name"),
+                "bab_name": stamped_bab,
+                "sub_bab_name": stamped_sub_bab,
+                "sub_sub_bab_name": stamped_sub_sub_bab,
                 "konsep": parsed.get("konsep", []),
             }
         )
@@ -336,6 +391,93 @@ def extract_topics_hybrid(
     return text_result, text_from_cache, filter_result
 
 
+def extract_topics_per_subbab(
+    pages: list[tuple[int, str]],
+    doc_structure,  # DocumentStructure — avoids circular import
+    glossary: dict[str, str] | None = None,
+    model: str | None = None,
+    use_cache: bool = True,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+    prompt_name: str = "default",
+    filter_content: bool = True,
+    document_name: str | None = None,
+) -> dict:
+    """Extract konsep per SubBab/SubSubBab using ToC-scoped text sections.
+
+    Iterates over unique (bab, sub_bab, sub_sub_bab) triples from ``doc_structure``,
+    slices ``pages`` to the section's page range, and calls :func:`extract_topics`
+    with that scoped text and optional glossary context.
+
+    Returns a merged ``{"konsep": [...]}`` dict where each konsep is already
+    tagged with the correct ``bab``, ``sub_bab``, and ``sub_sub_bab``.
+    """
+    from src.ingestion import extract_pages_for_subbab
+
+    # Collect unique (bab, sub_bab, sub_sub_bab) triples in ToC order
+    seen_set: set[tuple[str, str | None, str | None]] = set()
+    sections: list[tuple[str, str | None, str | None]] = []
+    for entry in doc_structure.entries:
+        key = (entry.bab, entry.sub_bab, entry.sub_sub_bab)
+        if key not in seen_set:
+            seen_set.add(key)
+            sections.append(key)
+
+    total = len(sections)
+    all_konsep: list[dict] = []
+
+    for i, (bab_name, sub_bab_name, sub_sub_bab_name) in enumerate(sections):
+        section_text = extract_pages_for_subbab(
+            pages, doc_structure, bab_name, sub_bab_name, sub_sub_bab_name
+        )
+        if not section_text.strip():
+            continue
+
+        # Build label for progress display
+        parts = [bab_name]
+        if sub_bab_name:
+            parts.append(sub_bab_name)
+        if sub_sub_bab_name:
+            parts.append(sub_sub_bab_name)
+        label = " / ".join(parts)
+
+        if progress_callback:
+            progress_callback(i, total, f"Extracting: {label}")
+
+        section_result, _, _ = extract_topics(
+            section_text,
+            model=model,
+            use_cache=use_cache,
+            prompt_name=prompt_name,
+            filter_content=filter_content,
+            document_name=document_name,
+            glossary=glossary,
+        )
+
+        for k in section_result.get("konsep", []):
+            k["bab"] = bab_name
+            k["sub_bab"] = sub_bab_name
+            k["sub_sub_bab"] = sub_sub_bab_name
+            all_konsep.append(k)
+
+    if progress_callback:
+        progress_callback(total, total, "Merging konsep...")
+
+    # Deduplicate by name, keeping first bab/sub_bab/sub_sub_bab and merging sub_konsep
+    merged: dict[str, dict] = {}
+    for k in all_konsep:
+        name = k["name"]
+        if name not in merged:
+            merged[name] = {**k, "sub_konsep": list(k.get("sub_konsep", []))}
+        else:
+            existing_subs = {s["name"] for s in merged[name].get("sub_konsep", [])}
+            for sub in k.get("sub_konsep", []):
+                if sub["name"] not in existing_subs:
+                    merged[name]["sub_konsep"].append(sub)
+                    existing_subs.add(sub["name"])
+
+    return {"konsep": list(merged.values())}
+
+
 def _normalize_chunk(parsed: dict) -> dict:
     """Normalize old chunk format (topics/sub_topics) to new (konsep/sub_konsep)."""
     if "topics" in parsed and "konsep" not in parsed:
@@ -380,6 +522,7 @@ def _normalize_result(result: dict) -> dict:
                     "description": t.get("description", ""),
                     "bloom_level": None,
                     "bab": None,
+                    "sub_bab": None,
                     "sub_konsep": sub_konsep,
                 }
             )

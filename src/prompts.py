@@ -32,6 +32,19 @@ def get_prompt_choices() -> dict[str, str]:
     return {name: p.description for name, p in PROMPT_REGISTRY.items()}
 
 
+def build_glossary_context(glossary: dict[str, str], max_terms: int = 50) -> str:
+    """Build a glossary context snippet to append to extraction prompts."""
+    if not glossary:
+        return ""
+    terms = list(glossary.items())[:max_terms]
+    lines = [f"- {term}: {defn}" for term, defn in terms]
+    return (
+        "\n\n## GLOSARIUM KONTEKS\n\n"
+        "Gunakan definisi berikut untuk memastikan konsistensi terminologi:\n"
+        + "\n".join(lines)
+    )
+
+
 # --- Default prompt (Indonesian ontology with Bloom's taxonomy) ---
 register_prompt(
     ExtractionPrompt(
