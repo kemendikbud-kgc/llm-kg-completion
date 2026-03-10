@@ -8,6 +8,7 @@ from src.config import (
     ANTHROPIC_API_KEY,
     ZAI_API_KEY,
     NEO4J_URI,
+    NEO4J_USERNAME,
     NEO4J_PASSWORD,
     DEFAULT_CHAT_MODEL,
     DEFAULT_EMBEDDING_MODEL,
@@ -29,8 +30,9 @@ def check_neo4j() -> HealthStatus:
         from neo4j import GraphDatabase
 
         uri: str = NEO4J_URI
+        user: str = NEO4J_USERNAME or "neo4j"
         pwd: str = NEO4J_PASSWORD
-        driver = GraphDatabase.driver(uri, auth=("neo4j", pwd))
+        driver = GraphDatabase.driver(uri, auth=(user, pwd))
         with driver.session() as session:
             session.run("RETURN 1").single()
         driver.close()
