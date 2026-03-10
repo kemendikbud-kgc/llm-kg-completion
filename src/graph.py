@@ -1,9 +1,13 @@
 """Step D: Neo4j graph construction and querying."""
 
+import logging
+
 import networkx as nx
 from neo4j import GraphDatabase
 
 from src.config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD
+
+logger = logging.getLogger(__name__)
 
 
 def get_driver():
@@ -13,6 +17,90 @@ def get_driver():
     user: str = NEO4J_USERNAME or "neo4j"
     pwd: str = NEO4J_PASSWORD
     return GraphDatabase.driver(uri, auth=(user, pwd))
+
+
+def seed_from_daftar_isi(
+    doc_structure,  # DocumentStructure from ingestion.py — avoids circular import
+    document_name: str,
+    driver,
+) -> int:
+    """Seed KG skeleton (Document, Bab, SubBab, SubSubBab nodes) from the Daftar Isi.
+
+    Runs *before* extraction so the structural nodes exist even if LLM
+    extraction fails or is partial.  All operations use MERGE so re-running
+    is idempotent.
+
+    Returns the number of distinct Bab + SubBab + SubSubBab nodes merged.
+    """
+    if not doc_structure.found or not doc_structure.entries:
+        return 0
+
+    count = 0
+    with driver.session() as session:
+        session.run(
+            "MERGE (d:Document {name: $doc_name}) ON CREATE SET d.uploaded_at = timestamp()",
+            doc_name=document_name,
+        )
+
+        seen_babs: set[str] = set()
+        seen_sub_babs: set[tuple[str, str]] = set()  # (bab, sub_bab)
+        seen_sub_sub_babs: set[tuple[str, str, str]] = (
+            set()
+        )  # (bab, sub_bab, sub_sub_bab)
+
+        for entry in doc_structure.entries:
+            bab_name = entry.bab
+
+            if bab_name not in seen_babs:
+                seen_babs.add(bab_name)
+                session.run(
+                    """
+                    MERGE (b:Bab {name: $bab_name, document: $doc_name})
+                    WITH b
+                    MATCH (d:Document {name: $doc_name})
+                    MERGE (d)-[:hasBab]->(b)
+                    """,
+                    bab_name=bab_name,
+                    doc_name=document_name,
+                )
+                count += 1
+
+            if entry.sub_bab:
+                sub_bab_key = (bab_name, entry.sub_bab)
+                if sub_bab_key not in seen_sub_babs:
+                    seen_sub_babs.add(sub_bab_key)
+                    session.run(
+                        """
+                        MERGE (sb:SubBab {name: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                        WITH sb
+                        MATCH (b:Bab {name: $bab_name, document: $doc_name})
+                        MERGE (b)-[:hasSubBab]->(sb)
+                        """,
+                        sub_bab_name=entry.sub_bab,
+                        bab_name=bab_name,
+                        doc_name=document_name,
+                    )
+                    count += 1
+
+            if entry.sub_sub_bab and entry.sub_bab:
+                sub_sub_bab_key = (bab_name, entry.sub_bab, entry.sub_sub_bab)
+                if sub_sub_bab_key not in seen_sub_sub_babs:
+                    seen_sub_sub_babs.add(sub_sub_bab_key)
+                    session.run(
+                        """
+                        MERGE (ssb:SubSubBab {name: $sub_sub_bab_name, sub_bab: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                        WITH ssb
+                        MATCH (sb:SubBab {name: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                        MERGE (sb)-[:hasSubSubBab]->(ssb)
+                        """,
+                        sub_sub_bab_name=entry.sub_sub_bab,
+                        sub_bab_name=entry.sub_bab,
+                        bab_name=bab_name,
+                        doc_name=document_name,
+                    )
+                    count += 1
+
+    return count
 
 
 def insert_konsep(
@@ -27,10 +115,12 @@ def insert_konsep(
 
     Creates:
       (:MataPelajaran)-[:hasDocument]->(:Document {kelas})-[:hasBab]->(:Bab)
-        -[:hasKonsep]->(:Konsep)-[:hasSubKonsep]->(:SubKonsep)
+        -[:hasSubBab]->(:SubBab)-[:hasSubSubBab]->(:SubSubBab)-[:hasKonsep]->(:Konsep)
+        -[:hasSubKonsep]->(:SubKonsep)
 
+    When sub_bab is None, Konsep is linked directly to Bab (no SubBab node).
+    When sub_sub_bab is None, Konsep is linked to SubBab (no SubSubBab node).
     Konsep are shared across documents (MERGE on name) to enable cross-doc linking.
-    Bab nodes group konsep by detected chapter.
     """
     with driver.session() as session:
         # Create the Document node
@@ -58,66 +148,168 @@ def insert_konsep(
                 doc_name=document_name,
             )
 
-        # Group konsep by bab name
-        bab_map: dict[str, list[dict]] = {}
+        # Group konsep by (bab, sub_bab, sub_sub_bab)
+        # Skip concepts without bab assignment (ToC is source of truth)
+        # Skip concepts with non-ToC bab names (e.g., LLM-detected "Meiosis")
+        bab_map: dict[str, dict[str | None, dict[str | None, list[dict]]]] = {}
+        skipped_no_bab = 0
+        skipped_invalid_bab = 0
         for konsep in data.get("konsep", []):
-            bab_name = konsep.get("bab") or "Bab Utama"
-            bab_map.setdefault(bab_name, []).append(konsep)
+            bab_name = konsep.get("bab")
+            if not bab_name:
+                logger.warning(
+                    "Konsep '%s' has no bab assignment, skipping",
+                    konsep.get("name", "<unnamed>"),
+                )
+                skipped_no_bab += 1
+                continue
+            # Validate bab_name follows ToC format (starts with "Bab " or "BAB ")
+            if not (bab_name.startswith("Bab ") or bab_name.startswith("BAB ")):
+                logger.warning(
+                    "Konsep '%s' has non-ToC bab name '%s', skipping",
+                    konsep.get("name", "<unnamed>"), bab_name
+                )
+                skipped_invalid_bab += 1
+                continue
+            sub_bab_name: str | None = konsep.get("sub_bab") or None
+            sub_sub_bab_name: str | None = konsep.get("sub_sub_bab") or None
+            bab_map.setdefault(bab_name, {}).setdefault(sub_bab_name, {}).setdefault(
+                sub_sub_bab_name, []
+            ).append(konsep)
 
-        for bab_name, konsep_list in bab_map.items():
-            # Create Bab node linked to Document
-            session.run(
+        if skipped_no_bab > 0:
+            logger.info(
+                "Skipped %d konsep without bab assignment (ToC is source of truth)",
+                skipped_no_bab,
+            )
+        if skipped_invalid_bab > 0:
+            logger.info(
+                "Skipped %d konsep with non-ToC bab names (LLM-detected names rejected)",
+                skipped_invalid_bab,
+            )
+
+        for bab_name, sub_bab_dict in bab_map.items():
+            # Only link to existing Bab nodes (created by seed_from_daftar_isi)
+            # Do NOT create new Bab nodes here - ToC is the single source of truth
+            result = session.run(
                 """
-                MERGE (b:Bab {name: $bab_name, document: $doc_name})
-                SET b.description = $desc
-                WITH b
-                MATCH (d:Document {name: $doc_name})
-                MERGE (d)-[:hasBab]->(b)
+                MATCH (b:Bab {name: $bab_name, document: $doc_name})
+                RETURN b.name as found
                 """,
                 bab_name=bab_name,
                 doc_name=document_name,
-                desc="",
             )
-
-            for konsep in konsep_list:
-                # MERGE Konsep (shared across documents)
-                session.run(
-                    """
-                    MERGE (k:Konsep {name: $name})
-                    SET k.description = $desc, k.bloom_level = $bloom
-                    """,
-                    name=konsep["name"],
-                    desc=konsep.get("description", ""),
-                    bloom=konsep.get("bloom_level"),
+            record = result.single()
+            if not record:
+                konsep_count = sum(
+                    len(kl) for sb_dict in sub_bab_dict.values()
+                    for kl in sb_dict.values()
                 )
-
-                # Link Bab -> Konsep
-                session.run(
-                    """
-                    MATCH (b:Bab {name: $bab_name, document: $doc_name})
-                    MATCH (k:Konsep {name: $konsep_name})
-                    MERGE (b)-[:hasKonsep]->(k)
-                    """,
-                    bab_name=bab_name,
-                    doc_name=document_name,
-                    konsep_name=konsep["name"],
+                logger.warning(
+                    "Bab '%s' not found in graph (not in ToC?), skipping %d konsep",
+                    bab_name, konsep_count
                 )
+                continue
 
-                # Handle sub-konsep
-                for sub in konsep.get("sub_konsep", []):
+            for sub_bab_name, sub_sub_bab_dict in sub_bab_dict.items():
+                if sub_bab_name:
+                    # Create SubBab node linked to Bab
                     session.run(
                         """
-                        MERGE (sk:SubKonsep {name: $name})
-                        SET sk.description = $desc, sk.bloom_level = $bloom
-                        WITH sk
-                        MATCH (k:Konsep {name: $konsep_name})
-                        MERGE (k)-[:hasSubKonsep]->(sk)
+                        MERGE (sb:SubBab {name: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                        WITH sb
+                        MATCH (b:Bab {name: $bab_name, document: $doc_name})
+                        MERGE (b)-[:hasSubBab]->(sb)
                         """,
-                        name=sub["name"],
-                        desc=sub.get("description", ""),
-                        bloom=sub.get("bloom_level"),
-                        konsep_name=konsep["name"],
+                        sub_bab_name=sub_bab_name,
+                        bab_name=bab_name,
+                        doc_name=document_name,
                     )
+
+                for sub_sub_bab_name, konsep_list in sub_sub_bab_dict.items():
+                    if sub_bab_name and sub_sub_bab_name:
+                        # Create SubSubBab node linked to SubBab
+                        session.run(
+                            """
+                            MERGE (ssb:SubSubBab {name: $sub_sub_bab_name, sub_bab: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                            WITH ssb
+                            MATCH (sb:SubBab {name: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                            MERGE (sb)-[:hasSubSubBab]->(ssb)
+                            """,
+                            sub_sub_bab_name=sub_sub_bab_name,
+                            sub_bab_name=sub_bab_name,
+                            bab_name=bab_name,
+                            doc_name=document_name,
+                        )
+
+                    for konsep in konsep_list:
+                        # MERGE Konsep (shared across documents)
+                        session.run(
+                            """
+                            MERGE (k:Konsep {name: $name})
+                            SET k.description = $desc, k.bloom_level = $bloom
+                            """,
+                            name=konsep["name"],
+                            desc=konsep.get("description", ""),
+                            bloom=konsep.get("bloom_level"),
+                        )
+
+                        # Link to the most specific structural node available
+                        if sub_bab_name and sub_sub_bab_name:
+                            # Link SubSubBab -> Konsep
+                            session.run(
+                                """
+                                MATCH (ssb:SubSubBab {name: $sub_sub_bab_name, sub_bab: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                                MATCH (k:Konsep {name: $konsep_name})
+                                MERGE (ssb)-[:hasKonsep]->(k)
+                                """,
+                                sub_sub_bab_name=sub_sub_bab_name,
+                                sub_bab_name=sub_bab_name,
+                                bab_name=bab_name,
+                                doc_name=document_name,
+                                konsep_name=konsep["name"],
+                            )
+                        elif sub_bab_name:
+                            # Link SubBab -> Konsep
+                            session.run(
+                                """
+                                MATCH (sb:SubBab {name: $sub_bab_name, bab: $bab_name, document: $doc_name})
+                                MATCH (k:Konsep {name: $konsep_name})
+                                MERGE (sb)-[:hasKonsep]->(k)
+                                """,
+                                sub_bab_name=sub_bab_name,
+                                bab_name=bab_name,
+                                doc_name=document_name,
+                                konsep_name=konsep["name"],
+                            )
+                        else:
+                            # Fallback: link Bab -> Konsep directly (no SubBab)
+                            session.run(
+                                """
+                                MATCH (b:Bab {name: $bab_name, document: $doc_name})
+                                MATCH (k:Konsep {name: $konsep_name})
+                                MERGE (b)-[:hasKonsep]->(k)
+                                """,
+                                bab_name=bab_name,
+                                doc_name=document_name,
+                                konsep_name=konsep["name"],
+                            )
+
+                        # Handle sub-konsep
+                        for sub in konsep.get("sub_konsep", []):
+                            session.run(
+                                """
+                                MERGE (sk:SubKonsep {name: $name})
+                                SET sk.description = $desc, sk.bloom_level = $bloom
+                                WITH sk
+                                MATCH (k:Konsep {name: $konsep_name})
+                                MERGE (k)-[:hasSubKonsep]->(sk)
+                                """,
+                                name=sub["name"],
+                                desc=sub.get("description", ""),
+                                bloom=sub.get("bloom_level"),
+                                konsep_name=konsep["name"],
+                            )
 
 
 # Backward-compat wrapper
@@ -206,13 +398,14 @@ def get_graph_stats(driver) -> dict:
             OPTIONAL MATCH (mp:MataPelajaran) WITH count(mp) AS subjects
             OPTIONAL MATCH (d:Document) WITH subjects, count(d) AS documents
             OPTIONAL MATCH (b:Bab) WITH subjects, documents, count(b) AS babs
-            OPTIONAL MATCH (k:Konsep) WITH subjects, documents, babs, count(k) AS konsep
-            OPTIONAL MATCH (sk:SubKonsep) WITH subjects, documents, babs, konsep, count(sk) AS sub_konsep
-            OPTIONAL MATCH ()-[r:SIMILAR_TO]->() WITH subjects, documents, babs, konsep, sub_konsep, count(r) AS similar_rels
-            OPTIONAL MATCH ()-[r2:isPrerequisiteOf]->() WITH subjects, documents, babs, konsep, sub_konsep, similar_rels, count(r2) AS prereq_rels
-            OPTIONAL MATCH ()-[r3:supports]->() WITH subjects, documents, babs, konsep, sub_konsep, similar_rels, prereq_rels, count(r3) AS supports_rels
+            OPTIONAL MATCH (sb:SubBab) WITH subjects, documents, babs, count(sb) AS sub_babs
+            OPTIONAL MATCH (k:Konsep) WITH subjects, documents, babs, sub_babs, count(k) AS konsep
+            OPTIONAL MATCH (sk:SubKonsep) WITH subjects, documents, babs, sub_babs, konsep, count(sk) AS sub_konsep
+            OPTIONAL MATCH ()-[r:SIMILAR_TO]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, count(r) AS similar_rels
+            OPTIONAL MATCH ()-[r2:isPrerequisiteOf]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, count(r2) AS prereq_rels
+            OPTIONAL MATCH ()-[r3:supports]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, prereq_rels, count(r3) AS supports_rels
             OPTIONAL MATCH ()-[r4:analogousTo]->()
-            RETURN subjects, documents, babs, konsep, sub_konsep, similar_rels,
+            RETURN subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels,
                    prereq_rels, supports_rels, count(r4) AS analogous_rels
             """
         )
@@ -222,6 +415,7 @@ def get_graph_stats(driver) -> dict:
                 "subjects": row["subjects"],
                 "documents": row["documents"],
                 "babs": row["babs"],
+                "sub_babs": row["sub_babs"],
                 "topics": row["konsep"],  # keep "topics" key for backward compat
                 "subtopics": row[
                     "sub_konsep"
@@ -237,6 +431,7 @@ def get_graph_stats(driver) -> dict:
             "subjects": 0,
             "documents": 0,
             "babs": 0,
+            "sub_babs": 0,
             "topics": 0,
             "subtopics": 0,
             "konsep": 0,
