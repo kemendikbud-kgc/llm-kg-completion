@@ -2,7 +2,8 @@
 
 import base64
 import logging
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
 
 import fitz  # pymupdf
 
@@ -10,6 +11,464 @@ from src.config import VISION_DENSITY_THRESHOLD, VISION_IMAGE_COUNT_THRESHOLD
 from src.filters import should_skip_chunk
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class StructureEntry:
+    """A Bab, SubBab, or SubSubBab entry parsed from Daftar Isi."""
+
+    bab: str
+    sub_bab: str | None
+    sub_sub_bab: str | None = None  # 3rd level (1., 2., 3. under SubBab)
+    page: int = 0  # 1-based page number from the ToC
+
+
+@dataclass
+class DocumentStructure:
+    """Parsed Daftar Isi (Table of Contents) skeleton."""
+
+    entries: list[StructureEntry] = field(default_factory=list)
+    found: bool = False  # Whether a ToC was actually detected
+
+
+# Regex patterns for Bab and SubBab detection
+# Matches: "BAB 1  LISTRIK STATIS....1" or "BAB 1\tLISTRIK STATIS..1"
+_BAB_PATTERN = re.compile(
+    r"^(?:BAB|Bab)\s+([IVXLC]+|\d+)[\t\s.:–\-]*(.*?)(?:[\s.]{2,}\s*(\d+)\s*)?$",
+    re.IGNORECASE,
+)
+# Matches: "1.1 Komponen Kimia Sel .... 5"
+_SUBBAB_NUM_PATTERN = re.compile(
+    r"^\s*(\d+\.\d+(?:\.\d+)?)[.\s]+(.*?)(?:[\s.]{2,}\s*(\d+)\s*)?$"
+)
+# Matches: "A.  Gaya Listrik .... 3" or "A.\t Gaya Listrik...3"
+_SUBBAB_ALPHA_PATTERN = re.compile(r"^\s*([A-Z])\.\s+(.*?)(?:[\s.]{2,}\s*(\d+)\s*)?$")
+# Matches: "1. Hukum Coulomb .....4" (single digit + title under SubBab)
+_SUBBAB_FLAT_NUM_PATTERN = re.compile(r"^\s*(\d)\.\s+(.*?)(?:[\s.]{2,}\s*(\d+)\s*)?$")
+_PAGE_NUM_PATTERN = re.compile(r"(\d+)\s*$")
+
+# Lines in ToC to skip (page number lines, administrative entries)
+_SKIP_PATTERN = re.compile(
+    r"^(Rangkuman|Asesmen|Pengayaan|Refleksi|Kata Pengantar|Prakata|Petunjuk|Daftar Gambar|Daftar Tabel|[ivxlcIVXLC]+|[xivXIV]+)[\s.]*\d*$",
+    re.IGNORECASE,
+)
+
+
+def _extract_page_from_next_line(lines: list[str], current_idx: int) -> tuple[int, int]:
+    """Check if the next non-empty line is a pure page number.
+
+    Used for Biology-style ToC where page numbers appear on SEPARATE lines.
+
+    Returns (page_number, lines_to_skip).
+    If no page found, returns (0, 0).
+    """
+    for offset in range(1, 4):  # Look ahead up to 3 lines
+        if current_idx + offset >= len(lines):
+            break
+        next_line = lines[current_idx + offset].strip()
+        if not next_line:
+            continue
+        # Check if it's a pure number (page number)
+        if re.match(r"^\d+$", next_line):
+            return int(next_line), offset
+        # Not a number, stop looking
+        break
+    return 0, 0
+
+
+def _is_valid_subbab_title(title: str) -> bool:
+    """Check if a title looks like a valid SubBab title, not a species name.
+
+    Valid SubBab titles start with a capitalized word.
+    Species names like "melanogaster" start with lowercase.
+
+    Examples:
+    - "Definisi Bioteknologi" → first word "Definisi" capitalized → VALID
+    - "Harapan dan Kenyataan" → first word "Harapan" capitalized → VALID
+    - "melanogaster" → first word lowercase → INVALID (species name)
+    - "sapiens" → first word lowercase → INVALID (species name)
+    """
+    if not title:
+        return False  # Empty title is invalid
+
+    title = title.strip()
+    if not title:
+        return False
+
+    # First word must start with uppercase letter
+    # Species epithets (melanogaster, sapiens) are always lowercase
+    first_word = title.split()[0]
+    if first_word[0].islower():
+        return False
+
+    return True
+
+
+def _normalize_toc_lines(lines: list[str]) -> list[str]:
+    """Join split TOC lines where letter prefix and title are on separate lines.
+
+    Handles PDF extraction artifacts like:
+      "A.    "        →  "A.  Definisi Evolusi"
+      "Definisi Evolusi"
+
+    Also deduplicates consecutive identical lines (e.g., two "A." lines).
+    """
+    result = []
+    i = 0
+    while i < len(lines):
+        stripped = lines[i].strip()
+        if not stripped:
+            result.append(lines[i])
+            i += 1
+            continue
+
+        # Check if this is a lone letter prefix: "A." / "B." etc. (with optional trailing whitespace)
+        if re.match(r"^[A-Z]\.\s*$", stripped):
+            # Look ahead for the title on the next non-empty, non-duplicate line
+            j = i + 1
+            while j < len(lines):
+                next_stripped = lines[j].strip()
+                if not next_stripped:
+                    j += 1
+                    continue
+                # Skip duplicate letter prefix lines
+                if next_stripped == stripped:
+                    j += 1
+                    continue
+                # Skip if next line is ALSO a lone letter prefix (different letter)
+                if re.match(r"^[A-Z]\.\s*$", next_stripped):
+                    break
+                # Found the title — join them
+                result.append(f"  {stripped} {next_stripped}")
+                i = j + 1
+                break
+            else:
+                # No title found, keep as-is
+                result.append(lines[i])
+                i += 1
+                continue
+            # If we broke out of the while (next line is a different lone prefix), keep current as-is
+            if i <= j - 1:
+                result.append(lines[i])
+                i += 1
+        else:
+            result.append(lines[i])
+            i += 1
+
+    return result
+
+
+def parse_daftar_isi(raw_text: str) -> DocumentStructure:
+    """Parse Daftar Isi (Table of Contents) from raw PDF text.
+
+    Scans for a ToC section and extracts Bab/SubBab/SubSubBab entries with their
+    page numbers. Returns a DocumentStructure that can be used to stamp text chunks.
+
+    Handles Indonesian textbook formats where:
+    - Bab lines: "BAB 1  TITLE....page" or "BAB 1\\tTITLE...page"
+    - SubBab lines: "A.  Title....page" or "1.1 Title....page"
+    - SubSubBab lines: "1. Title....page" (flat numeric under SubBab)
+    - ToC may span multiple PDF pages (with page number lines in between)
+
+    Supports both 2-level (Biology: Bab + SubBab) and 3-level (Physics/Chemistry:
+    Bab + SubBab + SubSubBab) hierarchies.
+    """
+    lines = raw_text.splitlines()
+
+    # Find ALL occurrences of "Daftar Isi" — use the last one (actual ToC, not references)
+    toc_starts = [
+        idx
+        for idx, line in enumerate(lines)
+        if re.search(r"daftar\s+isi|table\s+of\s+contents", line.strip(), re.IGNORECASE)
+    ]
+    if not toc_starts:
+        return DocumentStructure(found=False)
+
+    toc_start = toc_starts[-1]
+
+    # Scan up to 300 lines; stop when we hit actual chapter content
+    # (a BAB line with NO page number trailing it = real chapter heading, not ToC entry)
+    toc_end = min(toc_start + 300, len(lines))
+    bab_seen = 0
+    for idx in range(toc_start + 1, toc_end):
+        stripped = lines[idx].strip()
+        # A bare "BAB X" line with no dots/page number = we've left the ToC
+        if re.match(r"^(BAB|Bab)\s+[IVXLC\d]+\s*$", stripped):
+            toc_end = idx
+            break
+        if _BAB_PATTERN.match(stripped):
+            bab_seen += 1
+
+    toc_lines = lines[toc_start + 1 : toc_end]
+    toc_lines = _normalize_toc_lines(toc_lines)  # Join split letter+title lines
+    entries: list[StructureEntry] = []
+    current_bab: str | None = None
+    current_sub_bab: str | None = None
+
+    for idx, line in enumerate(toc_lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        # Skip pure page-number lines (e.g. "xii", "xiii", "12")
+        if re.match(r"^[ivxlcIVXLC]+$", stripped) or re.match(r"^\d+$", stripped):
+            continue
+        # Skip administrative entries (Rangkuman, Asesmen, etc.)
+        if _SKIP_PATTERN.match(stripped):
+            continue
+
+        # Try Bab line
+        bab_match = _BAB_PATTERN.match(stripped)
+        if bab_match:
+            bab_num = bab_match.group(1)
+            bab_title = (bab_match.group(2) or "").strip()
+            page_str = bab_match.group(3)
+            # Strip trailing dots/spaces from title
+            bab_title = re.sub(r"[\s.]+$", "", bab_title)
+            bab_title = re.sub(r"\s{2,}", " ", bab_title)  # collapse multiple spaces
+            if not page_str:
+                page_match = _PAGE_NUM_PATTERN.search(bab_title)
+                if page_match:
+                    page_str = page_match.group(1)
+                    bab_title = bab_title[: page_match.start()].strip()
+            page = int(page_str) if page_str else 0
+            current_bab = (
+                f"Bab {bab_num}: {bab_title}" if bab_title else f"Bab {bab_num}"
+            )
+            current_sub_bab = None  # Reset sub_bab when entering new Bab
+            entries.append(
+                StructureEntry(
+                    bab=current_bab, sub_bab=None, sub_sub_bab=None, page=page
+                )
+            )
+            continue
+
+        if not current_bab:
+            continue
+
+        # Try SubBab: alphabetic style (A., B., C.) — check this before flat numeric
+        alpha_match = _SUBBAB_ALPHA_PATTERN.match(stripped)
+        if alpha_match:
+            sub_letter = alpha_match.group(1)
+            sub_title = re.sub(r"[\s.]+$", "", (alpha_match.group(2) or "").strip())
+            sub_title = re.sub(r"\s{2,}", " ", sub_title)  # collapse multiple spaces
+            page_str = alpha_match.group(3)
+            # Validate: skip species names like "D. melanogaster"
+            if not _is_valid_subbab_title(sub_title):
+                continue
+            if not page_str:
+                page_match = _PAGE_NUM_PATTERN.search(stripped)
+                page_str = page_match.group(1) if page_match else None
+            page = int(page_str) if page_str else 0
+            current_sub_bab = (
+                f"{sub_letter}. {sub_title}" if sub_title else f"{sub_letter}."
+            )
+            entries.append(
+                StructureEntry(
+                    bab=current_bab,
+                    sub_bab=current_sub_bab,
+                    sub_sub_bab=None,
+                    page=page,
+                )
+            )
+            continue
+
+        # Try SubBab: numeric style (1.1, 1.2) — this is NOT a SubSubBab
+        sub_match = _SUBBAB_NUM_PATTERN.match(stripped)
+        if sub_match:
+            sub_num = sub_match.group(1)
+            sub_title = re.sub(r"[\s.]+$", "", (sub_match.group(2) or "").strip())
+            sub_title = re.sub(r"\s{2,}", " ", sub_title)  # collapse multiple spaces
+            page_str = sub_match.group(3)
+            if not page_str:
+                page_match = _PAGE_NUM_PATTERN.search(stripped)
+                page_str = page_match.group(1) if page_match else None
+            page = int(page_str) if page_str else 0
+            sub_bab = f"{sub_num} {sub_title}" if sub_title else sub_num
+            current_sub_bab = sub_bab
+            entries.append(
+                StructureEntry(
+                    bab=current_bab, sub_bab=sub_bab, sub_sub_bab=None, page=page
+                )
+            )
+            continue
+
+        # Try SubSubBab: flat numeric style (1., 2., 3.) — ONLY valid if we have a current_sub_bab
+        if current_sub_bab:
+            flat_match = _SUBBAB_FLAT_NUM_PATTERN.match(stripped)
+            if flat_match:
+                sub_num = flat_match.group(1)
+                sub_title = re.sub(r"[\s.]+$", "", (flat_match.group(2) or "").strip())
+                sub_title = re.sub(
+                    r"\s{2,}", " ", sub_title
+                )  # collapse multiple spaces
+                page_str = flat_match.group(3)
+                if not page_str:
+                    page_match = _PAGE_NUM_PATTERN.search(stripped)
+                    page_str = page_match.group(1) if page_match else None
+                page = int(page_str) if page_str else 0
+                sub_sub_bab = f"{sub_num}. {sub_title}" if sub_title else f"{sub_num}."
+                entries.append(
+                    StructureEntry(
+                        bab=current_bab,
+                        sub_bab=current_sub_bab,
+                        sub_sub_bab=sub_sub_bab,
+                        page=page,
+                    )
+                )
+                continue
+
+    if not entries:
+        return DocumentStructure(found=False)
+
+    # Post-process: match entries with trailing page numbers
+    # Biology-style ToC has all entries first, then all page numbers on separate lines
+    entries = _assign_trailing_page_numbers(entries, toc_lines)
+
+    return DocumentStructure(entries=entries, found=True)
+
+
+def _assign_trailing_page_numbers(
+    entries: list[StructureEntry], toc_lines: list[str]
+) -> list[StructureEntry]:
+    """Assign page numbers to entries that have page=0 using trailing number lines.
+
+    Biology-style ToC format:
+    - All entries listed with leader dots (no inline page numbers)
+    - All page numbers on separate lines at the end
+
+    This function matches entries with page=0 to trailing number lines positionally.
+    """
+    # Check if we have entries with missing page numbers
+    entries_without_pages = [e for e in entries if e.page == 0]
+    if not entries_without_pages:
+        return entries
+
+    # Collect trailing number lines from the end of toc_lines
+    trailing_numbers: list[int] = []
+    for line in reversed(toc_lines):
+        stripped = line.strip()
+        if re.match(r"^\d+$", stripped):
+            trailing_numbers.insert(0, int(stripped))
+        elif stripped:
+            # Non-number line - stop collecting
+            break
+
+    # If we have matching counts, assign pages positionally
+    if len(trailing_numbers) >= len(entries_without_pages):
+        # Assign to entries with page=0
+        num_idx = 0
+        for entry in entries:
+            if entry.page == 0 and num_idx < len(trailing_numbers):
+                entry.page = trailing_numbers[num_idx]
+                num_idx += 1
+
+    return entries
+
+
+_GLOS_PATTERN = re.compile(
+    r"^([A-Za-z\u00C0-\u024F][^:–\-]{1,60}?)[\s]*(?::|–|-)\s*(.+)$"
+)
+
+
+def extract_glossary(raw_text: str) -> dict[str, str]:
+    """Extract glossary terms from the Glosarium section of raw PDF text.
+
+    Scans for the last 'Glosarium' or 'Glosari' section and parses
+    ``term: definition`` or ``term — definition`` pairs.
+
+    Returns a ``{term_lower: definition}`` dict. Empty dict if not found.
+    """
+    lines = raw_text.splitlines()
+
+    glos_starts = [
+        idx
+        for idx, line in enumerate(lines)
+        if re.search(r"glosari[um]*", line.strip(), re.IGNORECASE)
+        and len(line.strip()) < 30  # section header, not inline mention
+    ]
+    if not glos_starts:
+        return {}
+
+    glos_start = glos_starts[-1]
+    glos_end = min(glos_start + 500, len(lines))
+
+    glossary: dict[str, str] = {}
+    for line in lines[glos_start + 1 : glos_end]:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        m = _GLOS_PATTERN.match(stripped)
+        if m:
+            term = m.group(1).strip()
+            definition = m.group(2).strip()
+            if term and definition and len(term) < 60:
+                glossary[term.lower()] = definition
+
+    return glossary
+
+
+def extract_pages_for_subbab(
+    pages: list[tuple[int, str]],
+    doc_structure: DocumentStructure,
+    bab: str,
+    sub_bab: str | None,
+    sub_sub_bab: str | None = None,
+) -> str:
+    """Return combined page text for a specific SubBab or SubSubBab section.
+
+    Uses ToC page ranges to slice the ``pages`` list to the content window
+    for the given ``bab``/``sub_bab``/``sub_sub_bab`` entry. Returns an empty
+    string if the section is not found in the ToC or if ``pages`` is empty.
+    """
+    if not doc_structure.found or not doc_structure.entries or not pages:
+        return ""
+
+    target_idx: int | None = None
+    for i, entry in enumerate(doc_structure.entries):
+        if (
+            entry.bab == bab
+            and entry.sub_bab == sub_bab
+            and entry.sub_sub_bab == sub_sub_bab
+        ):
+            target_idx = i
+            break
+
+    if target_idx is None:
+        return ""
+
+    start_page = doc_structure.entries[target_idx].page
+    if target_idx + 1 < len(doc_structure.entries):
+        end_page = doc_structure.entries[target_idx + 1].page - 1
+    else:
+        end_page = max(p for p, _ in pages)
+
+    texts = [text for page_num, text in pages if start_page <= page_num <= end_page]
+    return "\n".join(texts)
+
+
+def get_structure_for_page(
+    structure: DocumentStructure, page_num: int
+) -> tuple[str | None, str | None, str | None]:
+    """Return (bab_name, sub_bab_name, sub_sub_bab_name) for a given 1-based page number.
+
+    Finds the nearest preceding entry in the ToC skeleton.
+    """
+    if not structure.found or not structure.entries:
+        return None, None, None
+
+    best_bab: str | None = None
+    best_sub_bab: str | None = None
+    best_sub_sub_bab: str | None = None
+
+    for entry in structure.entries:
+        if entry.page <= page_num:
+            best_bab = entry.bab
+            best_sub_bab = entry.sub_bab
+            best_sub_sub_bab = entry.sub_sub_bab
+        else:
+            break
+
+    return best_bab, best_sub_bab, best_sub_sub_bab
 
 
 @dataclass
@@ -30,6 +489,20 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         pages.append(page.get_text() or "")
     doc.close()
     return "\n".join(pages)
+
+
+def extract_pages_from_pdf(pdf_path: str) -> list[tuple[int, str]]:
+    """Extract text per page from PDF.
+
+    Returns:
+        List of (page_num, text) tuples (1-based page numbers).
+    """
+    doc = fitz.open(pdf_path)
+    result = []
+    for i, page in enumerate(doc):
+        result.append((i + 1, page.get_text() or ""))
+    doc.close()
+    return result
 
 
 def _classify_page(page: fitz.Page) -> str:
