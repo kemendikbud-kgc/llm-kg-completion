@@ -2,7 +2,6 @@
 
 import json
 import logging
-import threading
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -79,7 +78,6 @@ def _extract_single_image(
     img_b64: str,
     model: str,
     cache_key: str | None,
-    progress_callback: Callable[[int, int, str], None] | None = None,
 ) -> tuple[int, dict]:
     """Extract konsep from a single image. Returns (page_index, result)."""
     # Check cache
@@ -87,20 +85,7 @@ def _extract_single_image(
         cached = cache_manager.get_chunk(cache_key, page_index)
         if cached is not None:
             logger.info("Loaded cached vision chunk %d", page_index + 1)
-            if progress_callback:
-                progress_callback(
-                    page_index + 1,
-                    -1,
-                    f"Loading vision page {page_index + 1} from cache",
-                )
             return page_index, cached
-
-    if progress_callback:
-        progress_callback(
-            page_index + 1,
-            -1,
-            f"Extracting page {page_index + 1} with vision LLM...",
-        )
 
     try:
         response = litellm.completion(
@@ -190,13 +175,6 @@ def extract_from_images(
 
     # Extract uncached pages concurrently
     all_chunks: dict[int, dict] = cached_pages.copy()
-    progress_lock = threading.Lock()
-
-    def progress_wrapper(idx: int, tot: int, msg: str) -> None:
-        """Thread-safe progress callback."""
-        if progress_callback:
-            with progress_lock:
-                progress_callback(idx, tot, msg)
 
     if pages_to_extract:
         with ThreadPoolExecutor(max_workers=VISION_CONCURRENCY) as executor:
@@ -207,7 +185,6 @@ def extract_from_images(
                     img_b64,
                     model,
                     cache_key,
-                    progress_wrapper,
                 ): idx
                 for idx, img_b64 in pages_to_extract
             }
@@ -217,6 +194,12 @@ def extract_from_images(
                 page_idx, result = future.result()
                 all_chunks[page_idx] = result
                 completed_count += 1
+                if progress_callback:
+                    progress_callback(
+                        completed_count,
+                        total,
+                        f"Extracted page {page_idx + 1} ({completed_count}/{total})",
+                    )
                 logger.info(
                     "Completed: page %d (%d/%d)", page_idx + 1, completed_count, total
                 )
