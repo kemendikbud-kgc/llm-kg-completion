@@ -8,19 +8,24 @@ from streamlit_agraph import agraph, Node, Edge, Config
 
 from src.ingestion import (
     extract_text_from_pdf,
+    extract_pages_from_pdf,
+    extract_glossary,
     ingest_pdf_enhanced,
     ingest_pdf_full_vision,
+    parse_daftar_isi,
 )
 from src.cache import cache_manager, CACHE_DIR
 from src.extraction import (
     extract_topics,
     extract_topics_hybrid,
+    extract_topics_per_subbab,
     _merge_konsep,
     _normalize_chunk,
 )
 from src.graph import (
     get_driver,
     insert_konsep,
+    seed_from_daftar_isi,
     get_all_documents,
     get_graph_stats,
     get_graph_quality_metrics,
@@ -590,6 +595,13 @@ else:
         st.session_state["document_name"] = uploaded_file.name
         st.session_state["ingestion_mode"] = selected_ingestion_mode
 
+        # Extract full per-page text BEFORE deleting tmp file (for ToC + page stamping)
+        _all_pages = extract_pages_from_pdf(tmp_path)
+        # Only use first 15 pages for ToC detection (ToC is always at the beginning)
+        _TOC_MAX_PAGES = 15
+        _full_text_for_toc = "\n".join(t for _, t in _all_pages[:_TOC_MAX_PAGES])
+        st.session_state["pdf_pages"] = _all_pages
+
         if selected_ingestion_mode == "enhanced":
             with st.spinner("Running enhanced ingestion..."):
                 text_content, vision_images, classifications = ingest_pdf_enhanced(
@@ -634,6 +646,65 @@ else:
             st.session_state["raw_text"] = raw_text
             st.session_state["vision_images"] = []
             st.text_area("Extracted Text", raw_text, height=200)
+
+        # Parse Daftar Isi for Bab/SubBab/SubSubBab skeleton
+        _doc_structure = parse_daftar_isi(_full_text_for_toc)
+        st.session_state["doc_structure"] = _doc_structure
+        if _doc_structure.found:
+            bab_count = len({e.bab for e in _doc_structure.entries})
+            sub_bab_count = len(
+                {(e.bab, e.sub_bab) for e in _doc_structure.entries if e.sub_bab}
+            )
+            sub_sub_bab_count = sum(1 for e in _doc_structure.entries if e.sub_sub_bab)
+            count_msg = (
+                f"Daftar Isi detected: **{bab_count} bab**, **{sub_bab_count} sub-bab**"
+            )
+            if sub_sub_bab_count > 0:
+                count_msg += f", **{sub_sub_bab_count} sub-sub-bab**"
+            st.success(count_msg + " found")
+            with st.expander("Lihat struktur Daftar Isi"):
+                cur_bab = None
+                cur_sub_bab = None
+                for entry in _doc_structure.entries:
+                    if entry.bab != cur_bab:
+                        st.markdown(f"**{entry.bab}** (hal. {entry.page})")
+                        cur_bab = entry.bab
+                        cur_sub_bab = None
+                    if entry.sub_bab and entry.sub_bab != cur_sub_bab:
+                        st.markdown(
+                            f"&nbsp;&nbsp;&nbsp;&nbsp;{entry.sub_bab} (hal. {entry.page})"
+                        )
+                        cur_sub_bab = entry.sub_bab
+                    if entry.sub_sub_bab:
+                        st.markdown(
+                            f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{entry.sub_sub_bab} (hal. {entry.page})"
+                        )
+
+            # Seed KG skeleton from ToC (Document + Bab + SubBab nodes)
+            try:
+                _seed_driver = get_driver()
+                _seeded = seed_from_daftar_isi(
+                    _doc_structure,
+                    uploaded_file.name,
+                    _seed_driver,
+                )
+                _seed_driver.close()
+                st.caption(
+                    f"KG skeleton seeded: {_seeded} Bab/SubBab/SubSubBab nodes pre-created in Neo4j."
+                )
+            except Exception as _seed_err:
+                logger.warning("Could not seed KG skeleton: %s", _seed_err)
+        else:
+            st.warning(
+                "⚠️ **Daftar Isi tidak ditemukan.** Ekstraksi mungkin tidak terstruktur dengan baik. "
+                "Konsep tanpa bab tidak akan disimpan ke knowledge graph."
+            )
+
+        # Extract glossary for terminology grounding
+        _glossary = extract_glossary(_full_text_for_toc)
+        st.session_state["glossary"] = _glossary
+        if _glossary:
+            st.caption(f"Glosarium extracted: **{len(_glossary)}** terms found.")
 
         st.session_state["step1_done"] = True
         has_raw_text = True
@@ -693,6 +764,10 @@ else:
                 ingestion_mode,
             )
 
+            _doc_structure = st.session_state.get("doc_structure")
+            _pdf_pages = st.session_state.get("pdf_pages")
+            _glossary = st.session_state.get("glossary")
+
             if vision_images and ingestion_mode in ("enhanced", "full_vision"):
                 result, from_cache, filter_result = extract_topics_hybrid(
                     raw_text,
@@ -705,6 +780,23 @@ else:
                     filter_content=filter_content,
                     document_name=st.session_state.get("document_name"),
                 )
+                from_cache = from_cache
+                filter_result = filter_result
+            elif _doc_structure and _doc_structure.found and _pdf_pages:
+                # ToC-first: extract per SubBab with glossary grounding
+                result = extract_topics_per_subbab(
+                    _pdf_pages,
+                    _doc_structure,
+                    glossary=_glossary,
+                    model=selected_chat_model,
+                    use_cache=use_cache,
+                    progress_callback=update_progress,
+                    prompt_name=selected_prompt_name,
+                    filter_content=filter_content,
+                    document_name=st.session_state.get("document_name"),
+                )
+                from_cache = False
+                filter_result = None
             else:
                 result, from_cache, filter_result = extract_topics(
                     raw_text,
@@ -714,6 +806,8 @@ else:
                     prompt_name=selected_prompt_name,
                     filter_content=filter_content,
                     document_name=st.session_state.get("document_name"),
+                    doc_structure=_doc_structure,
+                    pages=_pdf_pages,
                 )
             progress_bar.empty()
             status_text.empty()
@@ -781,7 +875,6 @@ else:
         topics = extracted_data.get("konsep", [])
 
         # Card-based validation UI
-        # Add topic button
         col_add, col_stats = st.columns([1, 3])
         with col_add:
             if st.button("➕ Add Konsep", key="add_topic"):
@@ -790,6 +883,8 @@ else:
                         "name": "New Konsep",
                         "description": "",
                         "bloom_level": None,
+                        "bab": None,
+                        "sub_bab": None,
                         "sub_konsep": [],
                     }
                 )
@@ -798,88 +893,119 @@ else:
         with col_stats:
             st.caption(f"📊 {topic_count} konsep, {subtopic_count} sub-konsep")
 
-        # Track topics to delete (can't modify list while iterating)
+        # Group topics by Bab → SubBab for hierarchical display
+        # Skip concepts without bab (ToC is source of truth)
+        from collections import defaultdict
+
+        bab_sub_map: dict[str, dict[str, list[tuple[int, dict]]]] = defaultdict(
+            lambda: defaultdict(list)
+        )
+        skipped_no_bab = 0
+        for i, topic in enumerate(topics):
+            bab = topic.get("bab")
+            if not bab:
+                skipped_no_bab += 1
+                continue  # Skip concepts without bab assignment
+            sub_bab = topic.get("sub_bab") or "(tanpa sub-bab)"
+            bab_sub_map[bab][sub_bab].append((i, topic))
+
+        if skipped_no_bab > 0:
+            st.warning(
+                f"⚠️ {skipped_no_bab} konsep tidak memiliki bab dan tidak ditampilkan "
+                "(akan dilewati saat menyimpan ke knowledge graph)."
+            )
+
         topics_to_delete = []
 
-        # Render each topic as an expandable card
-        for i, topic in enumerate(topics):
-            with st.container(border=True):
-                col_topic, col_del = st.columns([5, 1])
+        for bab_label, sub_bab_dict in bab_sub_map.items():
+            st.markdown(f"### 📖 {bab_label}")
+            for sub_bab_label, topic_pairs in sub_bab_dict.items():
+                with st.expander(
+                    f"📑 {sub_bab_label} ({len(topic_pairs)} konsep)", expanded=True
+                ):
+                    for i, topic in topic_pairs:
+                        with st.container(border=True):
+                            col_topic, col_del = st.columns([5, 1])
 
-                with col_topic:
-                    new_name = st.text_input(
-                        f"Topic {i + 1}",
-                        value=topic.get("name", ""),
-                        key=f"topic_name_{i}",
-                        label_visibility="collapsed",
-                        placeholder="Topic name",
-                    )
-                    if new_name != topic.get("name", ""):
-                        topic["name"] = new_name
+                            with col_topic:
+                                new_name = st.text_input(
+                                    f"Topic {i + 1}",
+                                    value=topic.get("name", ""),
+                                    key=f"topic_name_{i}",
+                                    label_visibility="collapsed",
+                                    placeholder="Topic name",
+                                )
+                                if new_name != topic.get("name", ""):
+                                    topic["name"] = new_name
 
-                with col_del:
-                    if st.button("🗑️", key=f"del_topic_{i}", help="Delete this topic"):
-                        topics_to_delete.append(i)
+                            with col_del:
+                                if st.button(
+                                    "🗑️", key=f"del_topic_{i}", help="Delete this topic"
+                                ):
+                                    topics_to_delete.append(i)
 
-                new_desc = st.text_area(
-                    "Description",
-                    value=topic.get("description", ""),
-                    key=f"topic_desc_{i}",
-                    height=80,
-                    label_visibility="collapsed",
-                    placeholder="Topic description",
-                )
-                if new_desc != topic.get("description", ""):
-                    topic["description"] = new_desc
-
-                # SubKonsep section
-                subtopics = topic.get("sub_konsep", [])
-                subtopics_to_delete = []
-
-                with st.expander(f"📑 SubKonsep ({len(subtopics)})", expanded=False):
-                    if st.button(
-                        "➕ Add SubKonsep", key=f"add_sub_{i}", use_container_width=True
-                    ):
-                        subtopics.append(
-                            {
-                                "name": "New SubKonsep",
-                                "description": "",
-                                "bloom_level": None,
-                            }
-                        )
-                        topic["sub_konsep"] = subtopics
-                        st.rerun()
-
-                    for j, sub in enumerate(subtopics):
-                        cols = st.columns([3, 4, 1])
-                        with cols[0]:
-                            new_sub_name = st.text_input(
-                                "Name",
-                                value=sub.get("name", ""),
-                                key=f"sub_name_{i}_{j}",
-                                label_visibility="collapsed",
-                                placeholder="SubTopic name",
-                            )
-                            if new_sub_name != sub.get("name", ""):
-                                sub["name"] = new_sub_name
-                        with cols[1]:
-                            new_sub_desc = st.text_input(
+                            new_desc = st.text_area(
                                 "Description",
-                                value=sub.get("description", ""),
-                                key=f"sub_desc_{i}_{j}",
+                                value=topic.get("description", ""),
+                                key=f"topic_desc_{i}",
+                                height=80,
                                 label_visibility="collapsed",
-                                placeholder="SubTopic description",
+                                placeholder="Topic description",
                             )
-                            if new_sub_desc != sub.get("description", ""):
-                                sub["description"] = new_sub_desc
-                        with cols[2]:
-                            if st.button("🗑️", key=f"del_sub_{i}_{j}"):
-                                subtopics_to_delete.append(j)
+                            if new_desc != topic.get("description", ""):
+                                topic["description"] = new_desc
 
-                    # Delete marked subtopics (reverse order to preserve indices)
-                    for j in reversed(subtopics_to_delete):
-                        subtopics.pop(j)
-                        st.rerun()
+                            # SubKonsep section
+                            subtopics = topic.get("sub_konsep", [])
+                            subtopics_to_delete = []
+
+                            with st.expander(
+                                f"📑 SubKonsep ({len(subtopics)})", expanded=False
+                            ):
+                                if st.button(
+                                    "➕ Add SubKonsep",
+                                    key=f"add_sub_{i}",
+                                    use_container_width=True,
+                                ):
+                                    subtopics.append(
+                                        {
+                                            "name": "New SubKonsep",
+                                            "description": "",
+                                            "bloom_level": None,
+                                        }
+                                    )
+                                    topic["sub_konsep"] = subtopics
+                                    st.rerun()
+
+                                for j, sub in enumerate(subtopics):
+                                    cols = st.columns([3, 4, 1])
+                                    with cols[0]:
+                                        new_sub_name = st.text_input(
+                                            "Name",
+                                            value=sub.get("name", ""),
+                                            key=f"sub_name_{i}_{j}",
+                                            label_visibility="collapsed",
+                                            placeholder="SubTopic name",
+                                        )
+                                        if new_sub_name != sub.get("name", ""):
+                                            sub["name"] = new_sub_name
+                                    with cols[1]:
+                                        new_sub_desc = st.text_input(
+                                            "Description",
+                                            value=sub.get("description", ""),
+                                            key=f"sub_desc_{i}_{j}",
+                                            label_visibility="collapsed",
+                                            placeholder="SubTopic description",
+                                        )
+                                        if new_sub_desc != sub.get("description", ""):
+                                            sub["description"] = new_sub_desc
+                                    with cols[2]:
+                                        if st.button("🗑️", key=f"del_sub_{i}_{j}"):
+                                            subtopics_to_delete.append(j)
+
+                                for j in reversed(subtopics_to_delete):
+                                    subtopics.pop(j)
+                                    st.rerun()
 
         # Delete marked topics (reverse order to preserve indices)
         if topics_to_delete:
