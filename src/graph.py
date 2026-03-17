@@ -167,7 +167,8 @@ def insert_konsep(
             if not (bab_name.startswith("Bab ") or bab_name.startswith("BAB ")):
                 logger.warning(
                     "Konsep '%s' has non-ToC bab name '%s', skipping",
-                    konsep.get("name", "<unnamed>"), bab_name
+                    konsep.get("name", "<unnamed>"),
+                    bab_name,
                 )
                 skipped_invalid_bab += 1
                 continue
@@ -202,12 +203,14 @@ def insert_konsep(
             record = result.single()
             if not record:
                 konsep_count = sum(
-                    len(kl) for sb_dict in sub_bab_dict.values()
+                    len(kl)
+                    for sb_dict in sub_bab_dict.values()
                     for kl in sb_dict.values()
                 )
                 logger.warning(
                     "Bab '%s' not found in graph (not in ToC?), skipping %d konsep",
-                    bab_name, konsep_count
+                    bab_name,
+                    konsep_count,
                 )
                 continue
 
@@ -311,6 +314,75 @@ def insert_konsep(
                                 konsep_name=konsep["name"],
                             )
 
+    # -------------------------------------------------------------------------
+    # PASS 2: Create inline relations from per-Bab extraction
+    # -------------------------------------------------------------------------
+    # Relation types from RelationType in schemas.py
+    VALID_RELATION_TYPES = {
+        "MENDEFINISIKAN",
+        "MENYEBABKAN",
+        "MEMUNGKINKAN",
+        "MENGATUR",
+        "BAGIAN_DARI",
+        "TERDIRI_DARI",
+        "BERGANTUNG_PADA",
+        "BERINTERAKSI_DENGAN",
+        "BEREAKSI_DENGAN",
+        "MENGHASILKAN",
+        "MEMPENGARUHI",
+        "DIFORMULASIKAN_SEBAGAI",
+    }
+
+    with driver.session() as session:
+        for konsep in data.get("konsep", []):
+            konsep_name = konsep.get("name")
+            if not konsep_name:
+                continue
+
+            for rel in konsep.get("relations", []):
+                rel_type = rel.get("type", "")
+                target_name = rel.get("target", "")
+                description = rel.get("description", "")
+
+                # Validate relation type
+                if rel_type not in VALID_RELATION_TYPES:
+                    logger.warning(
+                        "Skipping invalid relation type '%s' from '%s'",
+                        rel_type,
+                        konsep_name,
+                    )
+                    continue
+
+                if not target_name:
+                    continue
+
+                # Sanitize relation type for Cypher (must be valid identifier)
+                safe_rel_type = rel_type.upper().replace(" ", "_")
+                safe_rel_type = "".join(
+                    c for c in safe_rel_type if c.isalnum() or c == "_"
+                )
+
+                # Create relation (MERGE target to handle forward references)
+                try:
+                    session.run(
+                        f"""
+                        MATCH (a:Konsep {{name: $source}})
+                        MERGE (b:Konsep {{name: $target}})
+                        MERGE (a)-[r:{safe_rel_type}]->(b)
+                        SET r.description = $desc
+                        """,
+                        source=konsep_name,
+                        target=target_name,
+                        desc=description,
+                    )
+                except Exception as e:
+                    logger.warning(
+                        "Failed to create relation %s -> %s: %s",
+                        konsep_name,
+                        target_name,
+                        e,
+                    )
+
 
 # Backward-compat wrapper
 def insert_topics(
@@ -404,9 +476,10 @@ def get_graph_stats(driver) -> dict:
             OPTIONAL MATCH ()-[r:SIMILAR_TO]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, count(r) AS similar_rels
             OPTIONAL MATCH ()-[r2:isPrerequisiteOf]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, count(r2) AS prereq_rels
             OPTIONAL MATCH ()-[r3:supports]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, prereq_rels, count(r3) AS supports_rels
-            OPTIONAL MATCH ()-[r4:analogousTo]->()
+            OPTIONAL MATCH ()-[r4:analogousTo]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, prereq_rels, supports_rels, count(r4) AS analogous_rels
+            OPTIONAL MATCH ()-[r5:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI]->()
             RETURN subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels,
-                   prereq_rels, supports_rels, count(r4) AS analogous_rels
+                   prereq_rels, supports_rels, analogous_rels, count(r5) AS inline_rels
             """
         )
         row = result.single()
@@ -426,6 +499,7 @@ def get_graph_stats(driver) -> dict:
                 "prereq_rels": row["prereq_rels"],
                 "supports_rels": row["supports_rels"],
                 "analogous_rels": row["analogous_rels"],
+                "inline_rels": row["inline_rels"],
             }
         return {
             "subjects": 0,
@@ -440,6 +514,7 @@ def get_graph_stats(driver) -> dict:
             "prereq_rels": 0,
             "supports_rels": 0,
             "analogous_rels": 0,
+            "inline_rels": 0,
         }
 
 
@@ -476,14 +551,18 @@ def get_similar_relationships(driver) -> list:
 
 
 def get_typed_relationships(driver) -> list:
-    """Get all typed concept relationships (isPrerequisiteOf, supports, analogousTo)."""
+    """Get all typed concept relationships (both completion and inline extraction)."""
     with driver.session() as session:
         result = session.run(
             """
             MATCH (a)-[r]->(b)
-            WHERE type(r) IN ['isPrerequisiteOf', 'supports', 'analogousTo']
+            WHERE type(r) IN ['isPrerequisiteOf', 'supports', 'analogousTo',
+                              'MENDEFINISIKAN', 'MENYEBABKAN', 'MEMUNGKINKAN', 'MENGATUR',
+                              'BAGIAN_DARI', 'TERDIRI_DARI', 'BERGANTUNG_PADA',
+                              'BERINTERAKSI_DENGAN', 'BEREAKSI_DENGAN', 'MENGHASILKAN',
+                              'MEMPENGARUHI', 'DIFORMULASIKAN_SEBAGAI']
             RETURN a.name AS source, b.name AS target,
-                   type(r) AS rel_type, r.confidence AS confidence
+                   type(r) AS rel_type, r.confidence AS confidence, r.description AS description
             ORDER BY rel_type, source
             """
         )

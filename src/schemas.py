@@ -6,6 +6,22 @@ from pydantic import BaseModel
 
 BloomLevel = Literal["remember", "understand", "apply", "analyze", "evaluate", "create"]
 
+# Allowed relation types for inline KG extraction
+RelationType = Literal[
+    "MENDEFINISIKAN",
+    "MENYEBABKAN",
+    "MEMUNGKINKAN",
+    "MENGATUR",
+    "BAGIAN_DARI",
+    "TERDIRI_DARI",
+    "BERGANTUNG_PADA",
+    "BERINTERAKSI_DENGAN",
+    "BEREAKSI_DENGAN",
+    "MENGHASILKAN",
+    "MEMPENGARUHI",
+    "DIFORMULASIKAN_SEBAGAI",
+]
+
 
 class SubKonsep(BaseModel):
     name: str
@@ -72,3 +88,39 @@ class KonsepExtraction(BaseModel):
 
 # Backward-compat alias
 TopicExtraction = KonsepExtraction
+
+
+# =============================================================================
+# Per-Bab Extraction Schema (ToC-enforced with inline relations)
+# =============================================================================
+
+
+class KonsepRelation(BaseModel):
+    """A typed relation from one konsep to another."""
+
+    type: RelationType
+    target: str  # Name of target konsep
+    description: str = ""  # Brief explanation of why this relation exists
+
+
+class KonsepWithRelations(BaseModel):
+    """Konsep with inline relations for per-Bab extraction."""
+
+    name: str
+    description: str
+    bloom_level: BloomLevel | None = None
+    relations: list[KonsepRelation] = []
+
+
+class SubBabExtraction(BaseModel):
+    """Extraction result for one SubBab (enforced to match ToC name)."""
+
+    name: str  # Must match SubBab name from ToC exactly
+    konsep: list[KonsepWithRelations] = []
+
+
+class BabExtraction(BaseModel):
+    """Per-Bab LLM output schema for ToC-enforced extraction."""
+
+    bab_summary: str = ""  # 2-3 sentence academic summary
+    sub_bab: list[SubBabExtraction]

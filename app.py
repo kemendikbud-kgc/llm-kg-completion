@@ -10,7 +10,7 @@ from src.ingestion import (
     extract_text_from_pdf,
     extract_pages_from_pdf,
     extract_glossary,
-    ingest_pdf_enhanced,
+    ingest_pdf_enhanced_v2,
     ingest_pdf_full_vision,
     parse_daftar_isi,
 )
@@ -18,7 +18,7 @@ from src.cache import cache_manager, CACHE_DIR
 from src.extraction import (
     extract_topics,
     extract_topics_hybrid,
-    extract_topics_per_subbab,
+    extract_per_bab,
     _merge_konsep,
     _normalize_chunk,
 )
@@ -604,13 +604,16 @@ else:
 
         if selected_ingestion_mode == "enhanced":
             with st.spinner("Running enhanced ingestion..."):
-                text_content, vision_images, classifications = ingest_pdf_enhanced(
+                text_content, vision_pages, classifications = ingest_pdf_enhanced_v2(
                     tmp_path
                 )
             os.unlink(tmp_path)
 
+            # Store both VisionPage objects and raw base64 strings for backward compat
+            vision_images_b64 = [vp.image_b64 for vp in vision_pages]
             st.session_state["raw_text"] = text_content
-            st.session_state["vision_images"] = vision_images
+            st.session_state["vision_images"] = vision_images_b64
+            st.session_state["vision_pages"] = vision_pages  # New: page-tracked vision
             st.session_state["page_classifications"] = classifications
             raw_text = text_content
 
@@ -622,7 +625,7 @@ else:
                 f"Page classification: **{text_count}** text, "
                 f"**{vision_count}** vision, **{skip_count}** skipped"
             )
-            if vision_images:
+            if vision_pages:
                 with st.expander("Vision pages detail"):
                     for c in classifications:
                         if c.method == "vision":
@@ -767,8 +770,32 @@ else:
             _doc_structure = st.session_state.get("doc_structure")
             _pdf_pages = st.session_state.get("pdf_pages")
             _glossary = st.session_state.get("glossary")
+            _vision_pages = st.session_state.get(
+                "vision_pages"
+            )  # VisionPage objects with page tracking
 
-            if vision_images and ingestion_mode in ("enhanced", "full_vision"):
+            # -------------------------------------------------------------------------
+            # EXTRACTION DECISION TREE (v4 - ToC-enforced per-Bab as primary)
+            # -------------------------------------------------------------------------
+            # 1. PRIMARY: per-Bab ToC-enforced extraction (unifies text + vision)
+            # 2. FALLBACK: hybrid (text + vision) for docs without ToC
+            # 3. FALLBACK: standard chunked extraction
+            if _doc_structure and _doc_structure.found and _pdf_pages:
+                # PRIMARY: per-Bab ToC-enforced extraction with unified text + vision
+                result, from_cache, filter_result = extract_per_bab(
+                    pages=_pdf_pages,
+                    doc_structure=_doc_structure,
+                    vision_pages=_vision_pages,  # May be None or empty
+                    glossary=_glossary,
+                    text_model=selected_chat_model,
+                    vision_model=selected_vision_model,
+                    use_cache=use_cache,
+                    progress_callback=update_progress,
+                    filter_content=filter_content,
+                    document_name=st.session_state.get("document_name"),
+                )
+            elif vision_images and ingestion_mode in ("enhanced", "full_vision"):
+                # FALLBACK: hybrid for docs without ToC
                 result, from_cache, filter_result = extract_topics_hybrid(
                     raw_text,
                     vision_images,
@@ -780,24 +807,8 @@ else:
                     filter_content=filter_content,
                     document_name=st.session_state.get("document_name"),
                 )
-                from_cache = from_cache
-                filter_result = filter_result
-            elif _doc_structure and _doc_structure.found and _pdf_pages:
-                # ToC-first: extract per SubBab with glossary grounding
-                result = extract_topics_per_subbab(
-                    _pdf_pages,
-                    _doc_structure,
-                    glossary=_glossary,
-                    model=selected_chat_model,
-                    use_cache=use_cache,
-                    progress_callback=update_progress,
-                    prompt_name=selected_prompt_name,
-                    filter_content=filter_content,
-                    document_name=st.session_state.get("document_name"),
-                )
-                from_cache = False
-                filter_result = None
             else:
+                # FALLBACK: standard chunked extraction
                 result, from_cache, filter_result = extract_topics(
                     raw_text,
                     model=selected_chat_model,

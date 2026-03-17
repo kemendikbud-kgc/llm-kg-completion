@@ -528,3 +528,321 @@ def _normalize_result(result: dict) -> dict:
             )
         return {**result, "konsep": konsep}
     return result
+
+
+# =============================================================================
+# Per-Bab ToC-Enforced Extraction (v4)
+# =============================================================================
+
+
+def _extract_bab_multimodal(
+    chapter_text: str,
+    vision_images_b64: list[str],
+    system_prompt: str,
+    model: str,
+) -> dict:
+    """Extract from a Bab using multimodal (text + vision) LLM call.
+
+    Uses litellm directly since LLMTextCompletionProgram doesn't support images.
+    Returns the parsed BabExtraction as a dict.
+    """
+    import json
+
+    import litellm
+
+    from src.schemas import BabExtraction
+
+    # Build multimodal message content
+    content: list[dict] = []
+
+    # Add text part
+    full_text = f"{system_prompt}\n\n{chapter_text}"
+    content.append({"type": "text", "text": full_text})
+
+    # Add vision images (limit to avoid context overflow)
+    max_images = 20
+    for img_b64 in vision_images_b64[:max_images]:
+        content.append(
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{img_b64}"},
+            }
+        )
+
+    messages = [{"role": "user", "content": content}]
+
+    response = litellm.completion(
+        model=model,
+        messages=messages,
+        temperature=0.1,
+    )
+
+    # Parse response
+    raw_text = response.choices[0].message.content or "{}"
+    raw_text = raw_text.strip()
+
+    # Strip markdown code fences if present
+    if raw_text.startswith("```"):
+        lines = raw_text.split("\n")
+        lines = lines[1:]  # Remove first line (```json or ```)
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]  # Remove last line (```)
+        raw_text = "\n".join(lines)
+
+    # Parse and validate with Pydantic
+    parsed = json.loads(raw_text)
+    validated = BabExtraction.model_validate(parsed)
+    return validated.model_dump()
+
+
+def _extract_bab_text_only(
+    chapter_text: str,
+    system_prompt: str,
+    model: str,
+) -> dict:
+    """Extract from a Bab using text-only LLM call with Pydantic validation.
+
+    Uses LLMTextCompletionProgram for structured output.
+    """
+    from src.schemas import BabExtraction
+
+    llm = get_llm(model)
+    program = LLMTextCompletionProgram.from_defaults(
+        llm=llm,
+        output_cls=BabExtraction,
+        prompt_template_str=system_prompt + "\n\n{text_chunk}",
+    )
+    result: BabExtraction = program(text_chunk=chapter_text)
+    return result.model_dump()
+
+
+def _convert_bab_extraction_to_konsep(
+    bab_result: dict,
+    bab_name: str,
+) -> list[dict]:
+    """Convert BabExtraction dict to flat konsep list with bab/sub_bab tags.
+
+    Each konsep gets:
+    - bab: bab_name
+    - sub_bab: from the sub_bab.name in the extraction
+    - relations: from the konsep's relations list
+    """
+    konsep_list: list[dict] = []
+
+    for sub_bab in bab_result.get("sub_bab", []):
+        sub_bab_name = sub_bab.get("name")
+
+        for k in sub_bab.get("konsep", []):
+            konsep_dict = {
+                "name": k.get("name"),
+                "description": k.get("description", ""),
+                "bloom_level": k.get("bloom_level"),
+                "bab": bab_name,
+                "sub_bab": sub_bab_name,
+                "sub_konsep": [],  # Per-Bab extraction doesn't use sub_konsep
+                "relations": k.get("relations", []),
+            }
+            konsep_list.append(konsep_dict)
+
+    return konsep_list
+
+
+@retry(
+    retry=retry_if_exception(_is_rate_limit_error),
+    wait=wait_exponential(multiplier=2, min=10, max=120),
+    stop=stop_after_attempt(5),
+    reraise=True,
+    before_sleep=lambda retry_state: logger.warning(
+        "Rate limit hit in per-Bab extraction, retrying in %.1f seconds (attempt %d/5)",
+        retry_state.next_action.sleep if retry_state.next_action else 10,
+        retry_state.attempt_number,
+    ),
+)
+def _extract_bab_with_retry(
+    chapter_text: str,
+    vision_images_b64: list[str],
+    system_prompt: str,
+    text_model: str,
+    vision_model: str,
+    has_vision: bool,
+) -> dict:
+    """Wrapper that retries per-Bab extraction on rate limits."""
+    if has_vision and vision_images_b64:
+        return _extract_bab_multimodal(
+            chapter_text, vision_images_b64, system_prompt, vision_model
+        )
+    else:
+        return _extract_bab_text_only(chapter_text, system_prompt, text_model)
+
+
+def extract_per_bab(
+    pages: list[tuple[int, str]],
+    doc_structure,  # DocumentStructure from ingestion.py
+    vision_pages: list | None = None,  # list[VisionPage] from ingestion.py
+    glossary: dict[str, str] | None = None,
+    text_model: str | None = None,
+    vision_model: str | None = None,
+    use_cache: bool = True,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+    filter_content: bool = True,
+    document_name: str | None = None,
+) -> tuple[dict, bool, None]:
+    """Per-Bab ToC-enforced extraction with unified text + vision support.
+
+    This is the primary extraction function for documents with a detected ToC.
+    It sends the full chapter text (+ vision images if any) as ONE LLM call
+    per Bab, enforcing the use of exact SubBab names from the ToC.
+
+    Args:
+        pages: List of (page_num, text) tuples from extract_pages_from_pdf()
+        doc_structure: DocumentStructure with ToC entries
+        vision_pages: Optional list of VisionPage objects with page-tracked images
+        glossary: Optional glossary dict for terminology consistency
+        text_model: LLM model for text-only extraction
+        vision_model: LLM model for multimodal extraction (must support vision)
+        use_cache: Whether to use disk cache for per-Bab results
+        progress_callback: Optional callback(current, total, message)
+        filter_content: Whether to filter administrative content
+        document_name: Document name for cache metadata
+
+    Returns:
+        (result_dict, from_cache, None)
+        - result_dict: {"konsep": [...]} where each konsep has bab, sub_bab, relations
+        - from_cache: Whether the entire result was loaded from cache
+        - filter_result: Always None for per-Bab extraction
+    """
+    from src.config import DEFAULT_CHAT_MODEL, DEFAULT_VISION_MODEL
+    from src.ingestion import (
+        collect_bab_content,
+        get_subbab_names_for_bab,
+    )
+
+    text_model = text_model or DEFAULT_CHAT_MODEL
+    vision_model = vision_model or DEFAULT_VISION_MODEL
+
+    if not doc_structure or not doc_structure.found:
+        logger.warning("No ToC structure found, falling back to standard extraction")
+        combined_text = "\n".join(text for _, text in pages)
+        return extract_topics(
+            combined_text,
+            model=text_model,
+            use_cache=use_cache,
+            progress_callback=progress_callback,
+            filter_content=filter_content,
+            document_name=document_name,
+            glossary=glossary,
+        )
+
+    # Collect unique Bab names in ToC order
+    seen_babs: set[str] = set()
+    bab_names: list[str] = []
+    for entry in doc_structure.entries:
+        if entry.bab not in seen_babs:
+            seen_babs.add(entry.bab)
+            bab_names.append(entry.bab)
+
+    total_babs = len(bab_names)
+    all_konsep: list[dict] = []
+
+    if progress_callback:
+        progress_callback(0, total_babs, "Starting per-Bab extraction...")
+
+    for i, bab_name in enumerate(bab_names):
+        # Collect content for this Bab
+        chapter_text, vision_for_bab = collect_bab_content(
+            pages, vision_pages, doc_structure, bab_name
+        )
+
+        if not chapter_text.strip() and not vision_for_bab:
+            logger.warning("Bab '%s' has no content, skipping", bab_name)
+            continue
+
+        # Get SubBab names for prompt enforcement
+        subbab_names = get_subbab_names_for_bab(doc_structure, bab_name)
+
+        # Build cache key for this Bab
+        import hashlib
+
+        content_hash = hashlib.sha256(
+            (bab_name + chapter_text[:1000] + text_model + "v4-toc-bab").encode()
+        ).hexdigest()
+        cache_key = f"bab_{content_hash}"
+
+        # Check cache
+        if use_cache:
+            cached = cache_manager.get_chunk(cache_key, 0)  # Reuse chunk cache API
+            if cached is not None:
+                logger.info("Loaded cached extraction for Bab '%s'", bab_name)
+                if progress_callback:
+                    progress_callback(
+                        i + 1, total_babs, f"Loaded '{bab_name}' from cache"
+                    )
+                bab_konsep = _convert_bab_extraction_to_konsep(cached, bab_name)
+                all_konsep.extend(bab_konsep)
+                continue
+
+        # Build system prompt with ToC enforcement
+        from src.prompts import build_toc_bab_system_prompt
+
+        system_prompt = build_toc_bab_system_prompt(bab_name, subbab_names, glossary)
+
+        # Extract vision images for multimodal call
+        vision_images_b64 = (
+            [vp.image_b64 for vp in vision_for_bab] if vision_for_bab else []
+        )
+        has_vision = len(vision_images_b64) > 0
+
+        if progress_callback:
+            status = (
+                f"Extracting '{bab_name}' ({'multimodal' if has_vision else 'text'})..."
+            )
+            progress_callback(i, total_babs, status)
+
+        # Make the LLM call with retry
+        try:
+            if i > 0:
+                time.sleep(3)  # Rate limiting between Babs
+
+            bab_result = _extract_bab_with_retry(
+                chapter_text=chapter_text,
+                vision_images_b64=vision_images_b64,
+                system_prompt=system_prompt,
+                text_model=text_model,
+                vision_model=vision_model,
+                has_vision=has_vision,
+            )
+        except Exception as e:
+            logger.error("Failed to extract Bab '%s': %s", bab_name, e)
+            # Continue with other Babs instead of failing entirely
+            continue
+
+        # Cache the per-Bab result
+        if use_cache:
+            cache_manager.put_chunk(cache_key, 0, bab_result)
+            logger.info("Cached extraction for Bab '%s'", bab_name)
+
+        # Convert to konsep format
+        bab_konsep = _convert_bab_extraction_to_konsep(bab_result, bab_name)
+        all_konsep.extend(bab_konsep)
+
+        if progress_callback:
+            progress_callback(i + 1, total_babs, f"Done '{bab_name}'")
+
+    # Deduplicate konsep by name (may appear in multiple Babs)
+    merged: dict[str, dict] = {}
+    for k in all_konsep:
+        name = k["name"]
+        if name not in merged:
+            merged[name] = k
+        else:
+            # Merge relations
+            existing_targets = {r["target"] for r in merged[name].get("relations", [])}
+            for rel in k.get("relations", []):
+                if rel["target"] not in existing_targets:
+                    merged[name]["relations"].append(rel)
+                    existing_targets.add(rel["target"])
+
+    if progress_callback:
+        progress_callback(total_babs, total_babs, "Per-Bab extraction complete")
+
+    return {"konsep": list(merged.values())}, False, None

@@ -201,6 +201,13 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
 
     toc_lines = lines[toc_start + 1 : toc_end]
     toc_lines = _normalize_toc_lines(toc_lines)  # Join split letter+title lines
+
+    # DEBUG: Log ToC lines to understand format
+    logger.info("=== TOC LINES (first 30) ===")
+    for i, line in enumerate(toc_lines[:30]):
+        logger.info(f"  {i:3d}: {repr(line)}")
+    logger.info("=== END TOC LINES ===")
+
     entries: list[StructureEntry] = []
     current_bab: str | None = None
     current_sub_bab: str | None = None
@@ -231,6 +238,8 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
                     page_str = page_match.group(1)
                     bab_title = bab_title[: page_match.start()].strip()
             page = int(page_str) if page_str else 0
+            if page == 0:
+                page, _ = _extract_page_from_next_line(toc_lines, idx)
             current_bab = (
                 f"Bab {bab_num}: {bab_title}" if bab_title else f"Bab {bab_num}"
             )
@@ -259,6 +268,8 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
                 page_match = _PAGE_NUM_PATTERN.search(stripped)
                 page_str = page_match.group(1) if page_match else None
             page = int(page_str) if page_str else 0
+            if page == 0:
+                page, _ = _extract_page_from_next_line(toc_lines, idx)
             current_sub_bab = (
                 f"{sub_letter}. {sub_title}" if sub_title else f"{sub_letter}."
             )
@@ -283,6 +294,8 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
                 page_match = _PAGE_NUM_PATTERN.search(stripped)
                 page_str = page_match.group(1) if page_match else None
             page = int(page_str) if page_str else 0
+            if page == 0:
+                page, _ = _extract_page_from_next_line(toc_lines, idx)
             sub_bab = f"{sub_num} {sub_title}" if sub_title else sub_num
             current_sub_bab = sub_bab
             entries.append(
@@ -306,6 +319,8 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
                     page_match = _PAGE_NUM_PATTERN.search(stripped)
                     page_str = page_match.group(1) if page_match else None
                 page = int(page_str) if page_str else 0
+                if page == 0:
+                    page, _ = _extract_page_from_next_line(toc_lines, idx)
                 sub_sub_bab = f"{sub_num}. {sub_title}" if sub_title else f"{sub_num}."
                 entries.append(
                     StructureEntry(
@@ -481,6 +496,15 @@ class PageClassification:
     reason: str  # why this classification was chosen
 
 
+@dataclass
+class VisionPage:
+    """A vision-classified page with its rendered image and page number."""
+
+    page_num: int  # 1-based
+    image_b64: str  # base64-encoded PNG
+    extracted_text: str = ""  # optional: text extracted from the page (may be sparse)
+
+
 def extract_text_from_pdf(pdf_path: str) -> str:
     """Extract text from PDF using pymupdf (drop-in replacement for PyPDF2)."""
     doc = fitz.open(pdf_path)
@@ -628,6 +652,198 @@ def ingest_pdf_enhanced(
         sum(1 for c in classifications if c.method == "skip"),
     )
     return combined_text, vision_images, classifications
+
+
+def ingest_pdf_enhanced_v2(
+    pdf_path: str,
+) -> tuple[str, list[VisionPage], list[PageClassification]]:
+    """Enhanced ingestion with page-tracked vision images.
+
+    Like ingest_pdf_enhanced() but returns VisionPage objects that preserve
+    page numbers for vision-classified pages. This enables per-Bab vision
+    extraction where vision pages are associated with their chapter.
+
+    Returns:
+        (text_content, vision_pages, classifications)
+        - text_content: combined text from text-classified pages
+        - vision_pages: VisionPage objects for vision-classified pages (with page_num)
+        - classifications: per-page classification details
+    """
+    doc = fitz.open(pdf_path)
+    classifications: list[PageClassification] = []
+    text_pages: list[str] = []
+    vision_pages: list[VisionPage] = []
+
+    for i, page in enumerate(doc):
+        classification = _classify_page(page)
+        text = page.get_text() or ""
+
+        if classification == "skip":
+            classifications.append(
+                PageClassification(
+                    page_num=i + 1,
+                    method="skip",
+                    text="",
+                    reason="Administrative content",
+                )
+            )
+        elif classification == "vision":
+            img_b64 = _render_page_base64(page)
+            vision_pages.append(
+                VisionPage(page_num=i + 1, image_b64=img_b64, extracted_text=text)
+            )
+
+            # Determine reason
+            images = page.get_images(full=True)
+            rect = page.rect
+            area = rect.width * rect.height
+            density = len(text) / area if area > 0 else 0
+            if len(images) >= VISION_IMAGE_COUNT_THRESHOLD:
+                reason = f"{len(images)} embedded images"
+            elif density < VISION_DENSITY_THRESHOLD:
+                reason = f"Low text density ({density:.4f})"
+            else:
+                reason = "Formula characters detected"
+
+            classifications.append(
+                PageClassification(
+                    page_num=i + 1,
+                    method="vision",
+                    text=text,
+                    reason=reason,
+                )
+            )
+        else:
+            text_pages.append(text)
+            classifications.append(
+                PageClassification(
+                    page_num=i + 1,
+                    method="text",
+                    text=text,
+                    reason="Normal text content",
+                )
+            )
+
+    doc.close()
+
+    combined_text = "\n".join(text_pages)
+    logger.info(
+        "Enhanced v2 ingestion: %d text pages, %d vision pages, %d skipped",
+        sum(1 for c in classifications if c.method == "text"),
+        len(vision_pages),
+        sum(1 for c in classifications if c.method == "skip"),
+    )
+    return combined_text, vision_pages, classifications
+
+
+def get_bab_page_range(
+    doc_structure: DocumentStructure, bab_name: str
+) -> tuple[int, int]:
+    """Get the (start_page, end_page) range for a given Bab.
+
+    Handles cases where ToC entries have page=0 (failed parsing).
+    Falls back to inclusive defaults that match all pages.
+
+    Returns (1, 999999) if the Bab is not found or has no valid page info.
+    The end_page is INCLUSIVE.
+    """
+    if not doc_structure.found or not doc_structure.entries:
+        return 1, 999999  # Default: all pages
+
+    start_page = 1  # Default: start from page 1 (PDF pages are 1-based)
+    end_page = 999999  # Default: no upper bound
+
+    for i, entry in enumerate(doc_structure.entries):
+        if (
+            entry.bab == bab_name
+            and entry.sub_bab is None
+            and entry.sub_sub_bab is None
+        ):
+            # Use entry.page if > 0, otherwise look for first SubBab's page
+            if entry.page > 0:
+                start_page = entry.page
+            else:
+                # Fallback: find first SubBab under this Bab
+                for j in range(i + 1, len(doc_structure.entries)):
+                    sub_entry = doc_structure.entries[j]
+                    if sub_entry.bab == bab_name and sub_entry.sub_bab:
+                        if sub_entry.page > 0:
+                            start_page = sub_entry.page
+                            break
+                    elif sub_entry.bab != bab_name:
+                        break  # Moved to next Bab
+
+            # Find the next Bab entry to determine end_page
+            for j in range(i + 1, len(doc_structure.entries)):
+                next_entry = doc_structure.entries[j]
+                if next_entry.sub_bab is None and next_entry.sub_sub_bab is None:
+                    if next_entry.page > start_page:
+                        end_page = next_entry.page - 1
+                    # else: keep end_page = 999999
+                    break
+
+            break
+
+    # Ensure valid range
+    if end_page < start_page:
+        end_page = 999999
+
+    return start_page, end_page
+
+
+def collect_bab_content(
+    pages: list[tuple[int, str]],
+    vision_pages: list[VisionPage] | None,
+    doc_structure: DocumentStructure,
+    bab_name: str,
+) -> tuple[str, list[VisionPage]]:
+    """Collect all text and vision pages for a specific Bab.
+
+    Args:
+        pages: List of (page_num, text) tuples from extract_pages_from_pdf()
+        vision_pages: List of VisionPage objects (may be None or empty)
+        doc_structure: DocumentStructure with ToC entries
+        bab_name: Name of the Bab to collect content for
+
+    Returns:
+        (combined_text, vision_pages_for_bab)
+        - combined_text: All text from pages in this Bab's range
+        - vision_pages_for_bab: VisionPage objects whose page_num falls in this Bab
+    """
+    start_page, end_page = get_bab_page_range(doc_structure, bab_name)
+
+    # Collect text pages
+    texts = [text for page_num, text in pages if start_page <= page_num <= end_page]
+    combined_text = "\n".join(texts)
+
+    # Collect vision pages
+    vision_for_bab: list[VisionPage] = []
+    if vision_pages:
+        for vp in vision_pages:
+            if start_page <= vp.page_num <= end_page:
+                vision_for_bab.append(vp)
+
+    return combined_text, vision_for_bab
+
+
+def get_subbab_names_for_bab(
+    doc_structure: DocumentStructure, bab_name: str
+) -> list[str]:
+    """Get unique SubBab names for a given Bab from the ToC.
+
+    Returns SubBab names in the order they appear in the ToC.
+    """
+    if not doc_structure.found or not doc_structure.entries:
+        return []
+
+    seen: set[str] = set()
+    result: list[str] = []
+    for entry in doc_structure.entries:
+        if entry.bab == bab_name and entry.sub_bab and entry.sub_bab not in seen:
+            seen.add(entry.sub_bab)
+            result.append(entry.sub_bab)
+
+    return result
 
 
 def ingest_pdf_full_vision(pdf_path: str) -> list[str]:
