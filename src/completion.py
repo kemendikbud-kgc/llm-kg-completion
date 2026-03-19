@@ -3,7 +3,6 @@
 import logging
 from collections.abc import Callable
 
-import numpy as np
 from tenacity import (
     retry,
     retry_if_exception,
@@ -13,6 +12,12 @@ from tenacity import (
 
 from src.cache import cache_manager
 from src.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_CHAT_MODEL
+from src.graph import (
+    create_vector_index,
+    store_node_embeddings,
+    query_similar_nodes,
+    get_embedding_dimensions,
+)
 from src.llama_setup import get_embed_model, get_llm
 
 logger = logging.getLogger(__name__)
@@ -32,12 +37,6 @@ def _is_rate_limit_error(exception: BaseException) -> bool:
         if resp_status == 429:
             return True
     return False
-
-
-def cosine_similarity(a: list[float], b: list[float]) -> float:
-    a_arr = np.array(a)
-    b_arr = np.array(b)
-    return float(np.dot(a_arr, b_arr) / (np.linalg.norm(a_arr) * np.linalg.norm(b_arr)))
 
 
 @retry(
@@ -129,79 +128,77 @@ def get_embeddings(
     return embeddings
 
 
-def find_similar_pairs(
-    names: list[str],
-    descriptions: list[str],
+def find_similar_pairs_ann(
+    driver,
+    nodes: list[dict],
+    embeddings: list[list[float]],
+    model: str,
     threshold: float = 0.8,
-    embedding_model: str | None = None,
+    top_k: int = 10,
     progress_callback: Callable[[int, int, str], None] | None = None,
-    min_description_length: int = 10,
 ) -> list[dict]:
-    """Find similar pairs of nodes based on embedding similarity.
+    """Find similar pairs using Neo4j Vector Index (ANN search).
+
+    This is O(n log n) instead of O(n²) for the brute-force approach.
+
+    Args:
+        driver: Neo4j driver
+        nodes: List of dicts with 'name', 'description', 'labels' keys
+        embeddings: Corresponding embedding vectors
+        model: Embedding model name (for index creation)
+        threshold: Minimum similarity score
+        top_k: Number of similar nodes to find per query
+        progress_callback: Optional progress callback
 
     Returns list of dicts with 'source', 'target', 'similarity'.
     """
-    # Filter out nodes with short descriptions
-    filtered_indices = []
-    filtered_names = []
-    filtered_descriptions = []
-    skipped_count = 0
-
-    for i, (name, desc) in enumerate(zip(names, descriptions)):
-        if desc and len(desc.strip()) >= min_description_length:
-            filtered_indices.append(i)
-            filtered_names.append(name)
-            filtered_descriptions.append(desc)
-        else:
-            skipped_count += 1
-
-    if skipped_count > 0:
-        logger.info(
-            "Skipped %d nodes with descriptions < %d chars",
-            skipped_count,
-            min_description_length,
-        )
-
-    names = filtered_names
-    descriptions = filtered_descriptions
-
-    if len(names) < 2:
-        logger.warning("Not enough nodes with valid descriptions to compare")
-        return []
-
+    # Get dimensions and create index
+    dimensions = get_embedding_dimensions(model)
     if progress_callback:
-        progress_callback(0, 1, "Computing embeddings...")
+        progress_callback(0, len(nodes), "Creating vector index...")
 
-    combined_texts = [f"{name}. {desc}" for name, desc in zip(names, descriptions)]
-    embeddings = get_embeddings(combined_texts, model=embedding_model)
+    create_vector_index(driver, dimensions=dimensions)
 
-    n = len(names)
-    total_pairs = n * (n - 1) // 2
+    # Store embeddings on nodes
+    if progress_callback:
+        progress_callback(0, len(nodes), "Storing embeddings on nodes...")
+
+    store_node_embeddings(driver, nodes, embeddings, model)
+
+    # Query similar pairs using ANN
     pairs = []
-    checked = 0
+    seen_pairs: set[tuple[str, str]] = set()
+    total = len(nodes)
+
+    for i, (node, emb) in enumerate(zip(nodes, embeddings)):
+        if progress_callback:
+            progress_callback(i, total, f"Querying similar for {node['name'][:30]}...")
+
+        try:
+            similar = query_similar_nodes(
+                driver,
+                query_embedding=emb,
+                k=top_k,
+                threshold=threshold,
+                exclude_name=node["name"],
+            )
+            for s in similar:
+                # Create ordered pair to avoid duplicates (A-B and B-A)
+                pair_key = tuple(sorted([node["name"], s["name"]]))
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    pairs.append(
+                        {
+                            "source": node["name"],
+                            "target": s["name"],
+                            "similarity": float(s["score"]),
+                        }
+                    )
+        except Exception as e:
+            logger.warning("Failed to query similar for %s: %s", node["name"], e)
 
     if progress_callback:
-        progress_callback(0, total_pairs, f"Comparing {total_pairs} pairs...")
-
-    for i in range(len(names)):
-        for j in range(i + 1, len(names)):
-            score = cosine_similarity(embeddings[i], embeddings[j])
-            if score >= threshold:
-                pairs.append(
-                    {
-                        "source": names[i],
-                        "target": names[j],
-                        "similarity": float(score),
-                    }
-                )
-            checked += 1
-            if progress_callback and checked % 100 == 0:
-                progress_callback(
-                    checked, total_pairs, f"Comparing pairs ({checked}/{total_pairs})"
-                )
-
-    if progress_callback:
-        progress_callback(total_pairs, total_pairs, f"Found {len(pairs)} similar pairs")
+        progress_callback(total, total, f"Found {len(pairs)} similar pairs via ANN")
 
     return pairs
 

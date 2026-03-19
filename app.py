@@ -34,8 +34,18 @@ from src.graph import (
     get_typed_relationships,
     create_typed_relationship,
     get_nodes_with_descriptions,
+    create_vector_index,
+    drop_vector_index,
+    get_index_info,
+    count_nodes_with_embeddings,
+    get_embedding_dimensions,
+    store_node_embeddings,
 )
-from src.completion import find_similar_pairs, classify_similar_pairs
+from src.completion import (
+    find_similar_pairs_ann,
+    classify_similar_pairs,
+    get_embeddings,
+)
 from src.experiments import (
     ExperimentRun,
     generate_experiment_id,
@@ -387,8 +397,6 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                         with st.expander(f"**{t['name']}**"):
                             if t.get("description"):
                                 st.write(f"*{t['description']}*")
-                            if t.get("bloom_level"):
-                                st.caption(f"Bloom: {t['bloom_level']}")
                             subtopics = [
                                 s for s in t.get("subtopics", []) if s.get("name")
                             ]
@@ -893,7 +901,6 @@ else:
                     {
                         "name": "New Konsep",
                         "description": "",
-                        "bloom_level": None,
                         "bab": None,
                         "sub_bab": None,
                         "sub_konsep": [],
@@ -982,7 +989,6 @@ else:
                                         {
                                             "name": "New SubKonsep",
                                             "description": "",
-                                            "bloom_level": None,
                                         }
                                     )
                                     topic["sub_konsep"] = subtopics
@@ -1225,6 +1231,30 @@ else:
     # Threshold and controls
     threshold = st.slider("Similarity threshold", 0.5, 1.0, 0.8, 0.05)
 
+    # Show vector index status (always visible since ANN is the only method)
+    try:
+        driver = get_driver()
+        index_info = get_index_info(driver)
+        embedding_stats = count_nodes_with_embeddings(driver)
+        driver.close()
+
+        col_stat1, col_stat2 = st.columns(2)
+        with col_stat1:
+            if index_info.get("exists"):
+                st.success(
+                    f"✅ Vector index ready ({index_info.get('state', 'ONLINE')})"
+                )
+            else:
+                st.info("ℹ️ Vector index will be created on first run")
+        with col_stat2:
+            st.caption(
+                f"Nodes with embeddings: {embedding_stats['with_embedding']}/{embedding_stats['total']}"
+            )
+            if embedding_stats["models"]:
+                st.caption(f"Models used: {', '.join(embedding_stats['models'])}")
+    except Exception as e:
+        st.warning(f"Could not check index status: {e}")
+
     if "found_pairs" not in st.session_state:
         st.session_state["found_pairs"] = None
 
@@ -1254,28 +1284,46 @@ else:
                         document_name=doc_filter,
                         include_cross_doc=include_cross,
                     )
-                    driver.close()
 
                     if not nodes:
                         progress_bar.empty()
                         status_text.warning("No nodes found in the selected scope.")
+                        driver.close()
                     else:
                         logger.info(
-                            "[Step 5] Analyzing %d nodes (scope: %s, doc: %s)",
+                            "[Step 5] Analyzing %d nodes (scope: %s, doc: %s, method: ann)",
                             len(nodes),
                             scope_mode,
                             doc_filter or "all",
                         )
 
+                        # Get embeddings first
                         names = [n["name"] for n in nodes]
                         descriptions = [n["description"] for n in nodes]
-                        pairs = find_similar_pairs(
-                            names,
-                            descriptions,
-                            threshold=threshold,
-                            embedding_model=selected_embedding_model,
+                        combined_texts = [
+                            f"{name}. {desc}"
+                            for name, desc in zip(names, descriptions)
+                        ]
+
+                        update_progress(0, len(nodes), "Computing embeddings...")
+                        embeddings = get_embeddings(
+                            combined_texts,
+                            model=selected_embedding_model,
                             progress_callback=update_progress,
                         )
+
+                        # Use ANN search
+                        pairs = find_similar_pairs_ann(
+                            driver=driver,
+                            nodes=nodes,
+                            embeddings=embeddings,
+                            model=selected_embedding_model,
+                            threshold=threshold,
+                            top_k=10,
+                            progress_callback=update_progress,
+                        )
+                        driver.close()
+
                         st.session_state["found_pairs"] = pairs
                         st.session_state["pairs_scope"] = {
                             "mode": scope_mode,
@@ -1286,7 +1334,7 @@ else:
                         progress_bar.empty()
                         status_text.empty()
                         logger.info(
-                            "[Step 5] Found %d similar pairs from %d nodes",
+                            "[Step 5] Found %d similar pairs from %d nodes (ann)",
                             len(pairs),
                             len(nodes),
                         )
@@ -1536,6 +1584,121 @@ else:
             )
     else:
         st.info("Run SIMILAR_TO discovery first (above), then classify relationships.")
+
+    # --- Vector Index Management ---
+    st.divider()
+    st.subheader("Vector Index Management")
+    st.write("Manage Neo4j vector indexes for ANN similarity search.")
+
+    try:
+        driver = get_driver()
+        index_info = get_index_info(driver)
+        embedding_stats = count_nodes_with_embeddings(driver)
+        driver.close()
+
+        col_info1, col_info2, col_info3 = st.columns(3)
+        with col_info1:
+            if index_info.get("exists"):
+                st.metric("Index Status", index_info.get("state", "ONLINE"))
+            else:
+                st.metric("Index Status", "Not Created")
+
+        with col_info2:
+            st.metric("Nodes with Embeddings", embedding_stats["with_embedding"])
+
+        with col_info3:
+            st.metric("Total Nodes", embedding_stats["total"])
+
+        if embedding_stats["models"]:
+            st.caption(f"Embedding models used: {', '.join(embedding_stats['models'])}")
+
+        st.divider()
+
+        col_action1, col_action2, col_action3 = st.columns(3)
+
+        with col_action1:
+            dimensions = get_embedding_dimensions(selected_embedding_model)
+            if st.button(
+                "Create/Refresh Index",
+                help=f"Create vector index with {dimensions} dimensions for the selected embedding model",
+            ):
+                try:
+                    driver = get_driver()
+                    success = create_vector_index(driver, dimensions=dimensions)
+                    driver.close()
+                    if success:
+                        st.success(
+                            f"✅ Vector index created with {dimensions} dimensions"
+                        )
+                        st.rerun()
+                    else:
+                        st.error("Failed to create vector index")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+        with col_action2:
+            if st.button(
+                "Drop Index",
+                help="Remove vector indexes (useful when changing embedding models)",
+            ):
+                try:
+                    driver = get_driver()
+                    success = drop_vector_index(driver)
+                    driver.close()
+                    if success:
+                        st.success("✅ Vector indexes dropped")
+                        st.rerun()
+                    else:
+                        st.error("Failed to drop vector index")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+        with col_action3:
+            if st.button(
+                "Refresh All Embeddings",
+                help="Re-embed all nodes with the selected model and store in Neo4j",
+            ):
+                try:
+                    driver = get_driver()
+                    nodes = get_nodes_with_descriptions(driver)
+                    if not nodes:
+                        st.warning("No nodes found to embed")
+                        driver.close()
+                    else:
+                        progress_bar = st.progress(0, text="Embedding nodes...")
+                        status_text = st.empty()
+
+                        def update_embed_progress(
+                            current: int, total: int, message: str
+                        ):
+                            progress_bar.progress(current / total, text=message)
+                            status_text.caption(message)
+
+                        # Get embeddings
+                        combined_texts = [
+                            f"{n['name']}. {n['description']}" for n in nodes
+                        ]
+                        embeddings = get_embeddings(
+                            combined_texts,
+                            model=selected_embedding_model,
+                            progress_callback=update_embed_progress,
+                        )
+
+                        # Store in Neo4j
+                        updated = store_node_embeddings(
+                            driver, nodes, embeddings, selected_embedding_model
+                        )
+                        driver.close()
+
+                        progress_bar.empty()
+                        status_text.empty()
+                        st.success(f"✅ Stored embeddings for {updated} nodes")
+                        st.rerun()
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+    except Exception as e:
+        st.warning(f"Could not connect to Neo4j: {e}")
 
     # --- Save as Experiment Section ---
     st.divider()
