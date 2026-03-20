@@ -487,7 +487,6 @@ def _normalize_chunk(parsed: dict) -> dict:
                 {
                     "name": s["name"],
                     "description": s.get("description", ""),
-                    "bloom_level": None,
                 }
                 for s in t.get("sub_topics", [])
             ]
@@ -495,7 +494,6 @@ def _normalize_chunk(parsed: dict) -> dict:
                 {
                     "name": t["name"],
                     "description": t.get("description", ""),
-                    "bloom_level": None,
                     "sub_konsep": sub_konsep,
                 }
             )
@@ -512,7 +510,6 @@ def _normalize_result(result: dict) -> dict:
                 {
                     "name": s["name"],
                     "description": s.get("description", ""),
-                    "bloom_level": None,
                 }
                 for s in t.get("sub_topics", [])
             ]
@@ -520,7 +517,6 @@ def _normalize_result(result: dict) -> dict:
                 {
                     "name": t["name"],
                     "description": t.get("description", ""),
-                    "bloom_level": None,
                     "bab": None,
                     "sub_bab": None,
                     "sub_konsep": sub_konsep,
@@ -636,7 +632,6 @@ def _convert_bab_extraction_to_konsep(
             konsep_dict = {
                 "name": k.get("name"),
                 "description": k.get("description", ""),
-                "bloom_level": k.get("bloom_level"),
                 "bab": bab_name,
                 "sub_bab": sub_bab_name,
                 "sub_konsep": [],  # Per-Bab extraction doesn't use sub_konsep

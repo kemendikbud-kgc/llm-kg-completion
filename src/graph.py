@@ -250,11 +250,10 @@ def insert_konsep(
                         session.run(
                             """
                             MERGE (k:Konsep {name: $name})
-                            SET k.description = $desc, k.bloom_level = $bloom
+                            SET k.description = $desc
                             """,
                             name=konsep["name"],
                             desc=konsep.get("description", ""),
-                            bloom=konsep.get("bloom_level"),
                         )
 
                         # Link to the most specific structural node available
@@ -303,14 +302,13 @@ def insert_konsep(
                             session.run(
                                 """
                                 MERGE (sk:SubKonsep {name: $name})
-                                SET sk.description = $desc, sk.bloom_level = $bloom
+                                SET sk.description = $desc
                                 WITH sk
                                 MATCH (k:Konsep {name: $konsep_name})
                                 MERGE (k)-[:hasSubKonsep]->(sk)
                                 """,
                                 name=sub["name"],
                                 desc=sub.get("description", ""),
-                                bloom=sub.get("bloom_level"),
                                 konsep_name=konsep["name"],
                             )
 
@@ -401,7 +399,6 @@ def insert_topics(
                 {
                     "name": s["name"],
                     "description": s.get("description", ""),
-                    "bloom_level": None,
                 }
                 for s in t.get("sub_topics", [])
             ]
@@ -409,7 +406,6 @@ def insert_topics(
                 {
                     "name": t["name"],
                     "description": t.get("description", ""),
-                    "bloom_level": None,
                     "bab": None,
                     "sub_konsep": sub_konsep,
                 }
@@ -454,7 +450,7 @@ def get_document_topics(driver, document_name: str) -> list:
             MATCH (d:Document {name: $doc_name})-[:hasBab]->(b:Bab)-[:hasKonsep]->(k:Konsep)
             OPTIONAL MATCH (k)-[:hasSubKonsep]->(sk:SubKonsep)
             RETURN k.name AS topic, k.description AS topic_desc,
-                   k.bloom_level AS bloom_level, b.name AS bab,
+                   b.name AS bab,
                    collect({name: sk.name, description: sk.description}) AS subtopics
             """,
             doc_name=document_name,
@@ -528,7 +524,6 @@ def get_all_topics_with_subtopics(driver) -> list:
             OPTIONAL MATCH (b:Bab)-[:hasKonsep]->(k)
             OPTIONAL MATCH (d:Document)-[:hasBab]->(b)
             RETURN k.name AS name, k.description AS description,
-                   k.bloom_level AS bloom_level,
                    collect(DISTINCT {name: sk.name, description: sk.description}) AS subtopics,
                    collect(DISTINCT d.name) AS documents
             ORDER BY k.name
@@ -719,3 +714,236 @@ def get_graph_quality_metrics(driver) -> dict:
         "density": round(nx.density(G), 3),
         "components": nx.number_connected_components(G),
     }
+
+
+# --- Vector Index Functions for ANN Search ---
+
+
+def get_embedding_dimensions(model: str) -> int:
+    """Get embedding dimensions for a given model."""
+    # Mapping of model patterns to their dimensions
+    dimension_map = {
+        "gemini-embedding": 768,
+        "text-embedding-3-small": 1536,
+        "text-embedding-3-large": 3072,
+        "multilingual-e5-small": 384,
+        "bge-small": 384,
+        "bge-base": 768,
+        "bge-large": 1024,
+        "Qwen3-Embedding": 4096,
+    }
+    for pattern, dim in dimension_map.items():
+        if pattern.lower() in model.lower():
+            return dim
+    # Default to 768 (common for many models)
+    return 768
+
+
+def create_vector_index(
+    driver,
+    index_name: str = "konsep_embedding_idx",
+    dimensions: int = 768,
+) -> bool:
+    """Create a vector index for Konsep and SubKonsep nodes.
+
+    Returns True if successful, False otherwise.
+    """
+    try:
+        with driver.session() as session:
+            session.run(
+                f"""
+                CREATE VECTOR INDEX {index_name} IF NOT EXISTS
+                FOR (n:Konsep) ON n.embedding
+                OPTIONS {{
+                    indexConfig: {{
+                        `vector.dimensions`: {dimensions},
+                        `vector.similarity_function`: 'cosine'
+                    }}
+                }}
+                """
+            )
+            # Also create for SubKonsep
+            session.run(
+                f"""
+                CREATE VECTOR INDEX subkonsep_embedding_idx IF NOT EXISTS
+                FOR (n:SubKonsep) ON n.embedding
+                OPTIONS {{
+                    indexConfig: {{
+                        `vector.dimensions`: {dimensions},
+                        `vector.similarity_function`: 'cosine'
+                    }}
+                }}
+                """
+            )
+        logger.info("Created vector indexes with %d dimensions", dimensions)
+        return True
+    except Exception as e:
+        logger.error("Failed to create vector index: %s", e)
+        return False
+
+
+def drop_vector_index(
+    driver,
+    index_name: str = "konsep_embedding_idx",
+) -> bool:
+    """Drop a vector index."""
+    try:
+        with driver.session() as session:
+            session.run(f"DROP INDEX {index_name} IF EXISTS")
+            session.run("DROP INDEX subkonsep_embedding_idx IF EXISTS")
+        logger.info("Dropped vector indexes")
+        return True
+    except Exception as e:
+        logger.error("Failed to drop vector index: %s", e)
+        return False
+
+
+def store_node_embeddings(
+    driver,
+    nodes: list[dict],
+    embeddings: list[list[float]],
+    model: str,
+) -> int:
+    """Store embeddings on Konsep and SubKonsep nodes.
+
+    Args:
+        driver: Neo4j driver
+        nodes: List of dicts with 'name' and 'labels' keys
+        embeddings: Corresponding embedding vectors
+        model: Model name used for embedding (stored for tracking)
+
+    Returns number of nodes updated.
+    """
+    updated = 0
+    with driver.session() as session:
+        for node, emb in zip(nodes, embeddings):
+            label_filter = (
+                "Konsep" if "Konsep" in node.get("labels", []) else "SubKonsep"
+            )
+            session.run(
+                f"""
+                MATCH (n:{label_filter} {{name: $name}})
+                SET n.embedding = $embedding, n.embedding_model = $model
+                """,
+                name=node["name"],
+                embedding=emb,
+                model=model,
+            )
+            updated += 1
+    logger.info("Stored embeddings on %d nodes (model: %s)", updated, model)
+    return updated
+
+
+def query_similar_nodes(
+    driver,
+    query_embedding: list[float],
+    k: int = 10,
+    threshold: float = 0.8,
+    exclude_name: str | None = None,
+    index_name: str = "konsep_embedding_idx",
+) -> list[dict]:
+    """Query for similar nodes using vector index (ANN search).
+
+    Args:
+        driver: Neo4j driver
+        query_embedding: The embedding vector to search with
+        k: Number of nearest neighbors to return
+        threshold: Minimum similarity score
+        exclude_name: Optional node name to exclude from results
+        index_name: Name of the vector index to use
+
+    Returns list of dicts with 'name', 'description', 'score', 'labels'.
+    """
+    with driver.session() as session:
+        # Query Konsep index
+        result = session.run(
+            f"""
+            CALL db.index.vector.queryNodes('{index_name}', $k, $embedding)
+            YIELD node, score
+            WHERE score >= $threshold
+            AND ($exclude_name IS NULL OR node.name <> $exclude_name)
+            RETURN node.name AS name, node.description AS description,
+                   score, labels(node) AS labels
+            ORDER BY score DESC
+            """,
+            embedding=query_embedding,
+            k=k,
+            threshold=threshold,
+            exclude_name=exclude_name,
+        )
+        konsep_results = [dict(r) for r in result]
+
+        # Query SubKonsep index
+        result2 = session.run(
+            """
+            CALL db.index.vector.queryNodes('subkonsep_embedding_idx', $k, $embedding)
+            YIELD node, score
+            WHERE score >= $threshold
+            AND ($exclude_name IS NULL OR node.name <> $exclude_name)
+            RETURN node.name AS name, node.description AS description,
+                   score, labels(node) AS labels
+            ORDER BY score DESC
+            """,
+            embedding=query_embedding,
+            k=k,
+            threshold=threshold,
+            exclude_name=exclude_name,
+        )
+        subkonsep_results = [dict(r) for r in result2]
+
+    # Merge and deduplicate
+    all_results = konsep_results + subkonsep_results
+    seen = set()
+    unique = []
+    for r in all_results:
+        if r["name"] not in seen:
+            seen.add(r["name"])
+            unique.append(r)
+    return sorted(unique, key=lambda x: x["score"], reverse=True)[:k]
+
+
+def get_index_info(driver, index_name: str = "konsep_embedding_idx") -> dict | None:
+    """Get information about a vector index."""
+    try:
+        with driver.session() as session:
+            result = session.run(
+                """
+                SHOW INDEXES YIELD name, type, state, indexProvider
+                WHERE name = $index_name OR name = 'subkonsep_embedding_idx'
+                RETURN name, type, state, indexProvider
+                """,
+                index_name=index_name,
+            )
+            indexes = [dict(r) for r in result]
+            if indexes:
+                return {
+                    "exists": True,
+                    "indexes": indexes,
+                    "state": indexes[0].get("state", "UNKNOWN"),
+                }
+            return {"exists": False}
+    except Exception as e:
+        logger.error("Failed to get index info: %s", e)
+        return {"exists": False, "error": str(e)}
+
+
+def count_nodes_with_embeddings(driver) -> dict:
+    """Count nodes that have embeddings stored."""
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n) WHERE n:Konsep OR n:SubKonsep
+            WITH count(n) AS total,
+                 sum(CASE WHEN n.embedding IS NOT NULL THEN 1 ELSE 0 END) AS with_embedding,
+                 collect(DISTINCT n.embedding_model) AS models
+            RETURN total, with_embedding, models
+            """
+        )
+        r = result.single()
+        if r:
+            return {
+                "total": r["total"],
+                "with_embedding": r["with_embedding"],
+                "models": [m for m in r["models"] if m],
+            }
+        return {"total": 0, "with_embedding": 0, "models": []}

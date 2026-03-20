@@ -49,25 +49,13 @@ ORDER BY mp.name, d.name, b.name""",
     },
     {
         "title": "Konsep by Subject",
-        "description": "All Konsep grouped under each MataPelajaran with Bloom taxonomy level.",
+        "description": "All Konsep grouped under each MataPelajaran.",
         "category": "📚 Structure",
         "bloom_phrase": "Show all concepts by subject",
         "cypher": """\
 MATCH (mp:MataPelajaran)-[:hasDocument]->()-[:hasBab]->()-[:hasKonsep]->(k:Konsep)
-RETURN mp.name AS mata_pelajaran, k.name AS konsep,
-       k.bloom_level AS bloom_level, k.description AS description
+RETURN mp.name AS mata_pelajaran, k.name AS konsep, k.description AS description
 ORDER BY mp.name, k.name""",
-    },
-    {
-        "title": "Bloom Taxonomy Distribution",
-        "description": "Count of Konsep per Bloom taxonomy level — shows the cognitive coverage of the curriculum.",
-        "category": "📊 Analytics",
-        "bloom_phrase": "Show Bloom taxonomy distribution",
-        "cypher": """\
-MATCH (k:Konsep)
-WHERE k.bloom_level IS NOT NULL
-RETURN k.bloom_level AS level, count(k) AS konsep_count
-ORDER BY konsep_count DESC""",
     },
     {
         "title": "Most Connected Konsep",

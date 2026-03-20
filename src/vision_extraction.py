@@ -32,21 +32,16 @@ Perhatikan dengan seksama:
     {
       "name": "Nama Konsep",
       "description": "Deskripsi 1-3 kalimat tentang apa yang diajarkan",
-      "bloom_level": "understand",
       "sub_konsep": [
         {
           "name": "Nama SubKonsep",
-          "description": "Deskripsi detail",
-          "bloom_level": "apply"
+          "description": "Deskripsi detail"
         }
       ]
     }
   ]
 }
 ```
-
-## TINGKATAN BLOOM (bloom_level)
-remember / understand / apply / analyze / evaluate / create
 
 ## ATURAN
 1. Setiap Konsep HARUS memiliki minimal satu SubKonsep

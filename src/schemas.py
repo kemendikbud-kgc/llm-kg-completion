@@ -4,8 +4,6 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-BloomLevel = Literal["remember", "understand", "apply", "analyze", "evaluate", "create"]
-
 # Allowed relation types for inline KG extraction
 RelationType = Literal[
     "MENDEFINISIKAN",
@@ -26,7 +24,6 @@ RelationType = Literal[
 class SubKonsep(BaseModel):
     name: str
     description: str
-    bloom_level: BloomLevel | None = None
 
 
 # Backward-compat alias
@@ -36,7 +33,6 @@ SubTopic = SubKonsep
 class Konsep(BaseModel):
     name: str
     description: str
-    bloom_level: BloomLevel | None = None
     sub_konsep: list[SubKonsep] = []
 
 
@@ -108,7 +104,6 @@ class KonsepWithRelations(BaseModel):
 
     name: str
     description: str
-    bloom_level: BloomLevel | None = None
     relations: list[KonsepRelation] = []
 
 

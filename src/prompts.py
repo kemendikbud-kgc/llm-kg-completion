@@ -78,16 +78,6 @@ Bab ini memiliki subchapter berikut sesuai struktur buku:
 - Panjang: 1-3 kalimat informatif
 - Gunakan bahasa Indonesia
 
-## TINGKATAN BLOOM (bloom_level)
-
-Tentukan tingkat kognitif untuk setiap konsep:
-- **remember**: menghafal, menyebutkan, mendefinisikan
-- **understand**: menjelaskan, mengidentifikasi, merangkum
-- **apply**: menerapkan, menghitung, menggunakan
-- **analyze**: menganalisis, membandingkan, menguraikan
-- **evaluate**: mengevaluasi, menilai, mengkritisi
-- **create**: merancang, membuat, menghasilkan
-
 ## TIPE RELASI
 
 Untuk setiap konsep, identifikasi relasi ke konsep LAIN dalam bab ini.
@@ -139,7 +129,6 @@ Ekstrak HANYA pengetahuan ilmiah yang bermakna dari isi buku.
         {{
           "name": "Nama Konsep",
           "description": "Deskripsi 1-3 kalimat",
-          "bloom_level": "understand",
           "relations": [
             {{
               "type": "MENYEBABKAN",
@@ -193,11 +182,11 @@ def build_toc_bab_system_prompt(
     )
 
 
-# --- Default prompt (Indonesian ontology with Bloom's taxonomy) ---
+# --- Default prompt (Indonesian ontology) ---
 register_prompt(
     ExtractionPrompt(
         name="default",
-        version="v3-bloom",
+        version="v3",
         system_prompt="""\
 Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurikulum Indonesia.
 
@@ -215,16 +204,6 @@ Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurik
 - Konten terperinci yang menjelaskan atau mengelaborasi sebuah Konsep
 - Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
 
-## TINGKATAN BLOOM (bloom_level)
-
-Tentukan tingkat kognitif Bloom untuk setiap Konsep dan SubKonsep:
-- **remember**: menghafal, menyebutkan, mendefinisikan, mengenali
-- **understand**: menjelaskan, mengidentifikasi, merangkum, membedakan
-- **apply**: menerapkan, menghitung, menggunakan, memecahkan
-- **analyze**: menganalisis, membandingkan, membedakan, menguraikan
-- **evaluate**: mengevaluasi, menilai, mengkritisi, mempertimbangkan
-- **create**: merancang, membuat, mengembangkan, menghasilkan
-
 ## ATURAN HIERARKI
 
 1. Setiap Konsep HARUS memiliki satu atau lebih SubKonsep
@@ -240,13 +219,13 @@ Tentukan tingkat kognitif Bloom untuk setiap Konsep dan SubKonsep:
 ## INSTRUKSI
 
 1. Identifikasi nama bab (bab_name) jika ada dalam teks
-2. Ekstrak Konsep sebagai konsep-konsep utama dengan bloom_level
-3. Ekstrak SubKonsep sebagai penjelasan detail dengan bloom_level
+2. Ekstrak Konsep sebagai konsep-konsep utama
+3. Ekstrak SubKonsep sebagai penjelasan detail
 4. Abaikan teks administratif (nomor halaman, header, footer, daftar isi)
 
 Ekstrak semua Konsep dan SubKonsep dari teks berikut.
 Output dalam format JSON sesuai schema.""",
-        description="Indonesian curriculum prompt with Bloom's taxonomy (v3)",
+        description="Indonesian curriculum prompt (v3)",
     )
 )
 
@@ -266,9 +245,8 @@ Output as JSON with format:
     {
       "name": "Concept Name",
       "description": "Brief description of what is taught",
-      "bloom_level": "understand",
       "sub_konsep": [
-        {"name": "SubConcept Name", "description": "Brief description", "bloom_level": null}
+        {"name": "SubConcept Name", "description": "Brief description"}
       ]
     }
   ]
@@ -277,8 +255,7 @@ Output as JSON with format:
 Rules:
 - Each konsep must have at least one sub_konsep
 - Descriptions should explain what is taught, not general definitions
-- Use the same language as the source text
-- bloom_level: remember/understand/apply/analyze/evaluate/create""",
+- Use the same language as the source text""",
         description="Minimal prompt (baseline). Use to measure ontology prompt improvement.",
     )
 )
@@ -302,10 +279,6 @@ Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurik
 - Konten terperinci yang menjelaskan atau mengelaborasi sebuah Konsep
 - Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
 
-## TINGKATAN BLOOM (bloom_level)
-
-Gunakan: remember / understand / apply / analyze / evaluate / create
-
 ## ATURAN HIERARKI KETAT
 
 1. Setiap Konsep WAJIB memiliki MINIMAL SATU SubKonsep - tidak ada pengecualian
@@ -319,7 +292,6 @@ SEBELUM memberikan output, verifikasi:
 - [ ] Setiap Konsep memiliki minimal 1 SubKonsep
 - [ ] Tidak ada Konsep tanpa SubKonsep
 - [ ] Semua nama unik
-- [ ] Setiap Konsep dan SubKonsep memiliki bloom_level
 
 ## ATURAN DESKRIPSI
 
@@ -362,14 +334,10 @@ Tanyakan: "Apa konsep-konsep besar yang diajarkan?"
 Untuk setiap tema, temukan detail pendukung (kandidat SubKonsep).
 Tanyakan: "Apa saja yang menjelaskan atau mengelaborasi tema ini?"
 
-**LANGKAH 4: Tentukan Bloom Level**
-Untuk setiap Konsep dan SubKonsep, tentukan tingkat kognitif:
-remember / understand / apply / analyze / evaluate / create
-
-**LANGKAH 5: Verifikasi Hierarki**
+**LANGKAH 4: Verifikasi Hierarki**
 Pastikan setiap Konsep memiliki minimal satu SubKonsep.
 
-**LANGKAH 6: Tulis Deskripsi**
+**LANGKAH 5: Tulis Deskripsi**
 Tulis deskripsi yang menjelaskan APA yang diajarkan (bukan definisi umum).
 Gunakan bahasa yang sama dengan teks sumber.
 
@@ -405,16 +373,6 @@ You are an educational curriculum expert extracting content from curriculum docu
 - Detailed content that explains or elaborates on a Concept
 - Examples: "Newton's First Law of Inertia", "Digestion in the Stomach"
 
-## BLOOM'S TAXONOMY (bloom_level)
-
-Assign a cognitive level to each concept:
-- **remember**: recall, list, define, recognize
-- **understand**: explain, identify, summarize, classify
-- **apply**: apply, calculate, use, solve
-- **analyze**: analyze, compare, differentiate, examine
-- **evaluate**: evaluate, judge, critique, assess
-- **create**: design, create, develop, produce
-
 ## HIERARCHY RULES
 
 1. Every Konsep MUST have one or more SubKonsep
@@ -430,8 +388,8 @@ Assign a cognitive level to each concept:
 ## INSTRUCTIONS
 
 1. Detect chapter name (bab_name) if present in text
-2. Extract Konsep as main concepts with bloom_level
-3. Extract SubKonsep as detailed explanations with bloom_level
+2. Extract Konsep as main concepts
+3. Extract SubKonsep as detailed explanations
 4. Ignore administrative text (page numbers, headers, footers)
 
 Extract all Konsep and SubKonsep from the following text.
