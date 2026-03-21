@@ -1,0 +1,367 @@
+@prefix : <http://llm-kg-completion.github.io/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+#################################################################
+# Ontology Declaration
+#################################################################
+
+<http://llm-kg-completion.github.io/ontology>
+    a owl:Ontology ;
+    dc:title "LLM-KG Completion Ontology" ;
+    dc:description "Ontology for LLM-assisted knowledge graph completion on Indonesian curriculum textbooks (Kurikulum Merdeka). Formalises the graph schema used by src/schemas.py and src/graph.py." ;
+    owl:versionInfo "1.0" .
+
+
+#################################################################
+# Classes — Structural Hierarchy
+#################################################################
+
+:MataPelajaran a owl:Class ;
+    rdfs:label "MataPelajaran" ;
+    rdfs:comment "Indonesian curriculum subject (e.g. Fisika, Biologi, Kimia)." .
+
+:Document a owl:Class ;
+    rdfs:label "Document" ;
+    rdfs:comment "A specific PDF textbook uploaded for extraction." .
+
+:Bab a owl:Class ;
+    rdfs:label "Bab" ;
+    rdfs:comment "Chapter within a Document, sourced from the Daftar Isi (Table of Contents)." .
+
+:SubBab a owl:Class ;
+    rdfs:label "SubBab" ;
+    rdfs:comment "Subchapter within a Bab." .
+
+:SubSubBab a owl:Class ;
+    rdfs:label "SubSubBab" ;
+    rdfs:comment "Sub-subchapter within a SubBab." .
+
+
+#################################################################
+# Classes — Knowledge Nodes
+#################################################################
+
+:Konsep a owl:Class ;
+    rdfs:label "Konsep" ;
+    rdfs:comment "An extracted concept. Shared across documents (MERGE on name) to enable cross-document discovery." .
+
+:SubKonsep a owl:Class ;
+    rdfs:label "SubKonsep" ;
+    rdfs:comment "A granular sub-concept nested under a Konsep." .
+
+:ConceptTarget a owl:Class ;
+    rdfs:label "ConceptTarget" ;
+    rdfs:comment "Forward reference — a concept mentioned in a relation target but not yet extracted as a full Konsep node. Exists temporarily until a future extraction upgrades it." .
+
+
+#################################################################
+# Classes — Curriculum Metadata
+#################################################################
+
+:MateriPokok a owl:Class ;
+    rdfs:label "MateriPokok" ;
+    rdfs:comment "Official learning material entry from Buku Guru (teacher's guide). First-class node to enable curriculum coverage queries." .
+
+
+#################################################################
+# Object Properties — Structural
+#################################################################
+
+:hasDocument a owl:ObjectProperty ;
+    rdfs:label "hasDocument" ;
+    rdfs:comment "Links a MataPelajaran to a Document (textbook)." ;
+    rdfs:domain :MataPelajaran ;
+    rdfs:range :Document .
+
+:hasBab a owl:ObjectProperty ;
+    rdfs:label "hasBab" ;
+    rdfs:comment "Links a Document to its chapters." ;
+    rdfs:domain :Document ;
+    rdfs:range :Bab .
+
+:hasSubBab a owl:ObjectProperty ;
+    rdfs:label "hasSubBab" ;
+    rdfs:comment "Links a Bab to its subchapters." ;
+    rdfs:domain :Bab ;
+    rdfs:range :SubBab .
+
+:hasSubSubBab a owl:ObjectProperty ;
+    rdfs:label "hasSubSubBab" ;
+    rdfs:comment "Links a SubBab to its sub-subchapters." ;
+    rdfs:domain :SubBab ;
+    rdfs:range :SubSubBab .
+
+:hasKonsep a owl:ObjectProperty ;
+    rdfs:label "hasKonsep" ;
+    rdfs:comment "Links a structural node (Bab, SubBab, or SubSubBab) to an extracted Konsep." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Bab :SubBab :SubSubBab )
+    ] ;
+    rdfs:range :Konsep .
+
+:hasSubKonsep a owl:ObjectProperty ;
+    rdfs:label "hasSubKonsep" ;
+    rdfs:comment "Links a Konsep to its sub-concepts." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :SubKonsep .
+
+:hasMateriPokok a owl:ObjectProperty ;
+    rdfs:label "hasMateriPokok" ;
+    rdfs:comment "Links a Bab to its official MateriPokok entries." ;
+    rdfs:domain :Bab ;
+    rdfs:range :MateriPokok .
+
+:alignsToMateriPokok a owl:ObjectProperty ;
+    rdfs:label "alignsToMateriPokok" ;
+    rdfs:comment "Links a Konsep to the MateriPokok it aligns with in the curriculum." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :MateriPokok .
+
+
+#################################################################
+# Object Properties — Sequential
+#################################################################
+
+:nextChapter a owl:ObjectProperty ;
+    rdfs:label "nextChapter" ;
+    rdfs:comment "Reading order: links a Bab to the next Bab in the document." ;
+    rdfs:domain :Bab ;
+    rdfs:range :Bab .
+
+
+#################################################################
+# Object Properties — Semantic (between Konsep/ConceptTarget nodes)
+#################################################################
+
+:BAGIAN_DARI a owl:ObjectProperty ;
+    rdfs:label "BAGIAN_DARI" ;
+    rdfs:comment "A is part of B (universal hierarchy)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:MENYEBABKAN a owl:ObjectProperty ;
+    rdfs:label "MENYEBABKAN" ;
+    rdfs:comment "A causes B (causation)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:BERGANTUNG_PADA a owl:ObjectProperty ;
+    rdfs:label "BERGANTUNG_PADA" ;
+    rdfs:comment "A depends on B (dependency)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:MENDEFINISIKAN a owl:ObjectProperty ;
+    rdfs:label "MENDEFINISIKAN" ;
+    rdfs:comment "A defines B (definitional relationship)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:MEMPENGARUHI a owl:ObjectProperty ;
+    rdfs:label "MEMPENGARUHI" ;
+    rdfs:comment "A influences B (general influence — subsumes MENGATUR, MENGHASILKAN, etc.)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:BERINTERAKSI_DENGAN a owl:ObjectProperty ;
+    rdfs:label "BERINTERAKSI_DENGAN" ;
+    rdfs:comment "A interacts with B (subsumes BEREAKSI_DENGAN, DIKATALISIS_OLEH)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:DIFORMULASIKAN_SEBAGAI a owl:ObjectProperty ;
+    rdfs:label "DIFORMULASIKAN_SEBAGAI" ;
+    rdfs:comment "A is formulated as B (equations/formulas — key for Fisika/Kimia)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+
+#################################################################
+# Object Properties — Pedagogical (cross-chapter)
+#################################################################
+
+:PRASYARAT a owl:ObjectProperty ;
+    rdfs:label "PRASYARAT" ;
+    rdfs:comment "Learning prerequisite: Bab A must be learned before Bab B." ;
+    rdfs:domain :Bab ;
+    rdfs:range :Bab .
+
+:MEMPERSIAPKAN a owl:ObjectProperty ;
+    rdfs:label "MEMPERSIAPKAN" ;
+    rdfs:comment "Bab A prepares the learner for Bab B." ;
+    rdfs:domain :Bab ;
+    rdfs:range :Bab .
+
+
+#################################################################
+# Object Properties — Completion-Inferred
+#################################################################
+
+:SIMILAR_TO a owl:ObjectProperty, owl:SymmetricProperty ;
+    rdfs:label "SIMILAR_TO" ;
+    rdfs:comment "Cosine similarity above threshold, discovered via ANN embedding search." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:isPrerequisiteOf a owl:ObjectProperty ;
+    rdfs:label "isPrerequisiteOf" ;
+    rdfs:comment "LLM-classified: concept A should be learned before concept B." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:supports a owl:ObjectProperty ;
+    rdfs:label "supports" ;
+    rdfs:comment "LLM-classified: concept A helps understand concept B." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+:analogousTo a owl:ObjectProperty, owl:SymmetricProperty ;
+    rdfs:label "analogousTo" ;
+    rdfs:comment "LLM-classified: concepts A and B share structural or functional patterns." ;
+    rdfs:domain :Konsep ;
+    rdfs:range :Konsep .
+
+
+#################################################################
+# Data Properties — Shared
+#################################################################
+
+:name a owl:DatatypeProperty ;
+    rdfs:label "name" ;
+    rdfs:comment "Display name. Present on all node types." ;
+    rdfs:range xsd:string .
+
+:description a owl:DatatypeProperty ;
+    rdfs:label "description" ;
+    rdfs:comment "Textual description of the node." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Konsep :SubKonsep :MateriPokok )
+    ] ;
+    rdfs:range xsd:string .
+
+
+#################################################################
+# Data Properties — Document
+#################################################################
+
+:kelas a owl:DatatypeProperty ;
+    rdfs:label "kelas" ;
+    rdfs:comment "Class level, e.g. 'X', 'XI', 'XII'." ;
+    rdfs:domain :Document ;
+    rdfs:range xsd:string .
+
+:uploadedAt a owl:DatatypeProperty ;
+    rdfs:label "uploadedAt" ;
+    rdfs:comment "Timestamp when the document was uploaded." ;
+    rdfs:domain :Document ;
+    rdfs:range xsd:dateTime .
+
+
+#################################################################
+# Data Properties — MataPelajaran
+#################################################################
+
+:phase a owl:DatatypeProperty ;
+    rdfs:label "phase" ;
+    rdfs:comment "Kurikulum Merdeka phase, e.g. 'E' (Kelas X) or 'F' (Kelas XI-XII)." ;
+    rdfs:domain :MataPelajaran ;
+    rdfs:range xsd:string .
+
+
+#################################################################
+# Data Properties — Bab
+#################################################################
+
+:babSummary a owl:DatatypeProperty ;
+    rdfs:label "babSummary" ;
+    rdfs:comment "2-3 sentence academic summary of the chapter." ;
+    rdfs:domain :Bab ;
+    rdfs:range xsd:string .
+
+:order a owl:DatatypeProperty ;
+    rdfs:label "order" ;
+    rdfs:comment "Position of the chapter within the document." ;
+    rdfs:domain :Bab ;
+    rdfs:range xsd:integer .
+
+
+#################################################################
+# Data Properties — Konsep
+#################################################################
+
+:embedding a owl:DatatypeProperty ;
+    rdfs:label "embedding" ;
+    rdfs:comment "Vector embedding stored as a list of floats (for ANN search)." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Konsep :SubKonsep )
+    ] ;
+    rdfs:range xsd:string .
+
+:embeddingModel a owl:DatatypeProperty ;
+    rdfs:label "embeddingModel" ;
+    rdfs:comment "Name of the model used to generate the embedding." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Konsep :SubKonsep )
+    ] ;
+    rdfs:range xsd:string .
+
+:glossaryValidated a owl:DatatypeProperty ;
+    rdfs:label "glossaryValidated" ;
+    rdfs:comment "True if this Konsep matches a glossary definition." ;
+    rdfs:domain :Konsep ;
+    rdfs:range xsd:boolean .
+
+:materiPokokRef a owl:DatatypeProperty ;
+    rdfs:label "materiPokokRef" ;
+    rdfs:comment "Name of the aligned MateriPokok (string reference, complementary to alignsToMateriPokok)." ;
+    rdfs:domain :Konsep ;
+    rdfs:range xsd:string .
+
+
+#################################################################
+# Data Properties — Edge Annotations
+#################################################################
+
+:relDescription a owl:DatatypeProperty ;
+    rdfs:label "relDescription" ;
+    rdfs:comment "Explanation of why a semantic relation exists (stored as edge property)." ;
+    rdfs:range xsd:string .
+
+:similarity a owl:DatatypeProperty ;
+    rdfs:label "similarity" ;
+    rdfs:comment "Cosine similarity score for SIMILAR_TO edges." ;
+    rdfs:range xsd:float .
+
+:confidence a owl:DatatypeProperty ;
+    rdfs:label "confidence" ;
+    rdfs:comment "LLM confidence score for completion-inferred edges." ;
+    rdfs:range xsd:float .
+
+:source a owl:DatatypeProperty ;
+    rdfs:label "source" ;
+    rdfs:comment "Provenance: 'extraction' | 'completion' | 'manual'." ;
+    rdfs:range xsd:string .
+
+:extractedBy a owl:DatatypeProperty ;
+    rdfs:label "extractedBy" ;
+    rdfs:comment "Name of the LLM model that produced this relation." ;
+    rdfs:range xsd:string .
+
+
+#################################################################
+# Data Properties — ConceptTarget
+#################################################################
+
+:sourceBab a owl:DatatypeProperty ;
+    rdfs:label "sourceBab" ;
+    rdfs:comment "Which Bab first referenced this ConceptTarget." ;
+    rdfs:domain :ConceptTarget ;
+    rdfs:range xsd:string .
