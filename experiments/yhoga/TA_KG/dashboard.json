@@ -1,0 +1,283 @@
+{
+  "title": "Knowledge Graph Evaluation Dashboard (TA_KG Notebook)",
+  "version": "1.0",
+  "settings": {
+    "pagenumber": 0,
+    "editable": true,
+    "fullscreenEnabled": false,
+    "parameters": {}
+  },
+  "pages": [
+    {
+      "title": "Evaluasi Metrik (Notebook Ontology)",
+      "reports": [
+        {
+          "title": "Average Degree Centrality (ADC)",
+          "query": "MATCH (n)\nWITH count(n) as numNodes\nMATCH ()-[r]->()\nWITH numNodes, count(r) as numRels\nRETURN toFloat(numRels) / numNodes AS ADC",
+          "width": 3,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Graph Density",
+          "query": "MATCH (n)\nWITH count(n) as v\nMATCH ()-[r]->()\nWITH v, count(r) as numRels\nRETURN toFloat(numRels) / (v * (v - 1)) as Density",
+          "width": 3,
+          "height": 2,
+          "x": 3,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Glossary Validation Rate",
+          "query": "MATCH (c:Concept)\nWITH count(c) as total\nMATCH (c:Concept)\nWHERE c.glossary_validated = true\nRETURN toFloat(count(c)) / total AS GlossaryValidationRate\n// Persentase konsep tervalidasi glosarium (Target: Tinggi)",
+          "width": 3,
+          "height": 2,
+          "x": 6,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Materi Pokok Coverage",
+          "query": "MATCH (c:Concept)\nWITH count(c) as total\nMATCH (c:Concept)\nWHERE c.materi_pokok_ref IS NOT NULL AND c.materi_pokok_ref <> \"\"\nRETURN toFloat(count(c)) / total AS MateriPokokCoverage\n// Persentase konsep dengan referensi materi pokok (Target: >= 0.80)",
+          "width": 3,
+          "height": 2,
+          "x": 0,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Description Completeness",
+          "query": "MATCH (e) WHERE e:Concept OR e:ConceptTarget\nWITH count(e) as total\nMATCH (e) WHERE (e:Concept OR e:ConceptTarget)\nAND e.description IS NOT NULL AND e.description <> \"\"\nRETURN toFloat(count(e))/total AS DescriptionCompleteness\n// Persentase entitas dengan deskripsi (Target: >= 0.90)",
+          "width": 3,
+          "height": 2,
+          "x": 3,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Typed Relation Ratio",
+          "query": "MATCH ()-[r]->()\nWITH count(r) as total\nMATCH ()-[r:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI|PRASYARAT|MEMPERSIAPKAN]->()\nRETURN toFloat(count(r))/total AS TypedRelationRatio\n// Proporsi relasi semantik vs struktural",
+          "width": 3,
+          "height": 2,
+          "x": 6,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Distribusi Node dalam Ontologi",
+          "query": "MATCH (n)\nRETURN labels(n)[0] AS Label, count(n) AS Jumlah\nORDER BY Jumlah DESC",
+          "width": 4,
+          "height": 3,
+          "x": 0,
+          "y": 4,
+          "type": "bar",
+          "selection": {
+            "index": "Label",
+            "value": "Jumlah"
+          },
+          "settings": {
+            "colors": "set2"
+          }
+        },
+        {
+          "title": "Distribusi Relasi (Edge)",
+          "query": "MATCH ()-[r]->()\nRETURN type(r) AS TipeRelasi, count(r) AS Jumlah\nORDER BY Jumlah DESC\nLIMIT 15",
+          "width": 5,
+          "height": 3,
+          "x": 4,
+          "y": 4,
+          "type": "bar",
+          "selection": {
+            "index": "TipeRelasi",
+            "value": "Jumlah"
+          },
+          "settings": {
+            "colors": "set1"
+          }
+        },
+        {
+          "title": "Konsep per Subtopic",
+          "query": "MATCH (s:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nRETURN s.name AS Subtopic, count(c) AS JumlahKonsep\nORDER BY JumlahKonsep DESC\nLIMIT 20",
+          "width": 4,
+          "height": 3,
+          "x": 0,
+          "y": 7,
+          "type": "bar",
+          "selection": {
+            "index": "Subtopic",
+            "value": "JumlahKonsep"
+          },
+          "settings": {
+            "colors": "set3"
+          }
+        },
+        {
+          "title": "Cross-Chapter Relations (PRASYARAT/MEMPERSIAPKAN)",
+          "query": "MATCH p=()-[:PRASYARAT|MEMPERSIAPKAN]->()\nRETURN p\nLIMIT 100",
+          "width": 5,
+          "height": 4,
+          "x": 4,
+          "y": 7,
+          "type": "graph",
+          "selection": {
+            "Chapter": "name",
+            "Concept": "name"
+          },
+          "settings": {
+            "nodeColorScheme": "neodash"
+          }
+        },
+        {
+          "title": "Visualisasi Knowledge Graph (Full)",
+          "query": "MATCH p=(g:Grade)-[:HAS_CHAPTER]->(ch:Chapter)-[:HAS_SUBTOPIC]->(s:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nRETURN p\nLIMIT 200",
+          "width": 9,
+          "height": 5,
+          "x": 0,
+          "y": 11,
+          "type": "graph",
+          "selection": {
+            "Grade": "name",
+            "Chapter": "name",
+            "Subtopic": "name",
+            "Concept": "name"
+          },
+          "settings": {
+            "nodeColorScheme": "neodash"
+          }
+        },
+        {
+          "title": "Relasi Semantik (LLM-Extracted)",
+          "query": "MATCH p=()-[:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI]->()\nRETURN p\nLIMIT 150",
+          "width": 9,
+          "height": 5,
+          "x": 0,
+          "y": 16,
+          "type": "graph",
+          "selection": {
+            "Concept": "name",
+            "ConceptTarget": "name"
+          },
+          "settings": {
+            "nodeColorScheme": "neodash"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Struktur Hierarki",
+      "reports": [
+        {
+          "title": "Grade Overview",
+          "query": "MATCH (g:Grade)\nRETURN g.name AS Grade, g.name AS Name",
+          "width": 3,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Chapters per Grade",
+          "query": "MATCH (g:Grade)-[:HAS_CHAPTER]->(c:Chapter)\nRETURN g.name AS Grade, count(c) AS JumlahChapter",
+          "width": 3,
+          "height": 2,
+          "x": 3,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Chapter Chain (Sequential)",
+          "query": "MATCH p=(:Chapter)-[:NEXT_CHAPTER]->(:Chapter)\nRETURN p",
+          "width": 6,
+          "height": 3,
+          "x": 0,
+          "y": 2,
+          "type": "graph",
+          "selection": {
+            "Chapter": "name"
+          },
+          "settings": {
+            "nodeColorScheme": "neodash"
+          }
+        },
+        {
+          "title": "Chapter Summary",
+          "query": "MATCH (c:Chapter)\nWHERE c.summary IS NOT NULL\nRETURN c.name AS Chapter, c.summary AS Summary\nORDER BY c.name",
+          "width": 9,
+          "height": 4,
+          "x": 0,
+          "y": 5,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Validasi Kualitas",
+      "reports": [
+        {
+          "title": "Glossary-Validated Concepts",
+          "query": "MATCH (c:Concept)\nWHERE c.glossary_validated = true\nRETURN c.name AS Konsep, c.description AS Deskripsi, c.materi_pokok_ref AS MateriPokok\nLIMIT 50",
+          "width": 9,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Concepts Without Materi Pokok Ref",
+          "query": "MATCH (c:Concept)\nWHERE c.materi_pokok_ref IS NULL OR c.materi_pokok_ref = \"\"\nRETURN c.name AS Konsep, c.description AS Deskripsi\nLIMIT 50",
+          "width": 9,
+          "height": 4,
+          "x": 0,
+          "y": 4,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "ConceptTarget Usage (Unresolved References)",
+          "query": "MATCH (t:ConceptTarget)\nRETURN t.name AS TargetName, count{(t)<-[:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI]-()} AS ReferenceCount\nORDER BY ReferenceCount DESC\nLIMIT 30",
+          "width": 9,
+          "height": 3,
+          "x": 0,
+          "y": 8,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "Validation Coverage by Chapter",
+          "query": "MATCH (ch:Chapter)-[:HAS_SUBTOPIC]->(:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nWITH ch.name AS Chapter, count(c) AS TotalKonsep,\n     sum(CASE WHEN c.glossary_validated = true THEN 1 ELSE 0 END) AS Tervalidasi\nRETURN Chapter, TotalKonsep, Tervalidasi,\n       toFloat(Tervalidasi) / TotalKonsep AS ValidationRate\nORDER BY ValidationRate DESC",
+          "width": 9,
+          "height": 3,
+          "x": 0,
+          "y": 11,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    }
+  ]
+}
