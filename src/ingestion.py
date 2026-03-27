@@ -452,10 +452,26 @@ def extract_pages_for_subbab(
         return ""
 
     start_page = doc_structure.entries[target_idx].page
+    max_page = max(p for p, _ in pages) if pages else 1
+
+    # Handle start_page = 0 (missing page number in ToC)
+    if start_page <= 0:
+        start_page = 1  # Default to first page
+
     if target_idx + 1 < len(doc_structure.entries):
-        end_page = doc_structure.entries[target_idx + 1].page - 1
+        next_page = doc_structure.entries[target_idx + 1].page
+        # Handle next entry with page=0 or invalid page
+        if next_page > start_page:
+            end_page = next_page - 1
+        else:
+            # Fallback: use max page (no upper bound)
+            end_page = max_page
     else:
-        end_page = max(p for p, _ in pages)
+        end_page = max_page
+
+    # Ensure valid range (end_page must be >= start_page)
+    if end_page < start_page:
+        end_page = max_page
 
     texts = [text for page_num, text in pages if start_page <= page_num <= end_page]
     return "\n".join(texts)
@@ -784,8 +800,8 @@ def get_bab_page_range(
 
             break
 
-    # Ensure valid range
-    if end_page < start_page:
+    # Ensure valid range (handle page=0 edge cases)
+    if end_page <= 0 or end_page < start_page:
         end_page = 999999
 
     return start_page, end_page
@@ -868,3 +884,262 @@ def ingest_pdf_full_vision(pdf_path: str) -> list[str]:
         "Full vision ingestion: %d content pages, %d skipped", len(images), skipped
     )
     return images
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ToC Verification Functions (inspired by PageIndex)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _extract_json_from_response(text: str) -> dict:
+    """Extract JSON from LLM response, handling markdown code fences."""
+    import json
+
+    text = text.strip()
+
+    # Strip markdown code fences if present
+    if text.startswith("```"):
+        lines = text.split("\n")
+        lines = lines[1:]  # Remove first line (```json or ```)
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]  # Remove last line (```)
+        text = "\n".join(lines)
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return {}
+
+
+def verify_toc_entry(
+    entry: StructureEntry,
+    page_text: str,
+    model: str = "gemini/gemini-2.5-flash",
+) -> bool:
+    """Use LLM to verify if a ToC entry appears on the expected page.
+
+    Inspired by PageIndex's check_title_appearance() function.
+    Uses fuzzy matching to handle OCR errors and spacing inconsistencies.
+
+    Args:
+        entry: The StructureEntry to verify
+        page_text: The text content of the page to check
+        model: LLM model to use for verification
+
+    Returns:
+        True if the entry appears on the page, False otherwise
+    """
+    import litellm
+
+    # Build the section title
+    title_parts = [entry.bab]
+    if entry.sub_bab:
+        title_parts.append(entry.sub_bab)
+    if entry.sub_sub_bab:
+        title_parts.append(entry.sub_sub_bab)
+    section_title = " → ".join(title_parts)
+
+    # Truncate page text to avoid token limits
+    truncated_text = page_text[:2000] if len(page_text) > 2000 else page_text
+
+    prompt = f"""Your job is to check if the given section appears or starts in the given page_text.
+
+Note: do fuzzy matching, ignore any space inconsistency in the page_text.
+
+The given section title is: {section_title}
+The given page_text is:
+{truncated_text}
+
+Reply format:
+{{
+    "thinking": "<why do you think the section appears or starts in the page_text>",
+    "answer": "yes" or "no"
+}}
+
+Directly return the final JSON structure. Do not output anything else."""
+
+    try:
+        response = litellm.completion(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1,
+        )
+        content = response.choices[0].message.content or ""
+        parsed = _extract_json_from_response(content)
+        answer = parsed.get("answer", "no").lower()
+        return answer == "yes"
+    except Exception as e:
+        logger.warning("verify_toc_entry failed for %s: %s", section_title, e)
+        return False
+
+
+def fix_toc_page_number(
+    entry: StructureEntry,
+    pages: list[tuple[int, str]],
+    search_range: tuple[int, int],
+    model: str = "gemini/gemini-2.5-flash",
+) -> int | None:
+    """Find the correct page number for a ToC entry using LLM.
+
+    Inspired by PageIndex's single_toc_item_index_fixer() function.
+    Searches within a range of pages to find where the section actually starts.
+
+    Args:
+        entry: The StructureEntry with incorrect page number
+        pages: List of (page_num, text) tuples
+        search_range: (start_page, end_page) range to search within
+        model: LLM model to use
+
+    Returns:
+        The correct page number, or None if not found
+    """
+    import litellm
+
+    start_page, end_page = search_range
+
+    # Build the section title
+    title_parts = [entry.bab]
+    if entry.sub_bab:
+        title_parts.append(entry.sub_bab)
+    if entry.sub_sub_bab:
+        title_parts.append(entry.sub_sub_bab)
+    section_title = " → ".join(title_parts)
+
+    # Build content with page markers
+    content_parts = []
+    page_dict = {p: t for p, t in pages}
+    for page_num in range(start_page, end_page + 1):
+        if page_num in page_dict:
+            text = page_dict[page_num][:500]  # Truncate per page
+            content_parts.append(f"<page_{page_num}>\n{text}\n</page_{page_num}>")
+
+    content = "\n".join(content_parts)
+
+    prompt = f"""You are given a section title and several pages of a document.
+Your job is to find the page number where this section starts.
+
+The section title is: {section_title}
+
+Document pages (with page markers):
+{content}
+
+Reply format:
+{{
+    "thinking": "<explain which page contains the start of this section>",
+    "page_number": <the page number where the section starts>
+}}
+
+Directly return the final JSON structure. Do not output anything else."""
+
+    try:
+        response = litellm.completion(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1,
+        )
+        content = response.choices[0].message.content or ""
+        parsed = _extract_json_from_response(content)
+        page_num = parsed.get("page_number")
+        if isinstance(page_num, int) and start_page <= page_num <= end_page:
+            return page_num
+        return None
+    except Exception as e:
+        logger.warning("fix_toc_page_number failed for %s: %s", section_title, e)
+        return None
+
+
+def verify_and_fix_toc(
+    doc_structure: DocumentStructure,
+    pages: list[tuple[int, str]],
+    model: str = "gemini/gemini-2.5-flash",
+    sample_size: int = 5,
+) -> DocumentStructure:
+    """Verify ToC entries and fix incorrect page numbers.
+
+    Inspired by PageIndex's verify_toc() and fix_incorrect_toc() functions.
+    Samples entries, verifies them with LLM, and fixes incorrect page numbers.
+
+    Args:
+        doc_structure: The parsed DocumentStructure
+        pages: List of (page_num, text) tuples from the PDF
+        model: LLM model to use for verification
+        sample_size: Number of entries to sample for verification (0 = all)
+
+    Returns:
+        DocumentStructure with corrected page numbers
+    """
+    import random
+
+    if not doc_structure.found or not doc_structure.entries:
+        return doc_structure
+
+    page_dict = {p: t for p, t in pages}
+    entries = doc_structure.entries
+
+    # Determine which entries to verify
+    if sample_size > 0 and len(entries) > sample_size:
+        indices_to_check = random.sample(range(len(entries)), sample_size)
+    else:
+        indices_to_check = list(range(len(entries)))
+
+    logger.info("Verifying %d ToC entries...", len(indices_to_check))
+
+    # Track entries with page=0 or incorrect page numbers
+    incorrect_entries: list[tuple[int, StructureEntry]] = []
+
+    for idx in indices_to_check:
+        entry = entries[idx]
+
+        # Skip entries with no page number
+        if entry.page <= 0:
+            incorrect_entries.append((idx, entry))
+            continue
+
+        # Verify entry appears on its page
+        if entry.page in page_dict:
+            page_text = page_dict[entry.page]
+            is_correct = verify_toc_entry(entry, page_text, model)
+            if not is_correct:
+                logger.info(
+                    "Entry '%s %s' not found on page %d, marking for fix",
+                    entry.bab,
+                    entry.sub_bab or "",
+                    entry.page,
+                )
+                incorrect_entries.append((idx, entry))
+
+    # Fix incorrect entries
+    for idx, entry in incorrect_entries:
+        # Determine search range: between previous and next valid entries
+        prev_page = 1
+        for i in range(idx - 1, -1, -1):
+            if entries[i].page > 0:
+                prev_page = entries[i].page
+                break
+
+        next_page = max(p for p, _ in pages) if pages else 999
+        for i in range(idx + 1, len(entries)):
+            if entries[i].page > 0:
+                next_page = entries[i].page
+                break
+
+        # Find correct page
+        correct_page = fix_toc_page_number(
+            entry, pages, (prev_page, next_page), model
+        )
+        if correct_page is not None:
+            logger.info(
+                "Fixed entry '%s %s': page %d → %d",
+                entry.bab,
+                entry.sub_bab or "",
+                entry.page,
+                correct_page,
+            )
+            entries[idx] = StructureEntry(
+                bab=entry.bab,
+                sub_bab=entry.sub_bab,
+                sub_sub_bab=entry.sub_sub_bab,
+                page=correct_page,
+            )
+
+    return doc_structure
