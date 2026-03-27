@@ -144,33 +144,8 @@ else:
 
 st.divider()
 
-# ── Section C — Bloom Taxonomy Distribution ───────────────────────────────────
-st.subheader("C · Bloom Taxonomy Distribution")
-st.caption("Cognitive coverage of the curriculum — how many Konsep fall at each Bloom level.")
-
-bloom_q = next(q for q in QUERIES if q["title"] == "Bloom Taxonomy Distribution")
-
-try:
-    with driver.session() as session:
-        bloom_rows = [dict(r) for r in session.run(bloom_q["cypher"])]
-except Exception as e:
-    bloom_rows = []
-    st.warning(f"Query error: {e}")
-
-if bloom_rows:
-    import pandas as pd
-
-    bloom_df = pd.DataFrame(bloom_rows).set_index("level")
-    bloom_df.index.name = "Bloom Level"
-    bloom_df.columns = ["Konsep Count"]
-    st.bar_chart(bloom_df)
-else:
-    st.info("No Bloom level data found. Ensure extraction has run with bloom_level assignment.")
-
-st.divider()
-
-# ── Section D — Prerequisite Explorer ────────────────────────────────────────
-st.subheader("D · Prerequisite Explorer")
+# ── Section C — Prerequisite Explorer ────────────────────────────────────────
+st.subheader("C · Prerequisite Explorer")
 
 try:
     with driver.session() as session:
@@ -239,8 +214,8 @@ else:
 
 st.divider()
 
-# ── Section E — Bloom Search Phrases ─────────────────────────────────────────
-st.subheader("E · Neo4j Bloom Search Phrases")
+# ── Section D — Neo4j Bloom Search Phrases ─────────────────────────────────────
+st.subheader("D · Neo4j Bloom Search Phrases")
 st.info(
     "**How to use:** Open Neo4j Bloom → click **Search** → **Search Phrases** → **Add**. "
     "Paste the phrase name and the Cypher query below."

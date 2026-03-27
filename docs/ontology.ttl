@@ -319,13 +319,6 @@
     rdfs:domain :Konsep ;
     rdfs:range xsd:boolean .
 
-:materiPokokRef a owl:DatatypeProperty ;
-    rdfs:label "materiPokokRef" ;
-    rdfs:comment "Name of the aligned MateriPokok (string reference, complementary to alignsToMateriPokok)." ;
-    rdfs:domain :Konsep ;
-    rdfs:range xsd:string .
-
-
 #################################################################
 # Data Properties — Edge Annotations
 #################################################################
