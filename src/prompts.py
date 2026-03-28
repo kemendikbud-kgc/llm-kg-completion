@@ -81,20 +81,19 @@ Bab ini memiliki subchapter berikut sesuai struktur buku:
 ## TIPE RELASI
 
 Untuk setiap konsep, identifikasi relasi ke konsep LAIN dalam bab ini.
-Pilih tipe relasi yang paling tepat:
+Pilih SALAH SATU dari tipe relasi berikut (HURUF_KAPITAL):
 
-- **MENDEFINISIKAN**: konsep sumber memberikan definisi untuk target
-- **MENYEBABKAN**: konsep sumber menyebabkan atau menghasilkan target
-- **MEMUNGKINKAN**: konsep sumber memungkinkan terjadinya target
-- **MENGATUR**: konsep sumber mengatur atau mengontrol target
-- **BAGIAN_DARI**: konsep sumber adalah bagian dari target
-- **TERDIRI_DARI**: konsep sumber terdiri dari atau mencakup target
-- **BERGANTUNG_PADA**: konsep sumber bergantung pada target
-- **BERINTERAKSI_DENGAN**: konsep sumber berinteraksi dengan target
-- **BEREAKSI_DENGAN**: konsep sumber bereaksi secara kimia dengan target
-- **MENGHASILKAN**: konsep sumber menghasilkan atau memproduksi target
-- **MEMPENGARUHI**: konsep sumber mempengaruhi target
-- **DIFORMULASIKAN_SEBAGAI**: konsep sumber diformulasikan dalam rumus target
+| Tipe Relasi | Arti | Contoh |
+|-------------|------|--------|
+| **BAGIAN_DARI** | X adalah bagian dari Y | "Mitokondria BAGIAN_DARI Sel" |
+| **MENYEBABKAN** | X menyebabkan Y | "Energi MENYEBABKAN Pergerakan" |
+| **BERGANTUNG_PADA** | X membutuhkan Y | "Fotosintesis BERGANTUNG_PADA Cahaya" |
+| **MENDEFINISIKAN** | X mendefinisikan Y | "Hukum Newton MENDEFINISIKAN Gerak" |
+| **MEMPENGARUHI** | X mempengaruhi Y | "Suhu MEMPENGARUHI Laju Reaksi" |
+| **BERINTERAKSI_DENGAN** | X berinteraksi dengan Y | "Enzim BERINTERAKSI_DENGAN Substrat" |
+| **DIFORMULASIKAN_SEBAGAI** | X diformulasikan sebagai Y | "Gaya DIFORMULASIKAN_SEBAGAI F=ma" |
+
+**PENTING:** Hanya gunakan 7 tipe relasi di atas. Jangan membuat tipe relasi baru.
 
 ## ATURAN RELASI
 
