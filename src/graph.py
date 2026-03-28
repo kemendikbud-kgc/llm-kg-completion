@@ -315,21 +315,7 @@ def insert_konsep(
     # -------------------------------------------------------------------------
     # PASS 2: Create inline relations from per-Bab extraction
     # -------------------------------------------------------------------------
-    # Relation types from RelationType in schemas.py
-    VALID_RELATION_TYPES = {
-        "MENDEFINISIKAN",
-        "MENYEBABKAN",
-        "MEMUNGKINKAN",
-        "MENGATUR",
-        "BAGIAN_DARI",
-        "TERDIRI_DARI",
-        "BERGANTUNG_PADA",
-        "BERINTERAKSI_DENGAN",
-        "BEREAKSI_DENGAN",
-        "MENGHASILKAN",
-        "MEMPENGARUHI",
-        "DIFORMULASIKAN_SEBAGAI",
-    }
+    from src.schemas import RELATION_TYPES, normalize_relation_type
 
     with driver.session() as session:
         for konsep in data.get("konsep", []):
@@ -342,10 +328,11 @@ def insert_konsep(
                 target_name = rel.get("target", "")
                 description = rel.get("description", "")
 
-                # Validate relation type
-                if rel_type not in VALID_RELATION_TYPES:
-                    logger.warning(
-                        "Skipping invalid relation type '%s' from '%s'",
+                # Normalize relation type to ontology-defined types
+                normalized_type = normalize_relation_type(rel_type)
+                if normalized_type is None:
+                    logger.debug(
+                        "Skipping unmapped relation type '%s' from '%s'",
                         rel_type,
                         konsep_name,
                     )
@@ -354,11 +341,8 @@ def insert_konsep(
                 if not target_name:
                     continue
 
-                # Sanitize relation type for Cypher (must be valid identifier)
-                safe_rel_type = rel_type.upper().replace(" ", "_")
-                safe_rel_type = "".join(
-                    c for c in safe_rel_type if c.isalnum() or c == "_"
-                )
+                # Use normalized type for Cypher
+                safe_rel_type = normalized_type
 
                 # Create relation (MERGE target to handle forward references)
                 try:
@@ -473,7 +457,7 @@ def get_graph_stats(driver) -> dict:
             OPTIONAL MATCH ()-[r2:isPrerequisiteOf]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, count(r2) AS prereq_rels
             OPTIONAL MATCH ()-[r3:supports]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, prereq_rels, count(r3) AS supports_rels
             OPTIONAL MATCH ()-[r4:analogousTo]->() WITH subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels, prereq_rels, supports_rels, count(r4) AS analogous_rels
-            OPTIONAL MATCH ()-[r5:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI]->()
+            OPTIONAL MATCH ()-[r5:BAGIAN_DARI|MENYEBABKAN|BERGANTUNG_PADA|MENDEFINISIKAN|MEMPENGARUHI|BERINTERAKSI_DENGAN|DIFORMULASIKAN_SEBAGAI]->()
             RETURN subjects, documents, babs, sub_babs, konsep, sub_konsep, similar_rels,
                    prereq_rels, supports_rels, analogous_rels, count(r5) AS inline_rels
             """
@@ -552,10 +536,9 @@ def get_typed_relationships(driver) -> list:
             """
             MATCH (a)-[r]->(b)
             WHERE type(r) IN ['isPrerequisiteOf', 'supports', 'analogousTo',
-                              'MENDEFINISIKAN', 'MENYEBABKAN', 'MEMUNGKINKAN', 'MENGATUR',
-                              'BAGIAN_DARI', 'TERDIRI_DARI', 'BERGANTUNG_PADA',
-                              'BERINTERAKSI_DENGAN', 'BEREAKSI_DENGAN', 'MENGHASILKAN',
-                              'MEMPENGARUHI', 'DIFORMULASIKAN_SEBAGAI']
+                              'BAGIAN_DARI', 'MENYEBABKAN', 'BERGANTUNG_PADA',
+                              'MENDEFINISIKAN', 'MEMPENGARUHI', 'BERINTERAKSI_DENGAN',
+                              'DIFORMULASIKAN_SEBAGAI']
             RETURN a.name AS source, b.name AS target,
                    type(r) AS rel_type, r.confidence AS confidence, r.description AS description
             ORDER BY rel_type, source

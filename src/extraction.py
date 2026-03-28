@@ -621,21 +621,42 @@ def _convert_bab_extraction_to_konsep(
     Each konsep gets:
     - bab: bab_name
     - sub_bab: from the sub_bab.name in the extraction
-    - relations: from the konsep's relations list
+    - relations: from the konsep's relations list (normalized to ontology types)
     """
+    from src.schemas import normalize_relation_type
+
     konsep_list: list[dict] = []
 
     for sub_bab in bab_result.get("sub_bab", []):
         sub_bab_name = sub_bab.get("name")
 
         for k in sub_bab.get("konsep", []):
+            # Normalize relation types to ontology-defined types
+            raw_relations = k.get("relations", [])
+            normalized_relations = []
+            for rel in raw_relations:
+                rel_type = rel.get("type", "")
+                normalized_type = normalize_relation_type(rel_type)
+                if normalized_type:
+                    normalized_relations.append({
+                        "type": normalized_type,
+                        "target": rel.get("target", ""),
+                        "description": rel.get("description", ""),
+                    })
+                else:
+                    logger.debug(
+                        "Skipping unmapped relation type '%s' in konsep '%s'",
+                        rel_type,
+                        k.get("name"),
+                    )
+
             konsep_dict = {
                 "name": k.get("name"),
                 "description": k.get("description", ""),
                 "bab": bab_name,
                 "sub_bab": sub_bab_name,
                 "sub_konsep": [],  # Per-Bab extraction doesn't use sub_konsep
-                "relations": k.get("relations", []),
+                "relations": normalized_relations,
             }
             konsep_list.append(konsep_dict)
 
@@ -748,6 +769,19 @@ def extract_per_bab(
             pages, vision_pages, doc_structure, bab_name
         )
 
+        # Get page range for logging
+        from src.ingestion import get_bab_page_range
+
+        bab_start, bab_end = get_bab_page_range(doc_structure, bab_name)
+        logger.info(
+            "Bab '%s' (pages %d-%d): collected %d chars text, %d vision pages",
+            bab_name,
+            bab_start,
+            bab_end,
+            len(chapter_text),
+            len(vision_for_bab) if vision_for_bab else 0,
+        )
+
         if not chapter_text.strip() and not vision_for_bab:
             logger.warning("Bab '%s' has no content, skipping", bab_name)
             continue
@@ -807,9 +841,25 @@ def extract_per_bab(
                 has_vision=has_vision,
             )
         except Exception as e:
-            logger.error("Failed to extract Bab '%s': %s", bab_name, e)
+            import traceback
+
+            logger.error(
+                "Failed to extract Bab '%s': %s\n%s", bab_name, e, traceback.format_exc()
+            )
             # Continue with other Babs instead of failing entirely
             continue
+
+        # Debug: log the LLM result
+        sub_bab_count = len(bab_result.get("sub_bab", []))
+        konsep_in_result = sum(len(sb.get("konsep", [])) for sb in bab_result.get("sub_bab", []))
+        logger.info(
+            "Bab '%s' extraction: %d sub_bab, %d total konsep",
+            bab_name,
+            sub_bab_count,
+            konsep_in_result,
+        )
+        if sub_bab_count == 0:
+            logger.warning("Bab '%s' returned EMPTY sub_bab array! Raw result: %s", bab_name, bab_result)
 
         # Cache the per-Bab result
         if use_cache:
