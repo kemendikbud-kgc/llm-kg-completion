@@ -125,66 +125,6 @@ def get_cached_graph_metrics():
     return stats, quality
 
 
-@st.fragment
-def validation_fragment(pairs: list, sample_indices: list, sample_size: int):
-    """Fragment for validation UI - reruns independently without full page reload."""
-    validation_results = st.session_state.get("validation_results", {})
-
-    for idx in sample_indices:
-        p = pairs[idx]
-        pair_key = f"{p['source']}|{p['target']}"
-
-        with st.container(border=True):
-            cols = st.columns([4, 1, 1])
-            with cols[0]:
-                st.write(
-                    f"**{p['source']}** ↔ **{p['target']}** "
-                    f"(score: {p['similarity']:.3f})"
-                )
-            with cols[1]:
-                if st.button("✅ Valid", key=f"valid_{idx}"):
-                    st.session_state["validation_results"][pair_key] = True
-                    st.rerun()  # Only reruns this fragment!
-            with cols[2]:
-                if st.button("❌ Invalid", key=f"invalid_{idx}"):
-                    st.session_state["validation_results"][pair_key] = False
-                    st.rerun()  # Only reruns this fragment!
-
-            # Show current status
-            if pair_key in validation_results:
-                status = "✅ Valid" if validation_results[pair_key] else "❌ Invalid"
-                st.caption(f"Status: {status}")
-
-    # Calculate precision
-    validated_count = len(validation_results)
-    valid_count = sum(1 for v in validation_results.values() if v)
-
-    st.divider()
-    col_prec, col_resample = st.columns(2)
-
-    with col_prec:
-        if validated_count > 0:
-            precision = valid_count / validated_count
-            st.metric(
-                "Estimated Precision",
-                f"{precision:.0%}",
-                help=f"Based on {validated_count}/{sample_size} validated samples",
-            )
-            st.caption(f"Validated: {validated_count}/{sample_size} pairs")
-        else:
-            st.info("Validate some pairs to see precision estimate.")
-
-    with col_resample:
-        if st.button("🔄 New Sample", help="Get a new random sample"):
-            import random
-
-            st.session_state["validation_sample"] = random.sample(
-                range(len(pairs)), sample_size
-            )
-            st.session_state["validation_results"] = {}
-            st.rerun()
-
-
 # --- Sidebar: Model Selection ---
 with st.sidebar:
     st.header("Model Settings")
@@ -877,182 +817,10 @@ else:
         len(t.get("sub_konsep", [])) for t in extracted_data.get("konsep", [])
     )
 
-    # Ask user FIRST before loading the editing UI
+    # Show counts only, no editing UI (removed for performance)
     st.info(f"📊 Extracted: **{topic_count} konsep**, **{subtopic_count} sub-konsep**")
-
-    load_editor = st.checkbox(
-        "Load editing UI to review and modify topics",
-        value=False,
-        help="Warning: Loading many topics may be slow. Skip if you trust the extraction.",
-    )
-
-    if not load_editor:
-        st.success("✓ Click the checkbox above to edit, or proceed directly to Step 4.")
-        edited = json.dumps(extracted_data, indent=2, ensure_ascii=False)
-    else:
-        # Now load konsep for editing
-        topics = extracted_data.get("konsep", [])
-
-        # Card-based validation UI
-        col_add, col_stats = st.columns([1, 3])
-        with col_add:
-            if st.button("➕ Add Konsep", key="add_topic"):
-                topics.append(
-                    {
-                        "name": "New Konsep",
-                        "description": "",
-                        "bab": None,
-                        "sub_bab": None,
-                        "sub_konsep": [],
-                    }
-                )
-                st.session_state["extracted"]["konsep"] = topics
-                st.rerun()
-        with col_stats:
-            st.caption(f"📊 {topic_count} konsep, {subtopic_count} sub-konsep")
-
-        # Group topics by Bab → SubBab for hierarchical display
-        # Skip concepts without bab (ToC is source of truth)
-        from collections import defaultdict
-
-        bab_sub_map: dict[str, dict[str, list[tuple[int, dict]]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
-        skipped_no_bab = 0
-        for i, topic in enumerate(topics):
-            bab = topic.get("bab")
-            if not bab:
-                skipped_no_bab += 1
-                continue  # Skip concepts without bab assignment
-            sub_bab = topic.get("sub_bab") or "(tanpa sub-bab)"
-            bab_sub_map[bab][sub_bab].append((i, topic))
-
-        if skipped_no_bab > 0:
-            st.warning(
-                f"⚠️ {skipped_no_bab} konsep tidak memiliki bab dan tidak ditampilkan "
-                "(akan dilewati saat menyimpan ke knowledge graph)."
-            )
-
-        topics_to_delete = []
-
-        for bab_label, sub_bab_dict in bab_sub_map.items():
-            st.markdown(f"### 📖 {bab_label}")
-            for sub_bab_label, topic_pairs in sub_bab_dict.items():
-                with st.expander(
-                    f"📑 {sub_bab_label} ({len(topic_pairs)} konsep)", expanded=True
-                ):
-                    for i, topic in topic_pairs:
-                        with st.container(border=True):
-                            col_topic, col_del = st.columns([5, 1])
-
-                            with col_topic:
-                                new_name = st.text_input(
-                                    f"Topic {i + 1}",
-                                    value=topic.get("name", ""),
-                                    key=f"topic_name_{i}",
-                                    label_visibility="collapsed",
-                                    placeholder="Topic name",
-                                )
-                                if new_name != topic.get("name", ""):
-                                    topic["name"] = new_name
-
-                            with col_del:
-                                if st.button(
-                                    "🗑️", key=f"del_topic_{i}", help="Delete this topic"
-                                ):
-                                    topics_to_delete.append(i)
-
-                            new_desc = st.text_area(
-                                "Description",
-                                value=topic.get("description", ""),
-                                key=f"topic_desc_{i}",
-                                height=80,
-                                label_visibility="collapsed",
-                                placeholder="Topic description",
-                            )
-                            if new_desc != topic.get("description", ""):
-                                topic["description"] = new_desc
-
-                            # SubKonsep section
-                            subtopics = topic.get("sub_konsep", [])
-                            subtopics_to_delete = []
-
-                            with st.expander(
-                                f"📑 SubKonsep ({len(subtopics)})", expanded=False
-                            ):
-                                if st.button(
-                                    "➕ Add SubKonsep",
-                                    key=f"add_sub_{i}",
-                                    use_container_width=True,
-                                ):
-                                    subtopics.append(
-                                        {
-                                            "name": "New SubKonsep",
-                                            "description": "",
-                                        }
-                                    )
-                                    topic["sub_konsep"] = subtopics
-                                    st.rerun()
-
-                                for j, sub in enumerate(subtopics):
-                                    cols = st.columns([3, 4, 1])
-                                    with cols[0]:
-                                        new_sub_name = st.text_input(
-                                            "Name",
-                                            value=sub.get("name", ""),
-                                            key=f"sub_name_{i}_{j}",
-                                            label_visibility="collapsed",
-                                            placeholder="SubTopic name",
-                                        )
-                                        if new_sub_name != sub.get("name", ""):
-                                            sub["name"] = new_sub_name
-                                    with cols[1]:
-                                        new_sub_desc = st.text_input(
-                                            "Description",
-                                            value=sub.get("description", ""),
-                                            key=f"sub_desc_{i}_{j}",
-                                            label_visibility="collapsed",
-                                            placeholder="SubTopic description",
-                                        )
-                                        if new_sub_desc != sub.get("description", ""):
-                                            sub["description"] = new_sub_desc
-                                    with cols[2]:
-                                        if st.button("🗑️", key=f"del_sub_{i}_{j}"):
-                                            subtopics_to_delete.append(j)
-
-                                for j in reversed(subtopics_to_delete):
-                                    subtopics.pop(j)
-                                    st.rerun()
-
-        # Delete marked topics (reverse order to preserve indices)
-        if topics_to_delete:
-            for i in reversed(topics_to_delete):
-                topics.pop(i)
-            st.session_state["extracted"]["konsep"] = topics
-            st.rerun()
-
-        # Update session state with edited data
-        st.session_state["extracted"]["konsep"] = topics
-
-        # Generate edited JSON for Step 4 compatibility
-        edited = json.dumps(st.session_state["extracted"], indent=2, ensure_ascii=False)
-
-        # Show raw JSON in collapsible section for debugging
-        with st.expander("📝 View/Edit Raw JSON", expanded=False):
-            raw_edited = st.text_area(
-                "Raw JSON (edit with caution):",
-                edited,
-                height=300,
-                key="raw_json_editor",
-            )
-            if raw_edited != edited:
-                try:
-                    parsed = json.loads(raw_edited)
-                    st.session_state["extracted"] = parsed
-                    edited = raw_edited
-                    st.success("JSON updated!")
-                except json.JSONDecodeError as e:
-                    st.error(f"Invalid JSON: {e}")
+    st.success("✓ Proceed to Step 4 to save to Knowledge Graph.")
+    edited = json.dumps(extracted_data, indent=2, ensure_ascii=False)
 
 st.divider()
 
@@ -1361,46 +1129,8 @@ else:
                     f"Document: {scope_info.get('document', 'all')}"
                 )
 
-            # Semi-supervised validation mode for large result sets
-            SAMPLE_SIZE = 10
-            if len(pairs) > SAMPLE_SIZE:
-                st.subheader("🔍 Semi-Supervised Validation")
-
-                # Option to skip validation
-                skip_validation = st.checkbox(
-                    "Skip validation (save all pairs directly)",
-                    value=False,
-                    help="Skip manual validation and save all pairs without review",
-                )
-
-                if not skip_validation:
-                    st.write(
-                        f"Review a sample of {SAMPLE_SIZE} pairs to estimate precision. "
-                        "Mark each pair as valid or invalid."
-                    )
-
-                    # Initialize validation state if not present
-                    if "validation_sample" not in st.session_state:
-                        import random
-
-                        sample_indices = random.sample(range(len(pairs)), SAMPLE_SIZE)
-                        st.session_state["validation_sample"] = sample_indices
-                        st.session_state["validation_results"] = {}
-
-                    sample_indices = st.session_state["validation_sample"]
-
-                    # Use fragment for validation UI to avoid full page reruns
-                    validation_fragment(pairs, sample_indices, SAMPLE_SIZE)
-
-                st.divider()
-
-            # Display all pairs (or remaining pairs in collapsed view)
-            with st.expander(
-                f"📋 All {len(pairs)} pairs"
-                if len(pairs) > SAMPLE_SIZE
-                else "📋 Similar pairs",
-                expanded=len(pairs) <= SAMPLE_SIZE,
-            ):
+            # Display all pairs in collapsed view
+            with st.expander(f"📋 All {len(pairs)} pairs", expanded=False):
                 for p in pairs[:50]:
                     st.write(
                         f"**{p['source']}** ↔ **{p['target']}** (similarity: {p['similarity']:.3f})"
@@ -1408,101 +1138,33 @@ else:
                 if len(pairs) > 50:
                     st.info(f"Showing 50 of {len(pairs)} pairs.")
 
-            # Save options
+            # Save button
             st.subheader("💾 Save to Knowledge Graph")
-            save_col1, save_col2 = st.columns(2)
-
-            with save_col1:
-                if st.button("Save All Pairs", type="primary"):
-                    progress_bar = st.progress(0, text="Saving to Neo4j...")
-                    driver = get_driver()
-                    saved_count = 0
-                    with driver.session() as session:
-                        for i, p in enumerate(pairs):
-                            session.run(
-                                "MATCH (a {name: $src}), (b {name: $tgt}) "
-                                "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
-                                src=p["source"],
-                                tgt=p["target"],
-                                score=p["similarity"],
-                            )
-                            saved_count += 1
-                            if i % 10 == 0:
-                                progress_bar.progress(
-                                    (i + 1) / len(pairs),
-                                    text=f"Saving {i + 1}/{len(pairs)}...",
-                                )
-                    driver.close()
-                    progress_bar.progress(1.0, text="Done!")
-                    logger.info(
-                        "[Step 5] Saved %d SIMILAR_TO relationships", saved_count
-                    )
-                    st.success(f"Saved {saved_count} relationships to Neo4j!")
-                    # Clear validation state
-                    st.session_state.pop("validation_sample", None)
-                    st.session_state.pop("validation_results", None)
-                    st.session_state["found_pairs"] = None
-                    st.rerun()
-
-            with save_col2:
-                if len(pairs) > SAMPLE_SIZE:
-                    validation_results = st.session_state.get("validation_results", {})
-                    if validation_results:
-                        # Get validated pairs that were marked as valid
-                        validated_pairs = [
-                            p
-                            for p in pairs
-                            if validation_results.get(
-                                f"{p['source']}|{p['target']}", True
-                            )
-                        ]
-                        invalid_count = sum(
-                            1 for v in validation_results.values() if not v
+            if st.button("Save All Pairs", type="primary"):
+                progress_bar = st.progress(0, text="Saving to Neo4j...")
+                driver = get_driver()
+                saved_count = 0
+                with driver.session() as session:
+                    for i, p in enumerate(pairs):
+                        session.run(
+                            "MATCH (a {name: $src}), (b {name: $tgt}) "
+                            "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
+                            src=p["source"],
+                            tgt=p["target"],
+                            score=p["similarity"],
                         )
-
-                        if st.button(
-                            f"Save Excluding Invalid ({len(pairs) - invalid_count} pairs)",
-                            help="Save all pairs except those marked as invalid in validation",
-                        ):
-                            progress_bar = st.progress(0, text="Saving to Neo4j...")
-                            driver = get_driver()
-                            saved_count = 0
-                            pairs_to_save = [
-                                p
-                                for p in pairs
-                                if validation_results.get(
-                                    f"{p['source']}|{p['target']}", True
-                                )
-                            ]
-                            with driver.session() as session:
-                                for i, p in enumerate(pairs_to_save):
-                                    session.run(
-                                        "MATCH (a {name: $src}), (b {name: $tgt}) "
-                                        "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
-                                        src=p["source"],
-                                        tgt=p["target"],
-                                        score=p["similarity"],
-                                    )
-                                    saved_count += 1
-                                    if i % 10 == 0:
-                                        progress_bar.progress(
-                                            (i + 1) / len(pairs_to_save),
-                                            text=f"Saving {i + 1}/{len(pairs_to_save)}...",
-                                        )
-                            driver.close()
-                            progress_bar.progress(1.0, text="Done!")
-                            logger.info(
-                                "[Step 5] Saved %d SIMILAR_TO relationships (excluded %d invalid)",
-                                saved_count,
-                                invalid_count,
+                        saved_count += 1
+                        if i % 10 == 0:
+                            progress_bar.progress(
+                                (i + 1) / len(pairs),
+                                text=f"Saving {i + 1}/{len(pairs)}...",
                             )
-                            st.success(
-                                f"Saved {saved_count} relationships (excluded {invalid_count} invalid)!"
-                            )
-                            st.session_state.pop("validation_sample", None)
-                            st.session_state.pop("validation_results", None)
-                            st.session_state["found_pairs"] = None
-                            st.rerun()
+                driver.close()
+                progress_bar.progress(1.0, text="Done!")
+                logger.info("[Step 5] Saved %d SIMILAR_TO relationships", saved_count)
+                st.success(f"Saved {saved_count} relationships to Neo4j!")
+                st.session_state["found_pairs"] = None
+                st.rerun()
         else:
             st.info("No similar pairs found above the threshold.")
 
