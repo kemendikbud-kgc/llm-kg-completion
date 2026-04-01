@@ -38,9 +38,16 @@ RELATION_TYPE_MAPPING = {
     "BERHUBUNGAN_DENGAN": "BERINTERAKSI_DENGAN",
     "BERASOSIASI_DENGAN": "BERINTERAKSI_DENGAN",
     # Causation variants → MENYEBABKAN
+    "MENIMBULKAN": "MENYEBABKAN",
+    # Product/reaction variants → MENYEBABKAN
     "MENGHASILKAN": "MENYEBABKAN",
     "MEMPRODUKSI": "MENYEBABKAN",
-    "MENIMBULKAN": "MENYEBABKAN",
+    "MENGHASILKAN_PRODUK": "MENYEBABKAN",
+    # Process step variants → BAGIAN_DARI
+    "TAHAP_DARI": "BAGIAN_DARI",
+    "LANGKAH_DARI": "BAGIAN_DARI",
+    "TAHAPAN_DARI": "BAGIAN_DARI",
+    "LANGKAH_DALAM": "BAGIAN_DARI",
     # Dependency variants → BERGANTUNG_PADA
     "MEMBUTUHKAN": "BERGANTUNG_PADA",
     "MENGGUNAKAN": "BERGANTUNG_PADA",
@@ -84,6 +91,9 @@ def normalize_relation_type(rel_type: str) -> str | None:
 class SubKonsep(BaseModel):
     name: str
     description: str
+    formula: list[str] = []  # e.g., ["F = m × a", "a = F/m"]
+    variables: list[str] = []  # e.g., ["F (gaya, N)", "m (massa, kg)"]
+    kondisi: list[str] = []  # e.g., ["suhu konstan", "gas ideal"]
 
 
 # Backward-compat alias
@@ -94,6 +104,9 @@ class Konsep(BaseModel):
     name: str
     description: str
     sub_konsep: list[SubKonsep] = []
+    formula: list[str] = []  # e.g., ["F = m × a", "a = F/m"]
+    variables: list[str] = []  # e.g., ["F (gaya, N)", "m (massa, kg)", "a (percepatan, m/s²)"]
+    kondisi: list[str] = []  # e.g., ["suhu konstan", "gas ideal", "tanpa gesekan"]
 
 
 # Backward-compat alias
@@ -165,6 +178,9 @@ class KonsepWithRelations(BaseModel):
     name: str
     description: str
     relations: list[KonsepRelation] = []
+    formula: list[str] = []  # e.g., ["F = m × a", "a = F/m"]
+    variables: list[str] = []  # e.g., ["F (gaya, N)", "m (massa, kg)"]
+    kondisi: list[str] = []  # e.g., ["suhu konstan", "gas ideal"]
 
 
 class SubBabExtraction(BaseModel):
