@@ -234,6 +234,32 @@ class CacheManager:
         logger.info("Cleaned up %d old embedding cache files", deleted)
         return deleted
 
+    def clear_all(self) -> dict:
+        """Delete all extraction and embedding cache files. Returns counts deleted."""
+        extraction_deleted = 0
+        if CACHE_DIR.exists():
+            for f in CACHE_DIR.iterdir():
+                if f.suffix == ".json":
+                    f.unlink()
+                    extraction_deleted += 1
+        # Reset manifest
+        self._manifest = None
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+        embedding_deleted = 0
+        if EMBEDDING_CACHE_DIR.exists():
+            for f in EMBEDDING_CACHE_DIR.iterdir():
+                if f.suffix == ".json":
+                    f.unlink()
+                    embedding_deleted += 1
+
+        logger.info(
+            "Cleared all caches: %d extraction files, %d embedding files",
+            extraction_deleted,
+            embedding_deleted,
+        )
+        return {"extraction_deleted": extraction_deleted, "embedding_deleted": embedding_deleted}
+
     def migrate_legacy(self) -> None:
         """Index existing cache files that aren't in the manifest."""
         if not CACHE_DIR.exists():
