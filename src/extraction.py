@@ -536,6 +536,7 @@ def _extract_bab_multimodal(
     vision_images_b64: list[str],
     system_prompt: str,
     model: str,
+    bab_name: str = "",
 ) -> dict:
     """Extract from a Bab using multimodal (text + vision) LLM call.
 
@@ -585,8 +586,24 @@ def _extract_bab_multimodal(
             lines = lines[:-1]  # Remove last line (```)
         raw_text = "\n".join(lines)
 
+    if not raw_text.strip():
+        logger.warning(
+            "LLM returned empty content for bab '%s', skipping",
+            bab_name or "unknown",
+        )
+        from src.schemas import BabExtraction
+        return BabExtraction(sub_bab=[]).model_dump()
+
     # Parse and validate with Pydantic
-    parsed = json.loads(raw_text)
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        logger.warning(
+            "LLM returned non-JSON for bab '%s' (first 200 chars): %s",
+            bab_name or "unknown",
+            raw_text[:200],
+        )
+        raise
     validated = BabExtraction.model_validate(parsed)
     return validated.model_dump()
 
@@ -681,14 +698,25 @@ def _extract_bab_with_retry(
     text_model: str,
     vision_model: str,
     has_vision: bool,
+    bab_name: str = "",
 ) -> dict:
-    """Wrapper that retries per-Bab extraction on rate limits."""
+    """Wrapper that retries per-Bab extraction on rate limits.
+
+    Falls back to text-only if multimodal returns non-JSON.
+    """
+    import json as _json
+
     if has_vision and vision_images_b64:
-        return _extract_bab_multimodal(
-            chapter_text, vision_images_b64, system_prompt, vision_model
-        )
-    else:
-        return _extract_bab_text_only(chapter_text, system_prompt, text_model)
+        try:
+            return _extract_bab_multimodal(
+                chapter_text, vision_images_b64, system_prompt, vision_model, bab_name
+            )
+        except _json.JSONDecodeError:
+            logger.warning(
+                "Multimodal extraction failed for bab '%s', falling back to text-only",
+                bab_name,
+            )
+    return _extract_bab_text_only(chapter_text, system_prompt, text_model)
 
 
 def extract_per_bab(
@@ -793,7 +821,7 @@ def extract_per_bab(
         import hashlib
 
         content_hash = hashlib.sha256(
-            (bab_name + chapter_text[:1000] + text_model + "v4-toc-bab").encode()
+            (bab_name + chapter_text[:1000] + text_model + "v5-toc-bab").encode()
         ).hexdigest()
         cache_key = f"bab_{content_hash}"
 
@@ -839,6 +867,7 @@ def extract_per_bab(
                 text_model=text_model,
                 vision_model=vision_model,
                 has_vision=has_vision,
+                bab_name=bab_name,
             )
         except Exception as e:
             import traceback
