@@ -250,10 +250,16 @@ def insert_konsep(
                         session.run(
                             """
                             MERGE (k:Konsep {name: $name})
-                            SET k.description = $desc
+                            SET k.description = $desc,
+                                k.formula = $formula,
+                                k.variables = $variables,
+                                k.kondisi = $kondisi
                             """,
                             name=konsep["name"],
                             desc=konsep.get("description", ""),
+                            formula=konsep.get("formula", []),
+                            variables=konsep.get("variables", []),
+                            kondisi=konsep.get("kondisi", []),
                         )
 
                         # Link to the most specific structural node available
@@ -302,20 +308,26 @@ def insert_konsep(
                             session.run(
                                 """
                                 MERGE (sk:SubKonsep {name: $name})
-                                SET sk.description = $desc
+                                SET sk.description = $desc,
+                                    sk.formula = $formula,
+                                    sk.variables = $variables,
+                                    sk.kondisi = $kondisi
                                 WITH sk
                                 MATCH (k:Konsep {name: $konsep_name})
                                 MERGE (k)-[:hasSubKonsep]->(sk)
                                 """,
                                 name=sub["name"],
                                 desc=sub.get("description", ""),
+                                formula=sub.get("formula", []),
+                                variables=sub.get("variables", []),
+                                kondisi=sub.get("kondisi", []),
                                 konsep_name=konsep["name"],
                             )
 
     # -------------------------------------------------------------------------
     # PASS 2: Create inline relations from per-Bab extraction
     # -------------------------------------------------------------------------
-    from src.schemas import RELATION_TYPES, normalize_relation_type
+    from src.schemas import normalize_relation_type
 
     with driver.session() as session:
         for konsep in data.get("konsep", []):
@@ -364,6 +376,72 @@ def insert_konsep(
                         target_name,
                         e,
                     )
+
+    # -------------------------------------------------------------------------
+    # PASS 3: Create Variable nodes and USES_VARIABLE edges
+    # -------------------------------------------------------------------------
+    with driver.session() as session:
+        for konsep in data.get("konsep", []):
+            all_nodes = [konsep] + konsep.get("sub_konsep", [])
+            for node in all_nodes:
+                node_name = node.get("name")
+                if not node_name:
+                    continue
+                label = "SubKonsep" if node is not konsep else "Konsep"
+                for var_str in node.get("variables", []):
+                    _insert_variable(session, node_name, label, var_str)
+
+    # PASS 4: Create SHARES_VARIABLE edges between Konsep sharing a variable
+    with driver.session() as session:
+        session.run(
+            """
+            MATCH (a:Konsep)-[:USES_VARIABLE]->(v:Variable)<-[:USES_VARIABLE]-(b:Konsep)
+            WHERE a <> b AND a.name < b.name
+            MERGE (a)-[:SHARES_VARIABLE {variable: v.name}]->(b)
+            """
+        )
+
+
+def _insert_variable(session, node_name: str, label: str, var_str: str) -> None:
+    """Parse a variable string and create Variable node + USES_VARIABLE edge.
+
+    Accepts formats like:
+      "F (gaya, N)"    → name="F", label="gaya", unit="N"
+      "m (massa, kg)"  → name="m", label="massa", unit="kg"
+      "v"              → name="v", label="", unit=""
+    """
+    import re
+
+    var_str = var_str.strip()
+    if not var_str:
+        return
+
+    match = re.match(r"^([^\s(]+)\s*\(([^,)]+)(?:,\s*([^)]+))?\)", var_str)
+    if match:
+        var_name = match.group(1).strip()
+        var_label = match.group(2).strip()
+        var_unit = match.group(3).strip() if match.group(3) else ""
+    else:
+        var_name = var_str
+        var_label = ""
+        var_unit = ""
+
+    try:
+        session.run(
+            f"""
+            MERGE (v:Variable {{name: $var_name}})
+            SET v.label = $var_label, v.unit = $var_unit
+            WITH v
+            MATCH (n:{label} {{name: $node_name}})
+            MERGE (n)-[:USES_VARIABLE]->(v)
+            """,
+            var_name=var_name,
+            var_label=var_label,
+            var_unit=var_unit,
+            node_name=node_name,
+        )
+    except Exception as e:
+        logger.warning("Failed to insert variable '%s' for '%s': %s", var_str, node_name, e)
 
 
 # Backward-compat wrapper
@@ -595,12 +673,16 @@ def get_nodes_with_descriptions(
                 """
                 MATCH (d:Document {name: $doc_name})-[:hasBab]->(b:Bab)-[:hasKonsep]->(k:Konsep)
                 RETURN k.name AS name, k.description AS description,
-                       labels(k) AS labels, d.name AS doc_name
+                       labels(k) AS labels, d.name AS doc_name,
+                       coalesce(k.formula, []) AS formula,
+                       coalesce(k.variables, []) AS variables
                 UNION
                 MATCH (d:Document {name: $doc_name})-[:hasBab]->(:Bab)-[:hasKonsep]->(:Konsep)
                       -[:hasSubKonsep]->(sk:SubKonsep)
                 RETURN sk.name AS name, sk.description AS description,
-                       labels(sk) AS labels, d.name AS doc_name
+                       labels(sk) AS labels, d.name AS doc_name,
+                       coalesce(sk.formula, []) AS formula,
+                       coalesce(sk.variables, []) AS variables
                 ORDER BY name
                 """,
                 doc_name=document_name,
@@ -611,7 +693,9 @@ def get_nodes_with_descriptions(
                 MATCH (n)
                 WHERE n:Konsep OR n:SubKonsep
                 RETURN n.name AS name, n.description AS description,
-                       labels(n) AS labels, NULL AS doc_name
+                       labels(n) AS labels, NULL AS doc_name,
+                       coalesce(n.formula, []) AS formula,
+                       coalesce(n.variables, []) AS variables
                 ORDER BY name
                 """,
                 doc_name=document_name,
@@ -626,7 +710,9 @@ def get_nodes_with_descriptions(
                        -[:hasSubKonsep]->(n)
                 WITH n, COALESCE(d.name, d2.name) AS doc_name
                 RETURN n.name AS name, n.description AS description,
-                       labels(n) AS labels, doc_name
+                       labels(n) AS labels, doc_name,
+                       coalesce(n.formula, []) AS formula,
+                       coalesce(n.variables, []) AS variables
                 ORDER BY n.name
                 """
             )
@@ -645,6 +731,8 @@ def get_nodes_with_descriptions(
                     "description": desc,
                     "labels": r["labels"],
                     "document": r.get("doc_name"),
+                    "formula": list(r["formula"]) if r.get("formula") else [],
+                    "variables": list(r["variables"]) if r.get("variables") else [],
                 }
             )
         return nodes
