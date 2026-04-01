@@ -35,7 +35,7 @@
         },
         {
           "title": "Glossary Validation Rate",
-          "query": "MATCH (c:Concept)\nWITH count(c) as total\nMATCH (c:Concept)\nWHERE c.glossary_validated = true\nRETURN toFloat(count(c)) / total AS GlossaryValidationRate\n// Persentase konsep tervalidasi glosarium (Target: Tinggi)",
+          "query": "MATCH (c:Concept)\nWITH count(c) AS total,\n     sum(CASE WHEN c.glossary_validated = true THEN 1 ELSE 0 END) AS validated\nRETURN toFloat(validated) / total AS GlossaryValidationRate\n// Persentase konsep tervalidasi glosarium (Target: Tinggi)",
           "width": 3,
           "height": 2,
           "x": 6,
@@ -46,7 +46,7 @@
         },
         {
           "title": "Materi Pokok Coverage",
-          "query": "MATCH (c:Concept)\nWITH count(c) as total\nMATCH (c:Concept)\nWHERE c.materi_pokok_ref IS NOT NULL AND c.materi_pokok_ref <> \"\"\nRETURN toFloat(count(c)) / total AS MateriPokokCoverage\n// Persentase konsep dengan referensi materi pokok (Target: >= 0.80)",
+          "query": "MATCH (c:Concept)\nWITH count(c) AS total,\n     sum(CASE WHEN c.materi_pokok_ref IS NOT NULL AND c.materi_pokok_ref <> \"\" THEN 1 ELSE 0 END) AS has_ref\nRETURN toFloat(has_ref) / total AS MateriPokokCoverage\n// Persentase konsep dengan referensi materi pokok (Target: >= 0.80)",
           "width": 3,
           "height": 2,
           "x": 0,
@@ -57,7 +57,7 @@
         },
         {
           "title": "Description Completeness",
-          "query": "MATCH (e) WHERE e:Concept OR e:ConceptTarget\nWITH count(e) as total\nMATCH (e) WHERE (e:Concept OR e:ConceptTarget)\nAND e.description IS NOT NULL AND e.description <> \"\"\nRETURN toFloat(count(e))/total AS DescriptionCompleteness\n// Persentase entitas dengan deskripsi (Target: >= 0.90)",
+          "query": "MATCH (e) WHERE e:Concept OR e:ConceptTarget\nWITH count(e) AS total,\n     sum(CASE WHEN e.description IS NOT NULL AND e.description <> \"\" THEN 1 ELSE 0 END) AS has_desc\nRETURN toFloat(has_desc) / total AS DescriptionCompleteness\n// Persentase entitas dengan deskripsi (Target: >= 0.90)",
           "width": 3,
           "height": 2,
           "x": 3,
@@ -68,7 +68,7 @@
         },
         {
           "title": "Typed Relation Ratio",
-          "query": "MATCH ()-[r]->()\nWITH count(r) as total\nMATCH ()-[r:MENDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|MENGATUR|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|BEREAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIFORMULASIKAN_SEBAGAI|PRASYARAT|MEMPERSIAPKAN]->()\nRETURN toFloat(count(r))/total AS TypedRelationRatio\n// Proporsi relasi semantik vs struktural",
+          "query": "MATCH ()-[r]->()\nWITH count(r) AS total,\n     sum(CASE WHEN type(r) IN ['MENDEFINISIKAN','MENYEBABKAN','MEMUNGKINKAN','MENGATUR','BAGIAN_DARI','TERDIRI_DARI','BERGANTUNG_PADA','BERINTERAKSI_DENGAN','BEREAKSI_DENGAN','MENGHASILKAN','MEMPENGARUHI','DIFORMULASIKAN_SEBAGAI'] THEN 1 ELSE 0 END) AS typed\nRETURN toFloat(typed) / total AS TypedRelationRatio\n// Proporsi relasi semantik vs struktural",
           "width": 3,
           "height": 2,
           "x": 6,
