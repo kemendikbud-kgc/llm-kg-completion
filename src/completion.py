@@ -56,6 +56,16 @@ def _get_embeddings_raw(texts: list[str], model: str) -> list[list[float]]:
     return embed_model.get_text_embedding_batch(texts)
 
 
+def build_embed_text(node: dict) -> str:
+    """Build the text to embed for a node, enriched with formula/variables for STEM concepts."""
+    text = f"{node['name']}. {node.get('description', node['name'])}"
+    if node.get("formula"):
+        text += f" Rumus: {', '.join(node['formula'])}"
+    if node.get("variables"):
+        text += f" Variabel: {', '.join(node['variables'])}"
+    return text
+
+
 def get_embeddings(
     texts: list[str],
     model: str | None = None,
