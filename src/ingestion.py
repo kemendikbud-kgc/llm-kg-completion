@@ -175,7 +175,9 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
     """
     lines = raw_text.splitlines()
 
-    # Find ALL occurrences of "Daftar Isi" — use the last one (actual ToC, not references)
+    # Find ALL occurrences of "Daftar Isi" — use the FIRST one (start of ToC section)
+    # Note: Some PDFs have "Daftar Isi" repeated on continuation pages (e.g., page vi)
+    # We want to start from the beginning to capture all Bab entries
     toc_starts = [
         idx
         for idx, line in enumerate(lines)
@@ -184,7 +186,7 @@ def parse_daftar_isi(raw_text: str) -> DocumentStructure:
     if not toc_starts:
         return DocumentStructure(found=False)
 
-    toc_start = toc_starts[-1]
+    toc_start = toc_starts[0]  # Use FIRST occurrence to capture all Bab entries
 
     # Scan up to 300 lines; stop when we hit actual chapter content
     # (a BAB line with NO page number trailing it = real chapter heading, not ToC entry)
