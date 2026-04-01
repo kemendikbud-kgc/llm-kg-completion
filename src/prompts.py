@@ -78,6 +78,33 @@ Bab ini memiliki subchapter berikut sesuai struktur buku:
 - Panjang: 1-3 kalimat informatif
 - Gunakan bahasa Indonesia
 
+## RUMUS DAN VARIABEL (WAJIB untuk konsep kuantitatif)
+
+Jika konsep memiliki rumus, persamaan, atau variabel kuantitatif, field berikut WAJIB diisi:
+1. **"formula"**: Ekstrak SEMUA rumus/persamaan (notasi teks, misal: "F = m × a")
+   - Sertakan rumus utama DAN bentuk turunan (misal: "v = s/t", "s = v × t", "t = s/v")
+2. **"variables"**: Daftar SEMUA variabel dengan format: "simbol (nama, satuan)"
+   - Contoh: ["F (gaya, N)", "m (massa, kg)", "a (percepatan, m/s²)"]
+   - WAJIB menyertakan satuan SI
+3. **"kondisi"**: Kondisi/batasan berlakunya konsep
+   - Contoh: ["suhu konstan", "gas ideal", "tanpa gesekan", "vakum"]
+
+**PENTING:** Sebagian besar konsep Fisika/Kimia memiliki rumus. Jika Anda tidak mengekstrak rumus, periksa kembali teks — kemungkinan besar ada rumus yang terlewat.
+
+## CONTOH SOAL
+
+- Abaikan teks soal dan jawaban secara detail
+- TETAPI ekstrak pola penerapan konsep: konsep apa yang digunakan bersama?
+- Contoh: jika soal menggunakan Hukum Newton II dan Gaya Gesek pada bidang miring,
+  tambahkan relasi BERINTERAKSI_DENGAN antara kedua konsep tersebut
+
+## PROSES DAN MEKANISME (Kimia/Biologi)
+
+Untuk proses bertahap (mekanisme reaksi, jalur metabolisme, prosedur titrasi):
+- Gunakan relasi BAGIAN_DARI untuk menghubungkan langkah ke proses induk
+- Gunakan relasi MENYEBABKAN antar langkah berurutan
+- Contoh: "Ionisasi" BAGIAN_DARI "Reaksi Asam-Basa"
+
 ## TIPE RELASI
 
 Untuk setiap konsep, identifikasi relasi ke konsep LAIN dalam bab ini.
@@ -93,21 +120,21 @@ Pilih SALAH SATU dari tipe relasi berikut (HURUF_KAPITAL):
 | **BERINTERAKSI_DENGAN** | X berinteraksi dengan Y | "Enzim BERINTERAKSI_DENGAN Substrat" |
 | **DIFORMULASIKAN_SEBAGAI** | X diformulasikan sebagai Y | "Gaya DIFORMULASIKAN_SEBAGAI F=ma" |
 
-**PENTING:** Hanya gunakan 7 tipe relasi di atas. Jangan membuat tipe relasi baru.
+**PENTING:** Hanya gunakan tipe relasi di atas. Jangan membuat tipe relasi baru.
 
 ## ATURAN RELASI
 
-1. Relasi bersifat OPSIONAL — tidak semua konsep memiliki relasi
+1. Setiap konsep SEBAIKNYA memiliki minimal 1 relasi ke konsep lain dalam bab ini
 2. Target relasi adalah nama konsep LAIN dalam bab ini
 3. Deskripsi relasi: 1 kalimat singkat menjelaskan MENGAPA relasi ini ada
 4. Maksimal 3 relasi per konsep
+5. Jika konsep benar-benar independen, boleh tanpa relasi — tapi ini jarang terjadi
 
 ## FILTER KONTEN
 
 Abaikan sepenuhnya:
 - Daftar isi, nomor halaman, judul buku, nama penulis
 - Informasi penerbit, header/footer
-- Instruksi soal, pertanyaan latihan
 - Keterangan gambar, rangkuman, glosarium, indeks
 
 Ekstrak HANYA pengetahuan ilmiah yang bermakna dari isi buku.
@@ -128,6 +155,9 @@ Ekstrak HANYA pengetahuan ilmiah yang bermakna dari isi buku.
         {{
           "name": "Nama Konsep",
           "description": "Deskripsi 1-3 kalimat",
+          "formula": ["F = m × a", "a = F/m"],
+          "variables": ["F (gaya, N)", "m (massa, kg)", "a (percepatan, m/s²)"],
+          "kondisi": ["tanpa gesekan", "massa konstan"],
           "relations": [
             {{
               "type": "MENYEBABKAN",
@@ -142,7 +172,9 @@ Ekstrak HANYA pengetahuan ilmiah yang bermakna dari isi buku.
 }}
 
 CATATAN:
-- "relations" bersifat opsional — kosongkan array jika tidak ada relasi yang relevan
+- "formula" dan "variables" WAJIB diisi jika konsep bersifat kuantitatif (memiliki rumus/persamaan)
+- "relations" WAJIB diisi jika konsep berhubungan dengan konsep lain dalam bab
+- Kosongkan array [] HANYA jika benar-benar tidak ada (misal: konsep deskriptif murni tanpa rumus)
 - Setiap sub_bab WAJIB memiliki minimal 1 konsep
 
 Teks Bab:
@@ -185,7 +217,7 @@ def build_toc_bab_system_prompt(
 register_prompt(
     ExtractionPrompt(
         name="default",
-        version="v3",
+        version="v5",
         system_prompt="""\
 Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurikulum Indonesia.
 
@@ -202,6 +234,31 @@ Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurik
 **SubKonsep:**
 - Konten terperinci yang menjelaskan atau mengelaborasi sebuah Konsep
 - Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
+
+## RUMUS DAN VARIABEL (WAJIB untuk konsep kuantitatif)
+
+Jika konsep memiliki rumus, persamaan, atau variabel kuantitatif, field berikut WAJIB diisi:
+1. **"formula"**: Ekstrak SEMUA rumus/persamaan (notasi teks, misal: "F = m × a")
+   - Sertakan rumus utama DAN bentuk turunan (misal: "v = s/t", "s = v × t", "t = s/v")
+2. **"variables"**: Daftar SEMUA variabel dengan format: "simbol (nama, satuan)"
+   - Contoh: ["F (gaya, N)", "m (massa, kg)", "a (percepatan, m/s²)"]
+   - WAJIB menyertakan satuan SI
+3. **"kondisi"**: Kondisi/batasan berlakunya konsep
+   - Contoh: ["suhu konstan", "gas ideal", "tanpa gesekan", "vakum"]
+
+**PENTING:** Sebagian besar konsep Fisika/Kimia memiliki rumus. Jika Anda tidak mengekstrak rumus, periksa kembali teks — kemungkinan besar ada rumus yang terlewat.
+
+## CONTOH SOAL
+
+- Abaikan teks soal dan jawaban secara detail
+- TETAPI ekstrak pola penerapan konsep: konsep apa yang digunakan bersama?
+- Contoh: jika soal menggunakan Hukum Newton II dan Gaya Gesek, catat keterkaitan keduanya
+
+## PROSES DAN MEKANISME (Kimia/Biologi)
+
+Untuk proses bertahap (mekanisme reaksi, jalur metabolisme, prosedur titrasi):
+- Identifikasi langkah-langkah sebagai SubKonsep berurutan
+- Catat hubungan antar langkah (misal: langkah A menghasilkan produk untuk langkah B)
 
 ## ATURAN HIERARKI
 
@@ -224,7 +281,7 @@ Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurik
 
 Ekstrak semua Konsep dan SubKonsep dari teks berikut.
 Output dalam format JSON sesuai schema.""",
-        description="Indonesian curriculum prompt (v3)",
+        description="Indonesian curriculum prompt with STEM support (v4)",
     )
 )
 
@@ -233,7 +290,7 @@ Output dalam format JSON sesuai schema.""",
 register_prompt(
     ExtractionPrompt(
         name="minimal",
-        version="v2-minimal",
+        version="v3-minimal",
         system_prompt="""\
 Extract concepts (konsep) and sub-concepts (sub-konsep) from the following educational text.
 
@@ -244,8 +301,15 @@ Output as JSON with format:
     {
       "name": "Concept Name",
       "description": "Brief description of what is taught",
+      "formula": ["F = m × a"],
+      "variables": ["F (force, N)", "m (mass, kg)", "a (acceleration, m/s²)"],
       "sub_konsep": [
-        {"name": "SubConcept Name", "description": "Brief description"}
+        {
+          "name": "SubConcept Name",
+          "description": "Brief description",
+          "formula": [],
+          "variables": []
+        }
       ]
     }
   ]
@@ -254,8 +318,9 @@ Output as JSON with format:
 Rules:
 - Each konsep must have at least one sub_konsep
 - Descriptions should explain what is taught, not general definitions
-- Use the same language as the source text""",
-        description="Minimal prompt (baseline). Use to measure ontology prompt improvement.",
+- Use the same language as the source text
+- Extract formulas and variables for Physics/Chemistry concepts""",
+        description="Minimal prompt with STEM support. Use to measure ontology prompt improvement.",
     )
 )
 
@@ -264,7 +329,7 @@ Rules:
 register_prompt(
     ExtractionPrompt(
         name="strict",
-        version="v2-strict",
+        version="v4-strict",
         system_prompt="""\
 Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurikulum Indonesia.
 
@@ -277,6 +342,15 @@ Anda adalah ahli kurikulum pendidikan yang mengekstrak konten dari dokumen kurik
 **SubKonsep:**
 - Konten terperinci yang menjelaskan atau mengelaborasi sebuah Konsep
 - Contoh: "Hukum Newton I tentang Inersia", "Proses Pencernaan di Lambung"
+
+## RUMUS DAN VARIABEL (WAJIB untuk konsep kuantitatif)
+
+Jika konsep memiliki rumus atau variabel kuantitatif:
+1. **"formula"**: WAJIB ekstrak SEMUA rumus, termasuk bentuk turunan
+2. **"variables"**: WAJIB daftar semua variabel: "simbol (nama, satuan SI)"
+3. **"kondisi"**: Catat kondisi/batasan berlakunya konsep
+
+**PENTING:** Jangan lewatkan rumus — periksa kembali teks jika field "formula" kosong untuk konsep Fisika/Kimia.
 
 ## ATURAN HIERARKI KETAT
 
@@ -291,6 +365,7 @@ SEBELUM memberikan output, verifikasi:
 - [ ] Setiap Konsep memiliki minimal 1 SubKonsep
 - [ ] Tidak ada Konsep tanpa SubKonsep
 - [ ] Semua nama unik
+- [ ] Formula dan variabel diekstrak untuk konsep Fisika/Kimia
 
 ## ATURAN DESKRIPSI
 
@@ -307,7 +382,7 @@ SEBELUM memberikan output, verifikasi:
 
 Ekstrak semua Konsep dan SubKonsep dari teks berikut.
 Output dalam format JSON sesuai schema.""",
-        description="Strict hierarchy enforcement. Forces every Konsep to have SubKonsep.",
+        description="Strict hierarchy with STEM support. Forces every Konsep to have SubKonsep.",
     )
 )
 
@@ -316,7 +391,7 @@ Output dalam format JSON sesuai schema.""",
 register_prompt(
     ExtractionPrompt(
         name="cot",
-        version="v2-cot",
+        version="v4-cot",
         system_prompt="""\
 Anda adalah ahli kurikulum pendidikan. Ekstrak konten kurikulum secara sistematis.
 
@@ -333,10 +408,16 @@ Tanyakan: "Apa konsep-konsep besar yang diajarkan?"
 Untuk setiap tema, temukan detail pendukung (kandidat SubKonsep).
 Tanyakan: "Apa saja yang menjelaskan atau mengelaborasi tema ini?"
 
-**LANGKAH 4: Verifikasi Hierarki**
+**LANGKAH 4: Ekstrak Rumus dan Variabel (Fisika/Kimia)**
+Untuk konsep Fisika/Kimia, identifikasi:
+- Rumus/persamaan yang mendefinisikan konsep
+- Variabel beserta nama dan satuan
+- Kondisi berlaku (jika ada)
+
+**LANGKAH 5: Verifikasi Hierarki**
 Pastikan setiap Konsep memiliki minimal satu SubKonsep.
 
-**LANGKAH 5: Tulis Deskripsi**
+**LANGKAH 6: Tulis Deskripsi**
 Tulis deskripsi yang menjelaskan APA yang diajarkan (bukan definisi umum).
 Gunakan bahasa yang sama dengan teks sumber.
 
@@ -344,12 +425,14 @@ Gunakan bahasa yang sama dengan teks sumber.
 
 **Konsep:** Konsep abstrak atau tema utama (contoh: "Hukum Newton")
 **SubKonsep:** Detail yang menjelaskan Konsep (contoh: "Hukum Newton I tentang Inersia")
+**Formula:** Rumus matematika (contoh: "F = m × a")
+**Variables:** Variabel dengan satuan (contoh: "F (gaya, N)", "m (massa, kg)")
 
 ## OUTPUT
 
 Setelah melalui semua langkah, berikan output dalam format JSON sesuai schema.
 Abaikan teks administratif (nomor halaman, header, footer).""",
-        description="Chain-of-Thought prompt. May improve accuracy for complex hierarchies.",
+        description="Chain-of-Thought prompt with STEM support. May improve accuracy for complex hierarchies.",
     )
 )
 
@@ -403,7 +486,7 @@ Output in JSON format according to the schema.""",
 register_prompt(
     ExtractionPrompt(
         name="toc_bab",
-        version="v4-toc-bab",
+        version="v5-toc-bab",
         system_prompt=TOC_BAB_PROMPT_TEMPLATE,  # Template, will be customized per-Bab
         description="ToC-enforced per-Bab extraction with inline relations. Best for structured textbooks.",
     )
