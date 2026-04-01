@@ -14,3 +14,4 @@ data/cache/*.json
 data/embedding_cache/*.json
 settings.local.json
 nul
+.mcp.json
