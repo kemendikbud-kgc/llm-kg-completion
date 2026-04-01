@@ -3,6 +3,10 @@
 import json
 import logging
 
+# Silence verbose library logs
+logging.basicConfig(level=logging.WARNING)
+logging.getLogger("neo4j").setLevel(logging.ERROR)
+
 import streamlit as st
 from streamlit_agraph import agraph, Node, Edge, Config
 
@@ -45,6 +49,7 @@ from src.completion import (
     find_similar_pairs_ann,
     classify_similar_pairs,
     get_embeddings,
+    build_embed_text,
 )
 from src.experiments import (
     ExperimentRun,
@@ -255,6 +260,13 @@ with st.sidebar:
             f"{stats['embedding_size_mb']} MB\n\n"
             f"**Total:** {stats['total_size_mb']} MB"
         )
+        if st.button("Clear All Caches", type="secondary", use_container_width=True):
+            result = cache_manager.clear_all()
+            st.success(
+                f"Cleared {result['extraction_deleted']} extraction files "
+                f"and {result['embedding_deleted']} embedding files."
+            )
+            st.rerun()
         age = st.number_input("Max embedding age (days)", value=90, min_value=1)
         if st.button("Clear old embeddings"):
             n = cache_manager.cleanup_embeddings(max_age_days=age)
@@ -1066,12 +1078,7 @@ else:
                         )
 
                         # Get embeddings first
-                        names = [n["name"] for n in nodes]
-                        descriptions = [n["description"] for n in nodes]
-                        combined_texts = [
-                            f"{name}. {desc}"
-                            for name, desc in zip(names, descriptions)
-                        ]
+                        combined_texts = [build_embed_text(n) for n in nodes]
 
                         update_progress(0, len(nodes), "Computing embeddings...")
                         embeddings = get_embeddings(
@@ -1337,9 +1344,7 @@ else:
                             status_text.caption(message)
 
                         # Get embeddings
-                        combined_texts = [
-                            f"{n['name']}. {n['description']}" for n in nodes
-                        ]
+                        combined_texts = [build_embed_text(n) for n in nodes]
                         embeddings = get_embeddings(
                             combined_texts,
                             model=selected_embedding_model,
