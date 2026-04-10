@@ -1,0 +1,3 @@
+[submodule "kg-review-app"]
+	path = kg-review-app
+	url = https://github.com/tegar-wahyu/kg-review-app.git
