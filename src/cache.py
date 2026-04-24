@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 CACHE_DIR = Path("data/cache")
 EMBEDDING_CACHE_DIR = Path("data/embedding_cache")
+CLASSIFICATION_CACHE_DIR = Path("data/classification_cache")
 MANIFEST_PATH = CACHE_DIR / "manifest.json"
 
 
@@ -25,6 +26,13 @@ def _cache_key(text: str, model: str, prompt_version: str) -> str:
 def _embedding_cache_key(text: str, model: str) -> str:
     """Return SHA-256 hash of text + model for embedding cache keying."""
     return hashlib.sha256((text + model).encode()).hexdigest()
+
+
+def _classification_cache_key(text: str, model: str, prompt_version: str) -> str:
+    """Return SHA-256 hash of text + model + prompt_version for classification cache keying."""
+    return hashlib.sha256(
+        (text + "||" + model + "||" + prompt_version).encode()
+    ).hexdigest()
 
 
 class CacheManager:
@@ -135,6 +143,29 @@ class CacheManager:
         cache_file = EMBEDDING_CACHE_DIR / f"{key}.json"
         cache_file.write_text(
             json.dumps({"embedding": embedding}, indent=2), encoding="utf-8"
+        )
+
+    # ── Classification cache ───────────────────────────────────────
+
+    def get_classification(
+        self, text: str, model: str, prompt_version: str
+    ) -> dict | None:
+        """Load cached classification result, or None."""
+        key = _classification_cache_key(text, model, prompt_version)
+        cache_file = CLASSIFICATION_CACHE_DIR / f"{key}.json"
+        if cache_file.exists():
+            return json.loads(cache_file.read_text(encoding="utf-8"))
+        return None
+
+    def put_classification(
+        self, text: str, model: str, prompt_version: str, result: dict
+    ) -> None:
+        """Save classification result to cache."""
+        CLASSIFICATION_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        key = _classification_cache_key(text, model, prompt_version)
+        cache_file = CLASSIFICATION_CACHE_DIR / f"{key}.json"
+        cache_file.write_text(
+            json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
         )
 
     # ── Management ─────────────────────────────────────────────────
@@ -253,12 +284,24 @@ class CacheManager:
                     f.unlink()
                     embedding_deleted += 1
 
+        classification_deleted = 0
+        if CLASSIFICATION_CACHE_DIR.exists():
+            for f in CLASSIFICATION_CACHE_DIR.iterdir():
+                if f.suffix == ".json":
+                    f.unlink()
+                    classification_deleted += 1
+
         logger.info(
-            "Cleared all caches: %d extraction files, %d embedding files",
+            "Cleared all caches: %d extraction files, %d embedding files, %d classification files",
             extraction_deleted,
             embedding_deleted,
+            classification_deleted,
         )
-        return {"extraction_deleted": extraction_deleted, "embedding_deleted": embedding_deleted}
+        return {
+            "extraction_deleted": extraction_deleted,
+            "embedding_deleted": embedding_deleted,
+            "classification_deleted": classification_deleted,
+        }
 
     def migrate_legacy(self) -> None:
         """Index existing cache files that aren't in the manifest."""
