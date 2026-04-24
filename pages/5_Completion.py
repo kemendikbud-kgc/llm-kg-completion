@@ -34,12 +34,19 @@ from src.config import (
     DEFAULT_EMBEDDING_MODEL,
 )
 from src.notify import send_notification
+from src.streamlit_log_handler import setup_log_capture, render_log_container
 
 logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="KG Completion", layout="wide")
 st.title("Knowledge Graph Completion")
-st.write("Discover similar konsep using semantic embeddings, then classify relationships.")
+st.write(
+    "Discover similar konsep using semantic embeddings, then classify relationships."
+)
+
+# Clear logs from previous render
+if "log_handler" in st.session_state:
+    st.session_state["log_handler"].clear()
 
 # --- Sidebar: Model Selection ---
 with st.sidebar:
@@ -130,7 +137,19 @@ elif scope_mode == "cross" and selected_doc:
 st.divider()
 
 # --- Threshold and controls ---
-threshold = st.slider("Similarity threshold", 0.5, 1.0, 0.8, 0.05)
+col_thresh, col_topk = st.columns(2)
+with col_thresh:
+    threshold = st.slider("Similarity threshold", 0.5, 1.0, 0.85, 0.05)
+with col_topk:
+    top_k = st.slider(
+        "Neighbors per node (top-k)",
+        min_value=1,
+        max_value=50,
+        value=5,
+        step=1,
+        help="How many nearest neighbors to consider per node. Larger values "
+        "find more pairs at the cost of runtime and noise.",
+    )
 
 # Show vector index status
 try:
@@ -142,9 +161,7 @@ try:
     col_stat1, col_stat2 = st.columns(2)
     with col_stat1:
         if index_info.get("exists"):
-            st.success(
-                f"Vector index ready ({index_info.get('state', 'ONLINE')})"
-            )
+            st.success(f"Vector index ready ({index_info.get('state', 'ONLINE')})")
         else:
             st.info("Vector index will be created on first run")
     with col_stat2:
@@ -166,13 +183,12 @@ with col_find:
         if scope_mode in ["single", "cross"] and not selected_doc:
             st.error("Please select a document first.")
         else:
+            log_handler = setup_log_capture("Step 5: Find Similar")
             progress_bar = st.progress(0, text="Initializing...")
-            status_text = st.empty()
 
             def update_progress(current: int, total: int, message: str):
                 if total > 0:
                     progress_bar.progress(current / total, text=f"{message}")
-                status_text.info(message)
                 logger.info("[Completion] %s (%d/%d)", message, current, total)
 
             try:
@@ -188,7 +204,7 @@ with col_find:
 
                 if not nodes:
                     progress_bar.empty()
-                    status_text.warning("No nodes found in the selected scope.")
+                    st.warning("No nodes found in the selected scope.")
                     driver.close()
                 else:
                     logger.info(
@@ -208,14 +224,20 @@ with col_find:
                         progress_callback=update_progress,
                     )
 
-                    # Use ANN search
+                    # Single-doc scope: the vector index spans the whole graph,
+                    # so restrict matches to the filtered node set explicitly.
+                    allowed_names = (
+                        {n["name"] for n in nodes} if scope_mode == "single" else None
+                    )
+
                     pairs = find_similar_pairs_ann(
                         driver=driver,
                         nodes=nodes,
                         embeddings=embeddings,
                         model=selected_embedding_model,
                         threshold=threshold,
-                        top_k=10,
+                        top_k=top_k,
+                        allowed_names=allowed_names,
                         progress_callback=update_progress,
                     )
                     driver.close()
@@ -228,7 +250,6 @@ with col_find:
                     }
 
                     progress_bar.empty()
-                    status_text.empty()
                     logger.info(
                         "[Completion] Found %d similar pairs from %d nodes (ann)",
                         len(pairs),
@@ -241,7 +262,7 @@ with col_find:
 
             except Exception as e:
                 progress_bar.empty()
-                status_text.error(f"Error: {e}")
+                st.error(f"Error: {e}")
                 logger.error("[Completion] Error: %s", e)
 
 if st.session_state.get("found_pairs"):
@@ -274,11 +295,18 @@ if st.session_state.get("found_pairs"):
             saved_count = 0
             with driver.session() as session:
                 for i, p in enumerate(pairs):
+                    # Restrict matches to Konsep/SubKonsep so names that happen
+                    # to collide with Bab/Document nodes cannot be linked.
+                    # Pairs are written in a canonical direction (sorted) and
+                    # should be read with `-[r:SIMILAR_TO]-` (undirected).
+                    src, tgt = sorted([p["source"], p["target"]])
                     session.run(
-                        "MATCH (a {name: $src}), (b {name: $tgt}) "
-                        "MERGE (a)-[:SIMILAR_TO {score: $score}]->(b)",
-                        src=p["source"],
-                        tgt=p["target"],
+                        "MATCH (a:Konsep|SubKonsep {name: $src}), "
+                        "(b:Konsep|SubKonsep {name: $tgt}) "
+                        "MERGE (a)-[r:SIMILAR_TO]->(b) "
+                        "SET r.score = $score",
+                        src=src,
+                        tgt=tgt,
                         score=p["similarity"],
                     )
                     saved_count += 1
@@ -314,16 +342,27 @@ except Exception:
 if existing_similar:
     st.info(f"{len(existing_similar)} SIMILAR_TO relationships found in the graph.")
 
+    classify_batch_size = st.slider(
+        "Classify batch size (pairs per LLM call)",
+        min_value=1,
+        max_value=20,
+        value=10,
+        help=(
+            "1 = one LLM call per pair (safer, slower). "
+            "10 = ~10x fewer requests, much faster, slightly higher failure blast radius per call. "
+            "Failed batches are NOT cached and can be retried by rerunning."
+        ),
+    )
+
     col_classify, col_info = st.columns([1, 2])
     with col_classify:
         if st.button("Classify Relationships", type="secondary"):
+            log_handler = setup_log_capture("Step 5: Classify")
             progress_bar = st.progress(0, text="Classifying...")
-            status_text = st.empty()
 
             def update_classify_progress(current: int, total: int, message: str):
                 if total > 0:
                     progress_bar.progress(current / total, text=message)
-                status_text.info(message)
 
             try:
                 driver = get_driver()
@@ -332,6 +371,7 @@ if existing_similar:
                     existing_similar,
                     llm_model=selected_chat_model,
                     progress_callback=update_classify_progress,
+                    batch_size=classify_batch_size,
                 )
                 # Save typed relationships to Neo4j
                 saved_typed = 0
@@ -342,11 +382,11 @@ if existing_similar:
                             source=item["source"],
                             target=item["target"],
                             rel_type=item["rel_type"],
+                            confidence=item.get("confidence"),
                         )
                         saved_typed += 1
                 driver.close()
                 progress_bar.empty()
-                status_text.empty()
                 counts = {}
                 for item in classified:
                     counts[item["rel_type"]] = counts.get(item["rel_type"], 0) + 1
@@ -356,13 +396,11 @@ if existing_similar:
                     f"({counts})"
                 )
                 st.success(msg)
-                send_notification(
-                    "Classification Done", f"{saved_typed} relationships"
-                )
+                send_notification("Classification Done", f"{saved_typed} relationships")
                 st.rerun()
             except Exception as e:
                 progress_bar.empty()
-                status_text.error(f"Classification error: {e}")
+                st.error(f"Classification error: {e}")
                 logger.error("[Completion] Classification error: %s", e)
 
     with col_info:
@@ -416,9 +454,7 @@ try:
                 success = create_vector_index(driver, dimensions=dimensions)
                 driver.close()
                 if success:
-                    st.success(
-                        f"Vector index created with {dimensions} dimensions"
-                    )
+                    st.success(f"Vector index created with {dimensions} dimensions")
                     st.rerun()
                 else:
                     st.error("Failed to create vector index")
@@ -454,14 +490,11 @@ try:
                     st.warning("No nodes found to embed")
                     driver.close()
                 else:
+                    log_handler = setup_log_capture("Step 5: Embeddings")
                     progress_bar = st.progress(0, text="Embedding nodes...")
-                    status_text = st.empty()
 
-                    def update_embed_progress(
-                        current: int, total: int, message: str
-                    ):
+                    def update_embed_progress(current: int, total: int, message: str):
                         progress_bar.progress(current / total, text=message)
-                        status_text.caption(message)
 
                     # Get embeddings
                     combined_texts = [build_embed_text(n) for n in nodes]
@@ -478,7 +511,6 @@ try:
                     driver.close()
 
                     progress_bar.empty()
-                    status_text.empty()
                     st.success(f"Stored embeddings for {updated} nodes")
                     st.rerun()
             except Exception as e:
@@ -486,3 +518,7 @@ try:
 
 except Exception as e:
     st.warning(f"Could not connect to Neo4j: {e}")
+
+# --- Output Log Container ---
+st.divider()
+render_log_container()
