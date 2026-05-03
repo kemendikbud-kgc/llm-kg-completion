@@ -1,0 +1,10 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - img [ref=e5]
+    - heading "Validasi graf pengetahuan" [level=1] [ref=e6]
+    - paragraph [ref=e7]: Masuk menggunakan akun admin atau expert yang sudah diberikan.
+    - generic [ref=e8]: Nama pengguna
+    - textbox [ref=e9]
+    - generic [ref=e10]: Kata sandi
+    - textbox [ref=e11]
+    - button "Masuk" [ref=e12] [cursor=pointer]

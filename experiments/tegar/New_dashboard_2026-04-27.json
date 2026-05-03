@@ -1,0 +1,456 @@
+{
+  "version": 2,
+  "title": "Knowledge Graph Evaluation Dashboard (Combined)",
+  "description": "Merged from `New_dashboard` (graph-level stats) and `Knowledge_Graph_Evaluation_Dashboard_TA_KG_Notebook` (per-ontology evaluation), with audit fixes applied: relationship-type lists restricted to types present in the schema, Typed Relation Ratio redefined as non-structural, Description Completeness scoped to :Concept, Grade Overview duplicate column fix, and historical queries cleaned of broken `n.community` / unprojected-GDS references.",
+  "pages": [
+    {
+      "id": "0",
+      "version": 1,
+      "title": "Main page",
+      "widgets": [
+        {
+          "version": 1,
+          "title": "Average Degree Centrality (Normalized)",
+          "w": 4,
+          "h": 4,
+          "x": 0,
+          "y": 0,
+          "meta": {
+            "latestCypherQueries": [
+              {
+                "query": "/* Average normalized degree centrality: avg(deg(v) / (|V|-1)) */\nMATCH (n)\nWITH count(n) AS totalNodes\nMATCH (m)\nWITH totalNodes, 1.0 * COUNT { (m)--() } / (totalNodes - 1) AS normalizedDegree\nRETURN avg(normalizedDegree) AS average_degree_centrality",
+                "origin": "user"
+              },
+              {
+                "query": "/* Per-label avg normalized centrality (cleaner: single MATCH, all nodes have exactly one label in this graph) */\nMATCH (m)\nWITH labels(m)[0] AS labelType, COUNT { (m)--() } AS deg\nWITH labelType, avg(deg) AS avgDeg, count(*) AS n\nRETURN labelType, avgDeg / (n - 1) AS avg_normalized_centrality\nORDER BY avg_normalized_centrality DESC",
+                "origin": "user"
+              },
+              {
+                "query": "/* Raw average degree (not normalized) */\nMATCH (n)\nWITH n, COUNT { (n)--() } AS degree\nRETURN avg(degree) AS average_degree",
+                "origin": "user"
+              }
+            ],
+            "latestNaturalLanguagePrompts": [
+              {
+                "query": "calculate the average degree centrality"
+              }
+            ]
+          },
+          "settings": {
+            "type": "singleValue",
+            "query": "/* Average normalized degree centrality: avg(deg(v) / (|V|-1)) */\nMATCH (n)\nWITH count(n) AS totalNodes\nMATCH (m)\nWITH totalNodes, 1.0 * COUNT { (m)--() } / (totalNodes - 1) AS normalizedDegree\nRETURN avg(normalizedDegree) AS average_degree_centrality",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": null,
+            "textColor": null,
+            "align": 4
+          }
+        },
+        {
+          "version": 1,
+          "title": "Graph Stats (nodes, edges, density)",
+          "w": 4,
+          "h": 4,
+          "x": 4,
+          "y": 0,
+          "meta": {
+            "latestCypherQueries": [
+              {
+                "query": "MATCH (v)\nWITH count(v) AS total_nodes\nMATCH ()-[e]->()\nWITH total_nodes, count(e) AS total_edges\nRETURN\n    total_nodes,\n    total_edges,\n    CASE\n        WHEN total_nodes > 1\n        THEN toFloat(total_edges) / (total_nodes * (total_nodes - 1))\n        ELSE 0\n    END AS graph_density",
+                "origin": "user"
+              },
+              {
+                "query": "/* Modularity via GDS Louvain.\n   Run this setup once before the dashboard: CALL gds.graph.project('myGraph', '*', '*'). */\nCALL gds.louvain.stats('myGraph')\nYIELD modularity\nRETURN modularity",
+                "origin": "user"
+              },
+              {
+                "query": "/* Project + run Louvain in one go (drops the graph after to keep the catalog clean). */\nCALL gds.graph.project('mgTmp', '*', '*') YIELD graphName\nWITH graphName\nCALL gds.louvain.stats(graphName) YIELD modularity\nWITH graphName, modularity\nCALL gds.graph.drop(graphName) YIELD graphName AS dropped\nRETURN modularity",
+                "origin": "user"
+              }
+            ]
+          },
+          "settings": {
+            "type": "table",
+            "query": "MATCH (v)\nWITH count(v) AS total_nodes\nMATCH ()-[e]->()\nWITH total_nodes, count(e) AS total_edges\nRETURN \n    total_nodes, \n    total_edges,\n    CASE \n        WHEN total_nodes > 1 \n        THEN toFloat(total_edges) / (total_nodes * (total_nodes - 1)) \n        ELSE 0 \n    END AS graph_density",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "version": 1,
+      "title": "Evaluasi Metrik (Notebook Ontology)",
+      "widgets": [
+        {
+          "version": 1,
+          "title": "Materi Pokok Coverage",
+          "w": 4,
+          "h": 2,
+          "x": 0,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "singleValue",
+            "query": "MATCH (c:Concept)\nWITH count(c) AS total,\n     sum(CASE WHEN c.materi_pokok_ref IS NOT NULL AND c.materi_pokok_ref <> \"\" THEN 1 ELSE 0 END) AS has_ref\nRETURN toFloat(has_ref) / total AS MateriPokokCoverage\n// Persentase konsep dengan referensi materi pokok (Target: >= 0.80)",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": 72,
+            "align": 1
+          }
+        },
+        {
+          "version": 1,
+          "title": "Glossary Validation Rate",
+          "w": 4,
+          "h": 2,
+          "x": 4,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "singleValue",
+            "query": "MATCH (c:Concept)\nWITH count(c) AS total,\n     sum(CASE WHEN c.glossary_validated = true THEN 1 ELSE 0 END) AS validated\nRETURN toFloat(validated) / total AS GlossaryValidationRate\n// Persentase konsep tervalidasi glosarium (Target: Tinggi)",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": 72,
+            "align": 1
+          }
+        },
+        {
+          "version": 1,
+          "title": "Description Completeness (Concept)",
+          "w": 3,
+          "h": 2,
+          "x": 0,
+          "y": 2,
+          "meta": {},
+          "settings": {
+            "type": "singleValue",
+            "query": "MATCH (c:Concept)\nWITH count(c) AS total,\n     sum(CASE WHEN c.description IS NOT NULL AND c.description <> \"\" THEN 1 ELSE 0 END) AS has_desc\nRETURN toFloat(has_desc) / total AS DescriptionCompleteness\n// Scoped to :Concept only — :ConceptTarget intentionally has no description property\n// Target: >= 0.90",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": 72,
+            "align": 1
+          }
+        },
+        {
+          "version": 1,
+          "title": "Typed Relation Ratio (non-structural)",
+          "w": 3,
+          "h": 2,
+          "x": 3,
+          "y": 2,
+          "meta": {},
+          "settings": {
+            "type": "singleValue",
+            "query": "/* Proporsi relasi semantik vs struktural.\n   Struktural = HAS_CHAPTER, HAS_SUBTOPIC, HAS_CONCEPT, NEXT_CHAPTER. */\nMATCH ()-[r]->()\nWITH count(r) AS total,\n     sum(CASE WHEN NOT type(r) IN ['HAS_CHAPTER','HAS_SUBTOPIC','HAS_CONCEPT','NEXT_CHAPTER'] THEN 1 ELSE 0 END) AS typed\nRETURN toFloat(typed) / total AS TypedRelationRatio",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": 72,
+            "align": 1
+          }
+        },
+        {
+          "version": 1,
+          "title": "Cross-Chapter Relations (PRASYARAT/MEMPERSIAPKAN)",
+          "w": 2,
+          "h": 2,
+          "x": 6,
+          "y": 2,
+          "meta": {},
+          "settings": {
+            "type": "singleValue",
+            "query": "MATCH ()-[r:PRASYARAT|MEMPERSIAPKAN]->()\nRETURN count(r) AS CrossChapterRelations",
+            "databaseName": "772674a6",
+            "version": 1,
+            "fontSize": 72,
+            "align": 1
+          }
+        },
+        {
+          "version": 1,
+          "title": "Distribusi Node dalam Ontologi",
+          "w": 3,
+          "h": 3,
+          "x": 0,
+          "y": 4,
+          "meta": {},
+          "settings": {
+            "type": "bar",
+            "query": "MATCH (n)\nRETURN labels(n)[0] AS Label, count(n) AS Jumlah\nORDER BY Jumlah DESC",
+            "databaseName": "772674a6",
+            "dimensionKey": "Label",
+            "valueKeys": [
+              "Jumlah"
+            ],
+            "orientation": "vertical",
+            "scaleType": "linear",
+            "showLegend": false,
+            "showDataZoom": "auto",
+            "version": 1,
+            "barArrangement": "grouped",
+            "enableDownloadImage": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Distribusi Relasi (Edge, Top 15)",
+          "w": 3,
+          "h": 3,
+          "x": 3,
+          "y": 4,
+          "meta": {},
+          "settings": {
+            "type": "bar",
+            "query": "MATCH ()-[r]->()\nRETURN type(r) AS TipeRelasi, count(r) AS Jumlah\nORDER BY Jumlah DESC\nLIMIT 15",
+            "databaseName": "772674a6",
+            "dimensionKey": "TipeRelasi",
+            "valueKeys": [
+              "Jumlah"
+            ],
+            "orientation": "vertical",
+            "scaleType": "linear",
+            "showLegend": false,
+            "showDataZoom": "auto",
+            "version": 1,
+            "barArrangement": "grouped",
+            "enableDownloadImage": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Visualisasi Knowledge Graph (Hierarchy)",
+          "w": 6,
+          "h": 4,
+          "x": 6,
+          "y": 4,
+          "meta": {},
+          "settings": {
+            "type": "graph",
+            "query": "MATCH p=(g:Grade)-[:HAS_CHAPTER]->(ch:Chapter)-[:HAS_SUBTOPIC]->(s:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nRETURN p\nLIMIT 500",
+            "databaseName": "772674a6",
+            "version": 2,
+            "enableSidePanel": true,
+            "enableContextMenu": true,
+            "layout": {
+              "type": "d3Force"
+            },
+            "enableDownloadImage": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Konsep per Subtopic (Top 20)",
+          "w": 3,
+          "h": 3,
+          "x": 0,
+          "y": 7,
+          "meta": {},
+          "settings": {
+            "type": "bar",
+            "query": "MATCH (s:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nRETURN s.name AS Subtopic, count(c) AS JumlahKonsep\nORDER BY JumlahKonsep DESC\nLIMIT 20",
+            "databaseName": "772674a6",
+            "dimensionKey": "Subtopic",
+            "valueKeys": [
+              "JumlahKonsep"
+            ],
+            "orientation": "vertical",
+            "scaleType": "linear",
+            "showLegend": false,
+            "showDataZoom": "auto",
+            "version": 1,
+            "barArrangement": "grouped",
+            "enableDownloadImage": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Relasi Semantik (LLM-Extracted)",
+          "w": 6,
+          "h": 4,
+          "x": 3,
+          "y": 8,
+          "meta": {},
+          "settings": {
+            "type": "graph",
+            "query": "/* Relationship list restricted to types that exist in the DB schema.\n   Includes both spelling variants present in the graph: MENDEFINISIKAN + MEMDEFINISIKAN. */\nMATCH p=()-[:MENDEFINISIKAN|MEMDEFINISIKAN|MENYEBABKAN|MEMUNGKINKAN|BAGIAN_DARI|TERDIRI_DARI|BERGANTUNG_PADA|BERINTERAKSI_DENGAN|MENGHASILKAN|MEMPENGARUHI|DIRUMUSKAN_SEBAGAI]->()\nRETURN p\nLIMIT 150",
+            "databaseName": "772674a6",
+            "version": 2,
+            "enableSidePanel": true,
+            "enableContextMenu": true,
+            "layout": {
+              "type": "d3Force"
+            },
+            "enableDownloadImage": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "version": 1,
+      "title": "Struktur Hierarki",
+      "widgets": [
+        {
+          "version": 1,
+          "title": "Grade Overview",
+          "w": 6,
+          "h": 2,
+          "x": 0,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (g:Grade)\nRETURN g.name AS Grade, g.type AS Type",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Chapter Chain (NEXT_CHAPTER)",
+          "w": 6,
+          "h": 5,
+          "x": 6,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "graph",
+            "query": "MATCH p=(:Chapter)-[:NEXT_CHAPTER]->(:Chapter)\nRETURN p",
+            "databaseName": "772674a6",
+            "version": 2,
+            "enableSidePanel": true,
+            "enableContextMenu": true,
+            "layout": {
+              "type": "d3Force"
+            },
+            "enableDownloadImage": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Chapters per Grade",
+          "w": 6,
+          "h": 3,
+          "x": 0,
+          "y": 2,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (g:Grade)-[:HAS_CHAPTER]->(c:Chapter)\nRETURN g.name AS Grade, count(c) AS JumlahChapter\nORDER BY Grade",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Chapter Summary",
+          "w": 12,
+          "h": 4,
+          "x": 0,
+          "y": 5,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (c:Chapter)\nWHERE c.summary IS NOT NULL\nRETURN c.name AS Chapter, c.summary AS Summary\nORDER BY c.name",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "version": 1,
+      "title": "Validasi Kualitas",
+      "widgets": [
+        {
+          "version": 1,
+          "title": "Glossary-Validated Concepts",
+          "w": 6,
+          "h": 4,
+          "x": 0,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (c:Concept)\nWHERE c.glossary_validated = true\nRETURN c.name AS Konsep, c.description AS Deskripsi, c.materi_pokok_ref AS MateriPokok\nLIMIT 50",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Concepts Without Materi Pokok Ref",
+          "w": 6,
+          "h": 4,
+          "x": 6,
+          "y": 0,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (c:Concept)\nWHERE c.materi_pokok_ref IS NULL OR c.materi_pokok_ref = \"\"\nRETURN c.name AS Konsep, c.description AS Deskripsi\nLIMIT 50",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "ConceptTarget Usage (Reference Count, Top 30)",
+          "w": 6,
+          "h": 5,
+          "x": 0,
+          "y": 4,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "/* :ConceptTarget nodes are pure targets — counting all inbound edges yields true reference count\n   instead of an arbitrary subset that excluded valid relationship types. */\nMATCH (t:ConceptTarget)\nRETURN t.name AS TargetName,\n       count{(t)<--()} AS ReferenceCount\nORDER BY ReferenceCount DESC\nLIMIT 30",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        },
+        {
+          "version": 1,
+          "title": "Validation Coverage by Chapter",
+          "w": 6,
+          "h": 5,
+          "x": 6,
+          "y": 4,
+          "meta": {},
+          "settings": {
+            "type": "table",
+            "query": "MATCH (ch:Chapter)-[:HAS_SUBTOPIC]->(:Subtopic)-[:HAS_CONCEPT]->(c:Concept)\nWITH ch.name AS Chapter, count(c) AS TotalKonsep,\n     sum(CASE WHEN c.glossary_validated = true THEN 1 ELSE 0 END) AS Tervalidasi\nRETURN Chapter, TotalKonsep, Tervalidasi,\n       toFloat(Tervalidasi) / TotalKonsep AS ValidationRate\nORDER BY ValidationRate DESC",
+            "databaseName": "772674a6",
+            "actions": [],
+            "version": 1,
+            "richRenderCells": false,
+            "enableRecordsDownload": true
+          }
+        }
+      ]
+    }
+  ],
+  "params": []
+}

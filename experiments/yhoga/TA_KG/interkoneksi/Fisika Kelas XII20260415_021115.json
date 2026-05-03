@@ -1,0 +1,2487 @@
+{
+  "grade": "Fisika Kelas XII",
+  "chapters": [
+    {
+      "chapter": "LISTRIK STATIS",
+      "chapter_summary": "Bab Listrik Statis membahas tentang fenomena kelistrikan yang tidak bergerak. Materi pokoknya meliputi gaya listrik (Hukum Coulomb), medan listrik yang dihasilkan oleh muatan, serta konsep kapasitor keping sejajar dan rangkaiannya. Bab ini juga menjelaskan bagaimana prinsip-prinsip listrik statis diaplikasikan dalam teknologi sehari-hari seperti printer inkjet dan layar sentuh.",
+      "previous": null,
+      "next": "LISTRIK ARUS SEARAH",
+      "subchapters": [
+        "Gaya Listrik",
+        "Medan Listrik",
+        "Kapasitor Keping Sejajar",
+        "Rangkaian Kapasitor"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Gaya Listrik",
+          "concepts": [
+            {
+              "name": "Hukum Coulomb",
+              "description": "Hukum Coulomb menjelaskan bahwa besar gaya tarik-menarik atau tolak-menolak antara dua benda bermuatan listrik berbanding lurus dengan muatan masing-masing benda dan berbanding terbalik dengan kuadrat jarak antara kedua benda tersebut.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gaya Listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Resultan Gaya",
+                  "description": "Hukum Coulomb menjadi dasar untuk menghitung resultan gaya pada sebuah muatan akibat beberapa muatan lainnya."
+                }
+              ]
+            },
+            {
+              "name": "Resultan Gaya",
+              "description": "Karena gaya listrik merupakan besaran vektor, penentuan resultan gaya pada sebuah muatan akibat beberapa muatan memerlukan penjumlahan vektor.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gaya Listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Hukum Coulomb",
+                  "description": "Besarnya gaya masing-masing muatan dihitung menggunakan Hukum Coulomb."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "B. Medan Listrik",
+          "concepts": [
+            {
+              "name": "Medan Listrik Muatan Titik",
+              "description": "Medan listrik adalah daerah di sekitar muatan listrik yang menyebabkan timbulnya gaya listrik pada muatan uji.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Medan Listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "Medan Listrik pada Pelat Paralel",
+                  "description": "Konsep medan listrik muatan titik menjadi dasar untuk memahami medan listrik pada distribusi muatan yang lebih kompleks seperti pelat paralel."
+                }
+              ]
+            },
+            {
+              "name": "Medan Listrik pada Pelat Paralel",
+              "description": "Medan listrik dalam pelat paralel bersifat homogen, artinya memiliki besar dan arah yang sama di setiap titik di antara kedua pelat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Medan Listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Kapasitor Keping Sejajar",
+                  "description": "Medan listrik homogen pada pelat paralel merupakan prinsip dasar kerja kapasitor keping sejajar."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "C. Kapasitor Keping Sejajar",
+          "concepts": [
+            {
+              "name": "Kapasitor Keping Sejajar",
+              "description": "Kapasitor keping sejajar terdiri dari dua lapisan konduktor yang dipisahkan oleh bahan dielektrik, berfungsi untuk menyimpan muatan listrik dan energi listrik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kapasitor Keping Sejajar",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "elektrolit",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Bahan dielektrik pada kapasitor memiliki sifat isolator yang mirip dengan konsep elektrolit dalam kimia."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Rangkaian Kapasitor",
+                  "description": "Karakteristik kapasitor keping sejajar menjadi dasar untuk analisis rangkaian kapasitor."
+                }
+              ]
+            },
+            {
+              "name": "Kapasitansi Kapasitor",
+              "description": "Kapasitansi kapasitor adalah ukuran kemampuan kapasitor dalam menyimpan muatan listrik, dipengaruhi oleh luas penampang keping, jarak antar keping, dan bahan dielektriknya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kapasitor Keping Sejajar",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Kapasitor Keping Sejajar",
+                  "description": "Kapasitansi bergantung pada dimensi fisik dan bahan dielektrik kapasitor."
+                }
+              ]
+            },
+            {
+              "name": "Energi Tersimpan dalam Kapasitor",
+              "description": "Kapasitor yang telah terisi muatan menyimpan energi listrik yang besarnya bergantung pada kapasitansi dan tegangan sumbernya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kapasitor Keping Sejajar",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MERUPAKAN_AKIBAT_DARI",
+                  "target": "Kapasitor Keping Sejajar",
+                  "description": "Energi tersimpan sebagai hasil dari proses pengisian muatan pada kapasitor."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "D. Rangkaian Kapasitor",
+          "concepts": [
+            {
+              "name": "Rangkaian Seri Kapasitor",
+              "description": "Dalam rangkaian seri, kapasitansi total lebih kecil dari kapasitansi terkecil, dan muatan pada setiap kapasitor adalah sama.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Rangkaian Kapasitor",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Rangkaian Kapasitor",
+                  "description": "Merupakan salah satu cara menyusun kapasitor."
+                }
+              ]
+            },
+            {
+              "name": "Rangkaian Paralel Kapasitor",
+              "description": "Dalam rangkaian paralel, kapasitansi total adalah jumlah dari kapasitansi setiap kapasitor, dan tegangan pada setiap kapasitor adalah sama.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Rangkaian Kapasitor",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Rangkaian Kapasitor",
+                  "description": "Merupakan salah satu cara menyusun kapasitor."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "LISTRIK ARUS SEARAH",
+          "description": "Konsep dasar tentang muatan listrik dan medan listrik dari listrik statis merupakan prasyarat untuk memahami aliran muatan dalam listrik arus searah.",
+          "concept_links": [
+            {
+              "source_concept": "Gaya Listrik",
+              "target_concept": "Arus Listrik",
+              "explanation": "Pergerakan muatan yang menghasilkan arus listrik dipengaruhi oleh gaya listrik."
+            },
+            {
+              "source_concept": "Medan Listrik",
+              "target_concept": "Arus Listrik",
+              "explanation": "Medan listrik berperan dalam mendorong pergerakan muatan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "LISTRIK ARUS SEARAH",
+      "chapter_summary": "Bab ini membahas tentang listrik arus searah (DC), termasuk definisi arus listrik, hukum Ohm, karakteristik hambatan ohmik dan non-ohmik, serta faktor-faktor yang mempengaruhi hambatan jenis suatu kawat. Pembahasan dilanjutkan dengan analisis rangkaian listrik seri, paralel, dan majemuk menggunakan Hukum Kirchoff. Terakhir, bab ini menguraikan konsep daya listrik dan penerapannya dalam kehidupan sehari-hari, serta menugaskan siswa untuk membuat proyek sederhana yang mengaplikasikan rangkaian listrik.",
+      "previous": "LISTRIK STATIS",
+      "next": "KEMAGNETAN",
+      "subchapters": [
+        "Arus Listrik",
+        "Hambatan Ohmik dan Non Ohmik",
+        "Hambatan Jenis",
+        "Rangkaian Listrik",
+        "Rangkaian Majemuk",
+        "Daya Listrik"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Arus Listrik",
+          "concepts": [
+            {
+              "name": "Arus Listrik",
+              "description": "Arus listrik didefinisikan sebagai jumlah muatan listrik yang mengalir melalui penampang kawat per satuan waktu. Arah arus listrik konvensional dianggap berlawanan dengan arah aliran elektron.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Muatan Listrik",
+                  "description": "Arus listrik terjadi karena adanya aliran muatan listrik."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Medan Listrik",
+                  "description": "Arus listrik dapat menghasilkan medan magnet."
+                }
+              ]
+            },
+            {
+              "name": "Satuan Arus Listrik (Ampere)",
+              "description": "Satuan arus listrik dalam Standar Internasional adalah Ampere (A), yang setara dengan satu Coulomb per sekon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Arus Konvensional",
+              "description": "Arah arus listrik yang dianggap berlawanan arah dengan aliran elektron bebas, yaitu dari potensial tinggi ke potensial rendah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "B. Hambatan Ohmik dan Non Ohmik",
+          "concepts": [
+            {
+              "name": "Hukum Ohm",
+              "description": "Hubungan antara tegangan (V), arus (I), dan hambatan (R) dalam suatu rangkaian listrik, dinyatakan dengan persamaan V = I.R.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hukum Ohm",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Hambatan Listrik",
+                  "description": "Hukum Ohm mendefinisikan hubungan fundamental antara tegangan, arus, dan hambatan."
+                }
+              ]
+            },
+            {
+              "name": "Hambatan Ohmik",
+              "description": "Komponen atau bahan yang memiliki nilai hambatan tetap dan memenuhi hukum Ohm, di mana grafik hubungan tegangan-arusnya berupa garis lurus.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan Ohmik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Hambatan Non Ohmik",
+              "description": "Komponen atau bahan yang nilai hambatannya berubah-ubah tergantung pada besaran lain seperti suhu atau tegangan, sehingga tidak memenuhi hukum Ohm secara linier.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan Non Ohmik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERKAITAN_DENGAN",
+                  "target": "Semikonduktor",
+                  "description": "Bahan semikonduktor seperti LED menunjukkan karakteristik non-ohmik."
+                }
+              ]
+            },
+            {
+              "name": "Resistor",
+              "description": "Komponen elektronik pasif yang berfungsi untuk mengatur atau membatasi aliran arus listrik dalam sebuah rangkaian.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan Ohmik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Rangkaian Listrik",
+                  "description": "Resistor adalah komponen umum dalam rangkaian listrik."
+                }
+              ]
+            },
+            {
+              "name": "Light Emitting Diode (LED)",
+              "description": "Dioda semikonduktor yang memancarkan cahaya ketika dialiri arus listrik searah dalam kondisi panjar maju.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan Non Ohmik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "semikonduktor",
+                  "relation_type": "APLIKASI_DARI",
+                  "explanation": "LED adalah aplikasi dari bahan semikonduktor."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Hambatan Non Ohmik",
+                  "description": "Karakteristik tegangan-arus LED tidak linier."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "C. Hambatan Jenis",
+          "concepts": [
+            {
+              "name": "Hambatan Jenis (Resistivitas)",
+              "description": "Besaran fisis yang menyatakan karakteristik suatu bahan dalam menghambat aliran listrik, dinyatakan dalam satuan Ohm meter (Ωm).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan jenis",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Hambatan Listrik",
+                  "description": "Hambatan jenis adalah faktor penentu besarnya hambatan kawat."
+                }
+              ]
+            },
+            {
+              "name": "Faktor yang Mempengaruhi Hambatan Kawat",
+              "description": "Hambatan kawat dipengaruhi oleh hambatan jenis bahan, panjang kawat, dan luas penampang kawat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan jenis",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Hambatan Jenis (Resistivitas)",
+                  "description": "Hambatan jenis adalah salah satu faktor utama yang menentukan hambatan kawat."
+                }
+              ]
+            },
+            {
+              "name": "Pengaruh Suhu terhadap Hambatan Jenis",
+              "description": "Pada konduktor, hambatan jenis meningkat seiring kenaikan suhu, sedangkan pada semikonduktor, hambatan jenis menurun seiring kenaikan suhu.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hambatan jenis",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "belerang",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Perubahan suhu dapat mempengaruhi sifat konduktivitas berbagai unsur seperti belerang."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Suhu",
+                  "description": "Suhu memiliki dampak signifikan pada hambatan jenis bahan."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "D. Rangkaian Listrik",
+          "concepts": [
+            {
+              "name": "Rangkaian Seri",
+              "description": "Susunan komponen listrik di mana arus listrik mengalir melalui setiap komponen secara berurutan tanpa percabangan, sehingga hambatan totalnya adalah jumlah hambatan masing-masing komponen.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Rangkaian seri",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Rangkaian Listrik",
+                  "description": "Rangkaian seri adalah salah satu konfigurasi dasar rangkaian listrik."
+                }
+              ]
+            },
+            {
+              "name": "Rangkaian Paralel",
+              "description": "Susunan komponen listrik di mana arus listrik terbagi melalui beberapa cabang yang terhubung pada titik yang sama, sehingga tegangan pada setiap komponen sama dan hambatan totalnya dihitung dengan invers jumlah invers hambatan masing-masing.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Rangkaian Paralel",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Rangkaian Listrik",
+                  "description": "Rangkaian paralel adalah konfigurasi umum lain dalam rangkaian listrik."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "E. Rangkaian Majemuk",
+          "concepts": [
+            {
+              "name": "Hukum I Kirchoff (Hukum Arus)",
+              "description": "Jumlah arus yang masuk ke suatu titik percabangan dalam rangkaian listrik sama dengan jumlah arus yang keluar dari titik percabangan tersebut.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hukum Kirchoff",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Rangkaian Majemuk",
+                  "description": "Hukum I Kirchoff digunakan untuk menganalisis arus pada percabangan rangkaian majemuk."
+                }
+              ]
+            },
+            {
+              "name": "Hukum II Kirchoff (Hukum Tegangan)",
+              "description": "Dalam suatu rangkaian tertutup (loop), jumlah perubahan potensial listrik (tegangan) sama dengan nol, atau jumlah GGL sama dengan jumlah penurunan tegangan akibat hambatan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Hukum Kirchoff",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Rangkaian Majemuk",
+                  "description": "Hukum II Kirchoff digunakan untuk menganalisis tegangan dalam loop rangkaian majemuk."
+                }
+              ]
+            },
+            {
+              "name": "Rangkaian Majemuk",
+              "description": "Rangkaian listrik yang terdiri dari kombinasi rangkaian seri dan paralel, atau rangkaian dengan lebih dari satu sumber tegangan dan percabangan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Rangkaian Majemuk",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMBUTUHKAN",
+                  "target": "Hukum Kirchoff",
+                  "description": "Analisis rangkaian majemuk memerlukan penerapan Hukum Kirchoff."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "F. Daya Listrik",
+          "concepts": [
+            {
+              "name": "Daya Listrik",
+              "description": "Laju energi yang dihantarkan atau diubah oleh rangkaian listrik per satuan waktu, dinyatakan dalam satuan Watt (W).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Daya listrik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "energi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Daya listrik adalah konsep terkait dengan energi dalam konteks kelistrikan."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "Dinyatakan dalam",
+                  "target": "Tegangan dan Arus",
+                  "description": "Daya listrik dapat dihitung dari perkalian tegangan dan arus (P=VI)."
+                }
+              ]
+            },
+            {
+              "name": "Satuan Daya Listrik (Watt)",
+              "description": "Satuan standar untuk mengukur daya listrik, dilambangkan dengan W.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Daya listrik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Konsumsi Energi Listrik (kWh)",
+              "description": "Satuan yang digunakan untuk mengukur konsumsi energi listrik dalam skala besar, seringkali digunakan untuk penagihan biaya listrik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Daya listrik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "LISTRIK STATIS",
+          "description": "Konsep arus listrik dibangun di atas pemahaman tentang muatan listrik dan medan listrik statis.",
+          "concept_links": [
+            {
+              "source_concept": "Arus Listrik",
+              "target_concept": "Muatan Listrik",
+              "explanation": "Gerakan muatan listrik adalah dasar terjadinya arus listrik."
+            }
+          ]
+        },
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "KEMAGNETAN",
+          "description": "Arus listrik merupakan sumber dari medan magnet.",
+          "concept_links": [
+            {
+              "source_concept": "Arus Listrik",
+              "target_concept": "Medan Magnet",
+              "explanation": "Adanya arus listrik menghasilkan medan magnet di sekitarnya."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "KEMAGNETAN",
+      "chapter_summary": "Bab Kemagnetan membahas fenomena medan magnet di sekitar magnet dan arus listrik, serta gaya yang ditimbulkan oleh medan magnet. Konsep ini diaplikasikan pada motor listrik, generator, dan transformator. Pembahasan juga mencakup GGL induksi yang timbul akibat perubahan fluks magnet, yang menjadi dasar kerja generator dan transformator.",
+      "previous": "LISTRIK ARUS SEARAH",
+      "next": "ARUS BOLAK-BALIK",
+      "subchapters": [
+        "Medan Magnet",
+        "Gaya Magnet",
+        "Motor Listrik",
+        "Medan Magnet Induksi",
+        "Gaya Gerak Listrik (GGL) Induksi",
+        "Generator",
+        "Induktansi dan Transformator"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Medan Magnet",
+          "concepts": [
+            {
+              "name": "Medan Magnet",
+              "description": "Daerah di sekitar magnet atau muatan bergerak di mana gaya magnetik dapat dialami.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Magnet",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Gaya Magnet",
+                  "description": "Medan magnet adalah penyebab timbulnya gaya magnet pada muatan bergerak atau kawat berarus."
+                },
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Medan Magnet Bumi",
+                  "description": "Bumi memiliki medan magnet yang melindunginya dari radiasi luar."
+                }
+              ]
+            },
+            {
+              "name": "Medan Magnet Bumi",
+              "description": "Medan magnet yang dihasilkan oleh inti Bumi, yang memiliki kutub utara dan selatan magnetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Magnet",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "B. Gaya Magnet",
+          "concepts": [
+            {
+              "name": "Gaya Magnet pada Muatan Bergerak",
+              "description": "Gaya yang dialami oleh muatan listrik yang bergerak dalam medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gaya Listrik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "muatan",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Konsep muatan listrik adalah dasar untuk memahami gaya magnet pada muatan."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "F = qvB sinθ",
+                  "description": "Persamaan yang menggambarkan besar gaya magnet pada muatan bergerak."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Motor Listrik",
+                  "description": "Gaya magnet pada muatan bergerak adalah prinsip dasar kerja motor listrik."
+                }
+              ]
+            },
+            {
+              "name": "Gaya Magnet pada Kawat Berarus Listrik",
+              "description": "Gaya yang dialami oleh kawat yang dialiri arus listrik ketika berada dalam medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "arus listrik",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Konsep arus listrik sebagai aliran muatan penting untuk memahami gaya magnet pada kawat."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "F = iLB sinθ",
+                  "description": "Persamaan yang menggambarkan besar gaya magnet pada kawat berarus listrik."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Motor Listrik",
+                  "description": "Gaya magnet pada kawat berarus listrik adalah prinsip dasar kerja motor listrik."
+                }
+              ]
+            },
+            {
+              "name": "Gaya Lorentz",
+              "description": "Resultan gaya yang dialami oleh muatan yang bergerak dalam medan listrik dan medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gaya Listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "F = qv × B + qE",
+                  "description": "Persamaan vektor untuk gaya Lorentz yang mencakup gaya magnet dan gaya listrik."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "C. Motor Listrik",
+          "concepts": [
+            {
+              "name": "Prinsip Kerja Motor Listrik",
+              "description": "Motor listrik mengubah energi listrik menjadi energi mekanik melalui interaksi gaya magnet pada kumparan berarus.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Motor Listrik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "energi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Perubahan energi listrik menjadi energi mekanik adalah konsep fundamental dalam motor listrik."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Gaya Magnet pada Kawat Berarus Listrik",
+                  "description": "Prinsip kerja motor listrik didasarkan pada gaya magnet yang bekerja pada kawat berarus dalam medan magnet."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Gerak Putar",
+                  "description": "Gaya magnet pada motor listrik menghasilkan momen kopel yang menyebabkan kumparan berputar."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "D. Medan Magnet Induksi",
+          "concepts": [
+            {
+              "name": "Medan Magnet di Sekitar Kawat Lurus Berarus",
+              "description": "Arus listrik yang mengalir dalam kawat lurus menghasilkan medan magnet di sekitarnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "B = μ0 I / 2πr",
+                  "description": "Persamaan untuk menghitung besar medan magnet di sekitar kawat lurus panjang."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Arah Medan Magnet",
+                  "description": "Arah arus listrik menentukan arah medan magnet yang dihasilkan."
+                }
+              ]
+            },
+            {
+              "name": "Medan Magnet di Sekitar Kawat Melingkar Berarus",
+              "description": "Arus listrik yang mengalir dalam kawat melingkar menghasilkan medan magnet di pusat lingkaran.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Arus listrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "B = Nμ0 I / 2r",
+                  "description": "Persamaan untuk menghitung besar medan magnet di pusat kawat melingkar berarus."
+                }
+              ]
+            },
+            {
+              "name": "Medan Magnet pada Solenoida",
+              "description": "Solenoida yang dialiri arus listrik menghasilkan medan magnet yang seragam di dalamnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Solenoida",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "B = μ0 n I",
+                  "description": "Persamaan untuk menghitung besar medan magnet di pusat solenoida."
+                },
+                {
+                  "type": "BERKAITAN_DENGAN",
+                  "target": "Inti Besi",
+                  "description": "Penambahan inti besi dalam solenoida dapat meningkatkan kuat medan magnetnya."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "E. Gaya Gerak Listrik (GGL) Induksi",
+          "concepts": [
+            {
+              "name": "Fluks Magnet",
+              "description": "Ukuran jumlah garis medan magnet yang menembus suatu permukaan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Medan Magnet",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "bilangan oksidasi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Baik fluks magnet maupun bilangan oksidasi adalah konsep yang melibatkan jumlah atau ukuran dalam konteks fisika/kimia."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "ϕ = BA cos θ",
+                  "description": "Persamaan untuk menghitung fluks magnet."
+                },
+                {
+                  "type": "MENYEBABKAN",
+                  "target": "GGL Induksi",
+                  "description": "Perubahan fluks magnet dalam kumparan akan menghasilkan GGL induksi."
+                }
+              ]
+            },
+            {
+              "name": "Hukum Faraday",
+              "description": "Menyatakan bahwa GGL induksi yang timbul pada suatu rangkaian sebanding dengan laju perubahan fluks magnetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "GGL Induksi",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "ε = -N (Δϕ / Δt)",
+                  "description": "Persamaan Hukum Faraday untuk menghitung GGL induksi."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Generator",
+                  "description": "Hukum Faraday adalah dasar prinsip kerja generator."
+                }
+              ]
+            },
+            {
+              "name": "Hukum Lenz",
+              "description": "Menyatakan bahwa arah arus induksi selalu sedemikian rupa sehingga menentang perubahan fluks magnetik yang menghasilkannya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "GGL Induksi",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "Tanda negatif pada Hukum Faraday",
+                  "description": "Tanda negatif pada persamaan Hukum Faraday mencerminkan Hukum Lenz."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Arah Arus Induksi",
+                  "description": "Hukum Lenz menentukan arah arus induksi yang dihasilkan."
+                }
+              ]
+            },
+            {
+              "name": "GGL Induksi pada Batang Konduktor Bergerak",
+              "description": "GGL induksi dapat dihasilkan pada batang konduktor yang bergerak dalam medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "GGL Induksi",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "ε = BLv",
+                  "description": "Persamaan untuk menghitung GGL induksi pada batang konduktor yang bergerak."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "F. Generator",
+          "concepts": [
+            {
+              "name": "Prinsip Kerja Generator",
+              "description": "Generator mengubah energi mekanik menjadi energi listrik berdasarkan prinsip induksi elektromagnetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Generator",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "energi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Perubahan energi mekanik menjadi energi listrik adalah konsep fundamental dalam generator."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Hukum Faraday",
+                  "description": "Prinsip kerja generator didasarkan pada Hukum Faraday mengenai induksi elektromagnetik."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Produksi Listrik",
+                  "description": "Generator menghasilkan arus listrik bolak-balik (AC)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "G. Induktansi dan Transformator",
+          "concepts": [
+            {
+              "name": "Induktansi Bersama",
+              "description": "Fenomena di mana perubahan arus dalam satu kumparan menginduksi GGL pada kumparan lain yang berdekatan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Induktansi",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "M = N2 ϕ21 / I1",
+                  "description": "Persamaan untuk menghitung induktansi bersama."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Transformator",
+                  "description": "Induktansi bersama adalah prinsip dasar kerja transformator."
+                }
+              ]
+            },
+            {
+              "name": "Induktansi Diri",
+              "description": "Kemampuan suatu kumparan untuk menghasilkan GGL induksi ketika arus listrik yang mengalirinya berubah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Induktansi",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "L = Nϕ / I",
+                  "description": "Persamaan untuk menghitung induktansi diri."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "GGL Induksi",
+                  "description": "Perubahan arus pada kumparan menyebabkan GGL induksi diri."
+                }
+              ]
+            },
+            {
+              "name": "Transformator",
+              "description": "Alat yang digunakan untuk menaikkan atau menurunkan tegangan AC berdasarkan prinsip induksi elektromagnetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Transformator",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "energi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Transformator berperan dalam efisiensi transmisi energi listrik."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Induktansi Bersama",
+                  "description": "Transformator bekerja berdasarkan prinsip induksi bersama antara kumparan primer dan sekunder."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Sistem Transmisi Listrik",
+                  "description": "Transformator sangat penting dalam sistem transmisi listrik untuk menaikkan dan menurunkan tegangan."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "LISTRIK ARUS SEARAH",
+          "description": "Konsep kelistrikan dasar dari bab sebelumnya diperlukan untuk memahami kemagnetan.",
+          "concept_links": [
+            {
+              "source_concept": "Muatan Listrik",
+              "target_concept": "Muatan Listrik",
+              "explanation": "Konsep muatan listrik adalah dasar untuk memahami arus listrik dan gaya magnet pada muatan."
+            },
+            {
+              "source_concept": "Arus Listrik",
+              "target_concept": "Arus Listrik",
+              "explanation": "Memahami arus listrik sebagai aliran muatan membantu dalam memahami medan magnet induksi."
+            }
+          ]
+        },
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "ARUS BOLAK-BALIK",
+          "description": "Bab Kemagnetan, khususnya konsep GGL induksi dan transformator, menjadi dasar pemahaman arus bolak-balik.",
+          "concept_links": [
+            {
+              "source_concept": "GGL Induksi",
+              "target_concept": "Arus Bolak-Balik",
+              "explanation": "GGL induksi yang dihasilkan oleh generator merupakan sumber arus bolak-balik."
+            },
+            {
+              "source_concept": "Transformator",
+              "target_concept": "Transformator",
+              "explanation": "Prinsip kerja transformator sangat relevan dengan analisis rangkaian arus bolak-balik."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "ARUS BOLAK-BALIK",
+      "chapter_summary": "Bab ini membahas Arus Bolak-Balik (AC), yang merupakan jenis kelistrikan yang paling umum digunakan. Materi mencakup persamaan tegangan dan arus bolak-balik, karakteristik rangkaian RLC (resistor, induktor, kapasitor), serta konsep resonansi pada rangkaian tersebut. Pembahasan dilengkapi dengan penggunaan osiloskop untuk analisis sinyal listrik dan penerapan prinsip resonansi dalam teknologi seperti radio.",
+      "previous": "KEMAGNETAN",
+      "next": "GELOMBANG ELEKTROMAGNETIK",
+      "subchapters": [
+        "Persamaan Arus Bolak Balik",
+        "Karakteristik Rangkaian RLC",
+        "Resonansi Rangkaian"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Persamaan Arus Bolak Balik",
+          "concepts": [
+            {
+              "name": "Persamaan Tegangan Arus Bolak Balik",
+              "description": "Persamaan tegangan bolak balik dituliskan dalam bentuk sinusoidal V = Vmax sinωt, di mana Vmax adalah tegangan maksimumnya dan ω adalah frekuensi sudut.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Tegangan Efektif (Vrms)",
+              "description": "Tegangan efektif atau root mean square (Vrms) adalah nilai tegangan yang diukur oleh voltmeter pada rangkaian AC, setara dengan tegangan DC yang menghasilkan efek panas yang sama.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Tegangan Maksimum",
+                  "description": "Tegangan efektif berbanding lurus dengan tegangan maksimum (Vef = Vmaks / √2)."
+                }
+              ]
+            },
+            {
+              "name": "Penggunaan Osiloskop",
+              "description": "Osiloskop adalah alat yang digunakan untuk melihat dan menganalisis grafik tegangan sebagai fungsi waktu, yang membantu dalam memahami karakteristik sinyal AC.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Frekuensi Arus Bolak Balik",
+              "description": "Frekuensi arus bolak-balik (f) adalah jumlah siklus lengkap yang terjadi dalam satu detik, diukur dalam Hertz (Hz).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Persamaan Arus Arus Bolak Balik",
+              "description": "Persamaan arus bolak balik dituliskan dalam bentuk sinusoidal I = Imaks sin ωt, di mana Imaks adalah arus maksimumnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Arus Efektif (Ief)",
+              "description": "Arus efektif (Ief) adalah nilai arus bolak-balik yang setara dengan arus searah yang menghasilkan efek panas yang sama.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Persamaan Arus Bolak-Balik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Arus Maksimum",
+                  "description": "Arus efektif berbanding lurus dengan arus maksimum (Ief = Imaks / √2)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "B. Karakteristik Rangkaian RLC",
+          "concepts": [
+            {
+              "name": "Reaktansi Induktif (XL)",
+              "description": "Reaktansi induktif adalah hambatan yang dimiliki induktor terhadap aliran arus bolak-balik, yang bergantung pada induktansi diri (L) dan frekuensi (f).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Impedansi",
+                  "description": "Reaktansi induktif berkontribusi pada nilai impedansi total rangkaian RLC."
+                }
+              ]
+            },
+            {
+              "name": "Reaktansi Kapasitif (XC)",
+              "description": "Reaktansi kapasitif adalah hambatan yang dimiliki kapasitor terhadap aliran arus bolak-balik, yang bergantung pada kapasitas kapasitor (C) dan frekuensi (f).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Impedansi",
+                  "description": "Reaktansi kapasitif berkontribusi pada nilai impedansi total rangkaian RLC."
+                }
+              ]
+            },
+            {
+              "name": "Impedansi (Z)",
+              "description": "Impedansi adalah hambatan total terhadap aliran arus dalam rangkaian AC, yang merupakan perpaduan dari resistansi (R), reaktansi induktif (XL), dan reaktansi kapasitif (XC).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Resistor (R)",
+                  "description": "Resistor memberikan kontribusi hambatan murni pada impedansi."
+                },
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Reaktansi Induktif (XL)",
+                  "description": "Reaktansi induktif berkontribusi pada impedansi, mempengaruhi fase antara tegangan dan arus."
+                },
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Reaktansi Kapasitif (XC)",
+                  "description": "Reaktansi kapasitif berkontribusi pada impedansi, mempengaruhi fase antara tegangan dan arus."
+                }
+              ]
+            },
+            {
+              "name": "Diagram Fasor",
+              "description": "Diagram fasor digunakan untuk merepresentasikan variabel fungsi sinusoidal dalam bentuk vektor, memudahkan analisis matematis pada rangkaian AC.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Faktor Daya",
+              "description": "Faktor daya adalah kosinus dari sudut fase antara tegangan total dan arus total dalam rangkaian AC, menunjukkan seberapa efisien daya listrik diubah menjadi kerja atau panas.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Daya Disipasi",
+                  "description": "Faktor daya menentukan seberapa besar daya disipasi yang terjadi pada rangkaian."
+                }
+              ]
+            },
+            {
+              "name": "Daya Disipasi",
+              "description": "Daya disipasi adalah daya yang dihasilkan oleh resistor dalam rangkaian AC yang diubah menjadi panas, dihitung menggunakan rumus P = Ief^2 R.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik Rangkaian RLC",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "TERJADI_PADA",
+                  "target": "Resistor",
+                  "description": "Daya disipasi hanya terjadi pada komponen resistor dalam rangkaian RLC."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "C. Resonansi Rangkaian",
+          "concepts": [
+            {
+              "name": "Frekuensi Resonansi",
+              "description": "Frekuensi resonansi adalah frekuensi di mana reaktansi induktif sama dengan reaktansi kapasitif (XL = XC), menghasilkan impedansi minimum dan arus maksimum dalam rangkaian RLC.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Resonansi Rangkaian",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "DITENTUKAN_OLEH",
+                  "target": "Induktansi (L) dan Kapasitansi (C)",
+                  "description": "Frekuensi resonansi hanya bergantung pada nilai induktansi dan kapasitansi rangkaian."
+                }
+              ]
+            },
+            {
+              "name": "Kondisi Resonansi",
+              "description": "Kondisi resonansi pada rangkaian RLC terjadi ketika XL = XC, yang mengakibatkan impedansi rangkaian menjadi minimum dan sama dengan resistansi (Z = R).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Resonansi Rangkaian",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Aplikasi Prinsip Resonansi",
+              "description": "Prinsip resonansi digunakan dalam berbagai teknologi seperti tuner radio untuk memilih frekuensi siaran tertentu, alat Bioelectrical Impedance Analysis (BIA), dan microphone.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Resonansi Rangkaian",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Bioelectrical Impedance Analysis (BIA)",
+                  "relation_type": "APLIKASI_DARI",
+                  "explanation": "Teknik Bioelectrical Impedance Analysis (BIA) menggunakan prinsip impedansi rangkaian yang berkaitan dengan konsep resonansi dalam analisis komposisi tubuh."
+                }
+              ],
+              "relations": []
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "KEMAGNETAN",
+          "description": "Konsep induktansi diri yang dipelajari dalam Kemagnetan merupakan dasar untuk memahami reaktansi induktif dalam rangkaian Arus Bolak-Balik.",
+          "concept_links": [
+            {
+              "source_concept": "Induktansi Diri",
+              "target_concept": "Reaktansi Induktif (XL)",
+              "explanation": "Induktansi diri (L) adalah parameter kunci dalam perhitungan reaktansi induktif (XL = ωL)."
+            }
+          ]
+        },
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "GELOMBANG ELEKTROMAGNETIK",
+          "description": "Konsep dasar arus bolak-balik dan karakteristik rangkaiannya menjadi fondasi untuk memahami bagaimana gelombang elektromagnetik dihasilkan dan merambat.",
+          "concept_links": [
+            {
+              "source_concept": "Persamaan Arus Bolak Balik",
+              "target_concept": "Sumber Gelombang Elektromagnetik",
+              "explanation": "Arus bolak-balik yang berubah secara periodik adalah sumber penting dari radiasi gelombang elektromagnetik."
+            },
+            {
+              "source_concept": "Karakteristik Rangkaian RLC",
+              "target_concept": "Interaksi Gelombang Elektromagnetik",
+              "explanation": "Karakteristik rangkaian RLC dapat digunakan untuk menala (tune) penerimaan gelombang elektromagnetik pada frekuensi tertentu."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "GELOMBANG ELEKTROMAGNETIK",
+      "chapter_summary": "Bab ini membahas tentang gelombang elektromagnetik (GEM), yang dihasilkan dari perambatan medan listrik dan medan magnet yang saling tegak lurus. Dibahas pula spektrum GEM yang meliputi sinar gamma hingga gelombang radio, energi yang dibawa oleh GEM, serta berbagai pemanfaatannya dalam kehidupan sehari-hari, seperti komunikasi, kesehatan, dan teknologi.",
+      "previous": "ARUS BOLAK-BALIK",
+      "next": "PENGANTAR",
+      "subchapters": [
+        "Perambatan Gelombang Elektromagnetik",
+        "Spektrum Gelombang Elektromagnetik",
+        "Energi Gelombang Elektromagnetik",
+        "Pemanfaatan Gelombang Elektromagnetik"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Perambatan Gelombang Elektromagnetik",
+          "concepts": [
+            {
+              "name": "Sifat Gelombang Elektromagnetik",
+              "description": "Gelombang elektromagnetik adalah gelombang transversal yang dihasilkan oleh perambatan medan listrik dan medan magnet yang saling tegak lurus, dan tidak memerlukan medium untuk merambat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Perambatan Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Teori Gelombang Elektromagnetik Maxwell",
+              "description": "Teori yang dikemukakan oleh James Clerk Maxwell yang menyatakan bahwa perubahan medan magnet dapat menimbulkan medan listrik, dan sebaliknya, perubahan medan listrik dapat menimbulkan medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Perambatan Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Laju Gelombang Elektromagnetik",
+              "description": "Kecepatan perambatan gelombang elektromagnetik di ruang hampa adalah sekitar 3 x 10^8 m/s, yang juga dikenal sebagai laju cahaya, dan bergantung pada permitivitas dan permeabilitas medium.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Perambatan Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "B. Spektrum Gelombang Elektromagnetik",
+          "concepts": [
+            {
+              "name": "Spektrum Gelombang Elektromagnetik",
+              "description": "Urutan rentang frekuensi atau panjang gelombang dari berbagai jenis gelombang elektromagnetik, mulai dari sinar gamma dengan frekuensi tertinggi hingga gelombang radio dengan frekuensi terendah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Sinar Gamma",
+              "description": "Jenis gelombang elektromagnetik dengan frekuensi dan energi tertinggi, dihasilkan dari peluruhan zat radioaktif dan radiasi kosmik, mampu mengionisasi atom.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Bioteknologi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Sinar gamma berenergi tinggi dapat digunakan dalam sterilisasi peralatan medis yang terkait dengan bioteknologi."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Sinar X",
+              "description": "Gelombang elektromagnetik dengan energi tinggi yang dapat mengionisasi sel, digunakan dalam pencitraan medis seperti rontgen karena kemampuannya diserap oleh jaringan tubuh.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "bilangan oksidasi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Interaksi sinar-X dengan materi dapat mempengaruhi bilangan oksidasi atom."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Sinar Ultraviolet (UV)",
+              "description": "Gelombang elektromagnetik dengan panjang gelombang lebih pendek dari cahaya tampak, ditemukan dalam sinar matahari, bermanfaat untuk pembentukan vitamin D tetapi berbahaya jika berlebihan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Metabolisme",
+                  "relation_type": "MEMPERDALAM",
+                  "explanation": "Sinar UV berperan dalam sintesis Vitamin D yang merupakan bagian dari metabolisme tubuh."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Cahaya Tampak",
+              "description": "Bagian dari spektrum elektromagnetik yang dapat dilihat oleh mata manusia, berkisar dari sinar merah hingga ungu, dan merupakan sumber utama pencahayaan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Inframerah",
+              "description": "Gelombang elektromagnetik yang dipancarkan oleh benda panas, digunakan dalam remote control, termometer inframerah, dan penglihatan malam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Pemanfaatan Bioteknologi Modern",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Inframerah dapat digunakan dalam teknologi pencitraan termal yang relevan dengan studi bioteknologi."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Gelombang Mikro",
+              "description": "Gelombang elektromagnetik dengan frekuensi lebih tinggi dari gelombang radio, digunakan pada microwave oven, radar, dan komunikasi seluler.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "hidrokarbon",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Pemanasan menggunakan gelombang mikro dapat mempengaruhi ikatan kimia dalam senyawa hidrokarbon."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Gelombang Radio",
+              "description": "Jenis gelombang elektromagnetik dengan frekuensi terendah, digunakan untuk komunikasi, penyiaran radio dan televisi, serta dalam teleskop radio.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Spektrum Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "C. Energi Gelombang Elektromagnetik",
+          "concepts": [
+            {
+              "name": "Rapat Energi Gelombang Elektromagnetik",
+              "description": "Besar energi per satuan volume di mana gelombang elektromagnetik merambat, dipengaruhi oleh kuat medan listrik dan medan magnet.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Energi Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Intensitas Gelombang Elektromagnetik",
+              "description": "Jumlah energi yang melewati tiap satuan luas tiap satuan waktu, diukur dalam Watt per meter persegi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Energi Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "D. Pemanfaatan Gelombang Elektromagnetik",
+          "concepts": [
+            {
+              "name": "Pemanfaatan Sinar Gamma dan Sinar X",
+              "description": "Sinar gamma digunakan untuk membunuh sel kanker dan sterilisasi, sedangkan sinar X digunakan dalam pencitraan medis untuk mendiagnosis penyakit.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Sintesis Protein",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Radiasi energi tinggi dari sinar gamma dan sinar-X dapat merusak struktur molekuler yang terlibat dalam sintesis protein."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Pemanfaatan Sinar Ultraviolet (UV)",
+              "description": "Sinar UV bermanfaat untuk pembentukan vitamin D dan pengobatan penyakit kulit, tetapi dapat menyebabkan kerusakan kulit dan kanker jika berlebihan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Evolusi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Perubahan lingkungan akibat radiasi UV dapat mempengaruhi proses evolusi organisme."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Pemanfaatan Cahaya Tampak",
+              "description": "Cahaya tampak digunakan untuk penglihatan, serta dalam teknologi laser untuk aplikasi medis seperti terapi mata dan penghancuran batu ginjal.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Pemanfaatan Inframerah",
+              "description": "Digunakan pada remote control, termometer inframerah untuk mengukur suhu tanpa kontak, dan kamera termal untuk mendeteksi perbedaan suhu.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Metabolisme",
+                  "relation_type": "MEMPERDALAM",
+                  "explanation": "Radiasi inframerah terkait dengan energi panas yang dihasilkan dari proses metabolisme."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Pemanfaatan Gelombang Mikro",
+              "description": "Digunakan pada microwave oven untuk memasak, radar untuk pengukuran jarak dan kecepatan objek, serta pada telepon seluler untuk komunikasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "esterifikasi",
+                  "relation_type": "APLIKASI_DARI",
+                  "explanation": "Pemanasan menggunakan gelombang mikro dapat digunakan dalam reaksi kimia seperti esterifikasi."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Pemanfaatan Gelombang Radio",
+              "description": "Digunakan dalam komunikasi radio dan televisi, serta dalam teleskop radio untuk mengamati objek astronomi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pemanfaatan Gelombang Elektromagnetik",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "ARUS BOLAK-BALIK",
+          "description": "Bab ini merupakan kelanjutan dari pemahaman tentang arus bolak-balik karena gelombang elektromagnetik dihasilkan oleh muatan yang berosilasi, yang merupakan dasar dari arus bolak-balik.",
+          "concept_links": [
+            {
+              "source_concept": "Perambatan Gelombang Elektromagnetik",
+              "target_concept": "Arus Bolak-Balik",
+              "explanation": "Sumber gelombang elektromagnetik adalah muatan listrik yang berosilasi, yang merupakan prinsip dasar arus bolak-balik."
+            }
+          ]
+        },
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "PENGANTAR INSTRUMEN DIGITAL",
+          "description": "Konsep gelombang elektromagnetik, terutama gelombang mikro dan radio, merupakan dasar bagi pengembangan instrumen digital yang menggunakan sinyal tersebut.",
+          "concept_links": [
+            {
+              "source_concept": "Gelombang Mikro",
+              "target_concept": "Sistem Elektronika",
+              "explanation": "Gelombang mikro adalah sinyal yang digunakan dalam banyak sistem elektronik modern."
+            },
+            {
+              "source_concept": "Gelombang Radio",
+              "target_concept": "Sistem Elektronika",
+              "explanation": "Gelombang radio adalah media transmisi penting dalam banyak perangkat elektronik."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "PENGANTAR",
+      "chapter_summary": "Bab ini membahas Pengantar Instrumental Digital, yang mencakup sistem elektronika dengan konsep input-proses-output, semikonduktor sebagai bahan dasar perangkat elektronik, serta prinsip gerbang logika yang menjadi otak sistem elektronik digital. Materi ini penting untuk memahami cara kerja alat elektronik modern.",
+      "previous": "GELOMBANG ELEKTROMAGNETIK",
+      "next": "RELATIVITAS",
+      "subchapters": [
+        "Sistem Elektronika",
+        "Semikonduktor",
+        "Prinsip Gerbang Logika"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Sistem Elektronika",
+          "concepts": [
+            {
+              "name": "Input-Proses-Output Sistem Elektronika",
+              "description": "Sistem elektronika secara garis besar terdiri dari tiga bagian utama: input untuk menerima data, proses untuk mengolah data, dan output untuk menampilkan hasil.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Secara garis besar alat-alat elektronik tersebut memiliki suatu sistem elektronika yang terdiri dari input-proses-output.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Sensor sebagai Input",
+              "description": "Sensor atau transduser input berfungsi mengubah energi dari lingkungan menjadi sinyal listrik untuk dideteksi oleh sistem.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bagian input biasanya berupa sensor atau transduser atau converter yang berfungsi untuk mengubah masukan (input) non-listrik menjadi sinyal listrik atau sebaliknya.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Prosesor dalam Sistem Elektronika",
+              "description": "Prosesor menerima sinyal listrik dari sensor input dan memutuskan tindakan yang harus diambil, seperti menghitung atau memperkuat sinyal.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bagian proses biasanya berupa prosesor memutuskan tindakan apa yang harus diambil pada sinyal listrik yang diterimanya dari sensor input.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Transduser sebagai Output",
+              "description": "Transduser output mengubah sinyal listrik dari prosesor menjadi bentuk energi lain, seperti suara atau cahaya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bagian luaran (output) biasanya berupa transduser (luaran) mengubah energi listrik yang disuplai oleh prosesor menjadi bentuk lain.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Light-Dependent Resistor (LDR)",
+              "description": "LDR adalah resistor yang resistansinya berubah tergantung intensitas cahaya, berfungsi sebagai sensor input.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Light-Dependent Resistor/LDR (resistor yang bergantung pada cahaya)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Termistor",
+              "description": "Termistor adalah komponen semikonduktor yang resistansinya berubah terhadap suhu, sering digunakan sebagai sensor.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Termistor",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Relay",
+              "description": "Relay adalah sakelar yang dikendalikan secara elektromagnetik, memungkinkan arus kecil mengontrol arus yang lebih besar.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Relay",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "B. Semikonduktor",
+          "concepts": [
+            {
+              "name": "Pengertian Semikonduktor",
+              "description": "Semikonduktor adalah bahan yang memiliki nilai hambatan jenis di antara konduktor dan isolator, dan dapat berperilaku sebagai keduanya tergantung kondisi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bahan-bahan ini mempunyai nilai hambatan jenis di antara nilai hambatan jenis isolator dan konduktor.",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "belerang",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Beberapa unsur kimia seperti belerang dapat menunjukkan sifat semikonduktor dalam kondisi tertentu."
+                },
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "fosfor",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Fosfor adalah salah satu unsur yang dapat digunakan sebagai doping pada semikonduktor tipe-n."
+                },
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "hidrogen",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Struktur ikatan kimia, termasuk yang melibatkan hidrogen, mempengaruhi sifat konduktivitas material."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Semikonduktor Intrinsik",
+              "description": "Semikonduktor intrinsik adalah semikonduktor murni seperti Silikon atau Germanium yang memiliki ikatan kovalen sempurna.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Semikonduktor intrinsik terbentuk dari semikonduktor murni",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Semikonduktor Ekstrinsik",
+              "description": "Semikonduktor ekstrinsik terbentuk dari semikonduktor murni yang dikotori (doping) oleh atom lain untuk meningkatkan konduktivitasnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "semikoduktor ekstrinsik.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Hole (Lubang) dalam Semikonduktor",
+              "description": "Hole adalah kekosongan elektron dalam struktur kristal semikonduktor, yang bertindak sebagai pembawa muatan positif.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Lokasi yang ditinggalkan oleh elektron valensi ini akan membentuk hole (lihat Gambar 6.7 b).",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Semikonduktor Tipe-N",
+              "description": "Semikonduktor tipe-N dibuat dengan menambahkan atom pengotor (donatur) yang memiliki kelebihan elektron ke dalam struktur silikon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Semikonduktor tipe-N (Silikon + Phospor atau Arsenic)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Semikonduktor Tipe-P",
+              "description": "Semikonduktor tipe-P dibuat dengan menambahkan atom pengotor (akseptor) yang memiliki kekurangan elektron (hole) ke dalam struktur silikon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Semikonduktor tipe-P (Silikon + Boron, Galium atau Indium)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Dioda",
+              "description": "Dioda adalah komponen semikonduktor dengan dua kutub (anoda dan katoda) yang dapat mengalirkan arus listrik hanya dalam satu arah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "dioda",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Light-Emitting Diode (LED)",
+              "description": "LED adalah jenis dioda yang memancarkan cahaya ketika dialiri arus listrik, digunakan sebagai indikator atau sumber cahaya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Light-Emitting Diode (LED)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Transistor",
+              "description": "Transistor adalah komponen semikonduktor yang berfungsi sebagai sakelar elektronik atau penguat sinyal.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Transistor",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Sirkuit Terpadu (Integrated Circuit / IC)",
+              "description": "IC adalah chip kecil yang berisi jutaan transistor, dioda, dan komponen elektronik lainnya yang terintegrasi untuk melakukan fungsi tertentu.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Sirkuit Terpadu (Integrated Circuit / IC)",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "C. Prinsip Gerbang Logika",
+          "concepts": [
+            {
+              "name": "Pengertian Gerbang Logika",
+              "description": "Gerbang logika adalah blok bangunan dasar dalam sirkuit digital yang melakukan operasi logika Boolean pada satu atau lebih input biner untuk menghasilkan satu output biner.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gerbang logika dianalogikan sebagai otak suatu barang elektronika untuk menjalankan fungsinya.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Representasi Biner (0 dan 1)",
+              "description": "Dalam gerbang logika, nilai 0 merepresentasikan kondisi 'rendah' atau 'mati', sedangkan nilai 1 merepresentasikan kondisi 'tinggi' atau 'hidup'.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gerbang logika ini akan direpresentasikan dengan angka biner atau tabel kebenaran dengan simbol 1 dan 0.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Gerbang Logika NOT",
+              "description": "Gerbang NOT memiliki satu input dan satu output, yang menghasilkan output berlawanan dari inputnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gerbang logika jenis NOT",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Gerbang Logika AND",
+              "description": "Gerbang AND memiliki dua atau lebih input dan satu output, yang menghasilkan output 1 hanya jika semua inputnya 1.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gerbang logika jenis AND merupakan gerbang logika yang memerlukan dua masukan (input) dan menghasilkan 1 luaran (output), sifatnya seperti logika perkalian.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Gerbang Logika NAND",
+              "description": "Gerbang NAND adalah gabungan gerbang AND dan NOT, menghasilkan output 0 hanya jika semua inputnya 1.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "NAND merupakan gabungan dari gerbang logika AND dan NOT.",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Gerbang Logika OR",
+              "description": "Gerbang OR memiliki dua atau lebih input dan satu output, yang menghasilkan output 1 jika salah satu atau semua inputnya 1.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gerbang logika ini memerlukan dua masukan (input) dan menghasilkan satu luaran (output).",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Gerbang Logika NOR",
+              "description": "Gerbang NOR adalah gabungan gerbang OR dan NOT, menghasilkan output 1 hanya jika semua inputnya 0.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "NOR merupakan gabungan dari gerbang logika NOT dan OR.",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "PENGANTAR INSTRUMENTAL DIGITAL",
+          "description": "Bab ini merupakan pengantar untuk memahami dasar-dasar instrumentasi digital yang akan digunakan dalam aplikasi yang lebih kompleks.",
+          "concept_links": [
+            {
+              "source_concept": "Semikonduktor Tipe-N",
+              "target_concept": "Prinsip Gerbang Logika",
+              "explanation": "Semikonduktor tipe-N adalah salah satu komponen dasar yang digunakan dalam pembuatan gerbang logika."
+            },
+            {
+              "source_concept": "Semikonduktor Tipe-P",
+              "target_concept": "Prinsip Gerbang Logika",
+              "explanation": "Semikonduktor tipe-P adalah salah satu komponen dasar yang digunakan dalam pembuatan gerbang logika."
+            },
+            {
+              "source_concept": "Dioda",
+              "target_concept": "Prinsip Gerbang Logika",
+              "explanation": "Dioda adalah komponen fundamental dalam sirkuit digital yang sering menjadi bagian dari implementasi gerbang logika."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "RELATIVITAS",
+      "chapter_summary": "Bab Relativitas membahas dua postulat utama Einstein: hukum fisika berlaku sama di semua kerangka acuan inersial, dan kecepatan cahaya konstan untuk semua pengamat. Bab ini juga menguraikan dampak teori relativitas Einstein, termasuk dilatasi waktu, penambahan kecepatan secara relativistik, dan pengerutan panjang. Konsep-konsep ini secara fundamental mengubah pemahaman kita tentang ruang dan waktu.",
+      "previous": "PENGANTAR",
+      "next": "GEJALA KUANTUM",
+      "subchapters": [
+        "Postulat Pertama dan Kedua Einstein",
+        "Dampak Relativitas Einstein"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Postulat Pertama dan Kedua Einstein",
+          "concepts": [
+            {
+              "name": "Kerangka Acuan Inersial",
+              "description": "Kerangka acuan di mana hukum-hukum fisika memiliki bentuk yang sama dan tidak ada percepatan netto pada objek yang tidak dipengaruhi gaya eksternal.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Relativitas Newton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Kerangka Acuan",
+                  "description": "Konsep kerangka acuan adalah dasar untuk memahami kerangka acuan inersial."
+                }
+              ]
+            },
+            {
+              "name": "Postulat Pertama Einstein",
+              "description": "Menyatakan bahwa hukum-hukum fisika memiliki bentuk yang sama pada semua kerangka acuan inersial.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Postulat Pertama dan Kedua Einstein",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Relativitas Newton",
+                  "description": "Postulat ini memperluas dan memodifikasi prinsip relativitas Newton."
+                }
+              ]
+            },
+            {
+              "name": "Postulat Kedua Einstein",
+              "description": "Menyatakan bahwa kecepatan cahaya di ruang hampa (c) adalah sama untuk semua pengamat, tidak bergantung pada gerak sumber cahaya atau pengamat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Postulat Pertama dan Kedua Einstein",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Keserentakan Peristiwa",
+                  "description": "Postulat ini menimbulkan konsep ketidakserentakan peristiwa."
+                }
+              ]
+            },
+            {
+              "name": "Eksperimen Michelson-Morley",
+              "description": "Sebuah eksperimen yang dirancang untuk mendeteksi keberadaan eter luminifer, medium hipotetis yang dianggap sebagai medium perambatan cahaya, namun hasilnya menunjukkan tidak ada eter.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Relativitas Einstein",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERSIAPKAN",
+                  "target": "Postulat Kedua Einstein",
+                  "description": "Hasil eksperimen ini menjadi landasan bagi Einstein dalam merumuskan postulat keduanya."
+                }
+              ]
+            },
+            {
+              "name": "Transformasi Lorentz",
+              "description": "Persamaan matematika yang menghubungkan koordinat ruang dan waktu antara dua kerangka acuan inersial yang bergerak relatif satu sama lain, berlaku untuk kecepatan tinggi mendekati cahaya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Penurunan Persamaan Transformasi Lorentz",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Transformasi Galileo",
+                  "description": "Transformasi Lorentz adalah perluasan dari transformasi Galileo yang valid pada kecepatan relativistik."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "B. Dampak Relativitas Einstein",
+          "concepts": [
+            {
+              "name": "Dilatasi Waktu",
+              "description": "Fenomena di mana waktu berjalan lebih lambat untuk pengamat yang bergerak relatif terhadap pengamat yang diam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Dilatasi Waktu",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Sintesis Protein",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Proses biologi seperti sintesis protein terjadi dalam rentang waktu tertentu, dan pemahaman tentang dilatasi waktu dapat relevan jika mempertimbangkan proses ini dalam kerangka acuan yang bergerak sangat cepat."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Paradoks Kembar",
+                  "description": "Dilatasi waktu adalah penjelasan utama untuk paradoks kembar."
+                }
+              ]
+            },
+            {
+              "name": "Penambahan Kecepatan Relativistik",
+              "description": "Rumus untuk menghitung kecepatan gabungan dari dua objek yang bergerak relatif satu sama lain, yang berbeda dari penambahan kecepatan klasik pada kecepatan tinggi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Penambahan Kecepatan",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERBEDA_DARI",
+                  "target": "Penambahan Kecepatan Klasik",
+                  "description": "Berbeda dengan penambahan kecepatan klasik (v = v1 + v2), penambahan kecepatan relativistik memperhitungkan keterbatasan kecepatan cahaya."
+                }
+              ]
+            },
+            {
+              "name": "Pengerutan Panjang",
+              "description": "Fenomena di mana panjang objek yang bergerak tampak lebih pendek ketika diukur oleh pengamat yang diam relatif terhadap arah gerakan objek tersebut.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pengerutan Panjang",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Definisi Evolusi",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Perubahan dimensi ruang dan waktu akibat kecepatan tinggi dalam relativitas dapat dianalogikan secara konseptual dengan bagaimana faktor-faktor lingkungan yang berubah seiring waktu dapat mempengaruhi evolusi organisme."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Pengukuran Jarak Luar Angkasa",
+                  "description": "Pengerutan panjang sangat relevan untuk pengukuran jarak dalam perjalanan antariksa pada kecepatan tinggi."
+                }
+              ]
+            },
+            {
+              "name": "Keserentakan Relativistik",
+              "description": "Peristiwa yang dianggap serentak oleh satu pengamat mungkin tidak serentak oleh pengamat lain yang berada dalam kerangka acuan yang berbeda.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Keserentakan",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "AKIBAT_DARI",
+                  "target": "Postulat Kedua Einstein",
+                  "description": "Konsep keserentakan ini timbul sebagai konsekuensi langsung dari postulat kedua Einstein."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "GEJALA KUANTUM",
+          "description": "Konsep relativitas memberikan dasar bagi pemahaman fenomena kuantum, terutama terkait dengan energi dan momentum partikel yang bergerak mendekati kecepatan cahaya.",
+          "concept_links": [
+            {
+              "source_concept": "Postulat Kedua Einstein",
+              "target_concept": "Foton",
+              "explanation": "Kecepatan cahaya yang konstan dan merupakan batasan kecepatan fundamental dalam relativitas sangat erat kaitannya dengan sifat partikel cahaya (foton) dalam fisika kuantum."
+            },
+            {
+              "source_concept": "Penambahan Kecepatan Relativistik",
+              "target_concept": "Energi Kinetik Relativistik",
+              "explanation": "Penambahan kecepatan dalam relativitas mengarah pada konsep energi kinetik relativistik yang berbeda dari energi kinetik klasik, yang penting dalam fisika kuantum."
+            }
+          ]
+        },
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "PENGANTAR INSTRUMEN DIGITAL",
+          "description": "Meskipun tidak secara langsung, pemahaman tentang bagaimana pengukuran dapat bergantung pada kerangka acuan (relativitas) dapat secara halus mempengaruhi cara berpikir tentang sistem pengukuran dan kalibrasi dalam instrumen digital.",
+          "concept_links": []
+        }
+      ]
+    },
+    {
+      "chapter": "GEJALA KUANTUM",
+      "chapter_summary": "Bab Gejala Kuantum membahas fenomena fisika pada skala atomik dan subatomik, yang tidak dapat dijelaskan oleh fisika klasik. Bab ini meliputi konsep foton sebagai paket energi cahaya, efek fotolistrik di mana cahaya dapat mengeluarkan elektron dari logam, efek Compton yang menjelaskan hamburan sinar-X oleh elektron, serta dualitas gelombang-partikel yang menunjukkan bahwa cahaya dan materi dapat memiliki sifat gelombang dan partikel. Selain itu, bab ini juga membahas sinar-X dan aplikasinya.",
+      "previous": "RELATIVITAS",
+      "next": "FISIKA INTI DAN RADIOAKTIVITAS",
+      "subchapters": [
+        "Konsep Foton",
+        "Efek Fotolistrik",
+        "Efek Compton",
+        "Sinar–X"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Konsep Foton",
+          "concepts": [
+            {
+              "name": "Foton",
+              "description": "Foton adalah paket energi diskrit yang membentuk cahaya, sesuai dengan hipotesis Planck, yang memiliki energi E=hf.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BAGIAN_DARI",
+                  "target": "Radiasi Benda Hitam",
+                  "description": "Foton merupakan paket energi yang terkait dengan radiasi benda hitam."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Efek Fotolistrik",
+                  "description": "Foton adalah partikel cahaya yang dapat menyebabkan efek fotolistrik."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Efek Compton",
+                  "description": "Foton berinteraksi dengan elektron dalam efek Compton."
+                }
+              ]
+            },
+            {
+              "name": "Radiasi Benda Hitam",
+              "description": "Radiasi benda hitam adalah radiasi gelombang elektromagnetik yang dipancarkan oleh benda dalam kesetimbangan termal dengan lingkungannya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Teori Kuantum Planck",
+                  "description": "Penjelasan radiasi benda hitam mengarah pada pengembangan teori kuantum Planck."
+                }
+              ]
+            },
+            {
+              "name": "Hukum Stefan-Boltzmann",
+              "description": "Hukum Stefan-Boltzmann menyatakan bahwa total intensitas radiasi yang dipancarkan oleh benda hitam sebanding dengan pangkat empat suhu mutlaknya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "BERGANTUNG_PADA",
+                  "target": "Suhu Mutlak",
+                  "description": "Intensitas radiasi benda hitam berbanding lurus dengan pangkat empat suhu mutlaknya."
+                }
+              ]
+            },
+            {
+              "name": "Pergeseran Wien",
+              "description": "Pergeseran Wien menjelaskan hubungan antara panjang gelombang maksimum radiasi benda hitam dan suhu mutlaknya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENDEFINISIKAN",
+                  "target": "Panjang Gelombang Maksimum",
+                  "description": "Pergeseran Wien menghubungkan panjang gelombang maksimum radiasi dengan suhu benda."
+                }
+              ]
+            },
+            {
+              "name": "Teori Kuantum Planck",
+              "description": "Teori kuantum Planck menyatakan bahwa energi radiasi dipancarkan dalam bentuk paket-paket diskrit yang disebut kuanta atau foton (E=nhf).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Efek Fotolistrik",
+                  "description": "Teori kuantum Planck digunakan Einstein untuk menjelaskan efek fotolistrik."
+                },
+                {
+                  "type": "DASAR_DARI",
+                  "target": "Foton",
+                  "description": "Teori kuantum Planck memperkenalkan konsep foton."
+                }
+              ]
+            },
+            {
+              "name": "Konstanta Planck",
+              "description": "Konstanta Planck (h) adalah konstanta fisika fundamental yang menghubungkan energi sebuah foton dengan frekuensinya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Konsep Foton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "TERLIBAT_DALAM",
+                  "target": "Energi Foton",
+                  "description": "Energi foton dihitung menggunakan konstanta Planck dan frekuensi."
+                },
+                {
+                  "type": "TERLIBAT_DALAM",
+                  "target": "Hipotesis De Broglie",
+                  "description": "Konstanta Planck digunakan dalam persamaan hipotesis De Broglie."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "B. Efek Fotolistrik",
+          "concepts": [
+            {
+              "name": "Efek Fotolistrik",
+              "description": "Efek fotolistrik adalah fenomena di mana elektron dikeluarkan dari permukaan logam ketika disinari oleh cahaya dengan frekuensi yang cukup.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Fotolistrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERDALAM",
+                  "target": "Teori Kuantum Planck",
+                  "description": "Efek fotolistrik merupakan bukti eksperimental untuk teori kuantum Planck."
+                },
+                {
+                  "type": "MEMPENGARUHI",
+                  "target": "Fungsi Kerja Logam",
+                  "description": "Terjadinya efek fotolistrik bergantung pada fungsi kerja logam."
+                },
+                {
+                  "type": "MEMUNGKINKAN",
+                  "target": "Energi Kinetik Elektron",
+                  "description": "Energi kinetik elektron yang keluar dalam efek fotolistrik dapat dihitung."
+                }
+              ]
+            },
+            {
+              "name": "Fungsi Kerja Logam (W0)",
+              "description": "Fungsi kerja logam adalah energi minimum yang dibutuhkan untuk mengeluarkan elektron dari permukaan logam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Fotolistrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENENTUKAN",
+                  "target": "Frekuensi Ambang",
+                  "description": "Fungsi kerja logam berhubungan langsung dengan frekuensi ambang."
+                },
+                {
+                  "type": "BERHUBUNGAN_DENGAN",
+                  "target": "Energi Foton",
+                  "description": "Agar terjadi efek fotolistrik, energi foton harus lebih besar dari fungsi kerja."
+                }
+              ]
+            },
+            {
+              "name": "Frekuensi Ambang (f0)",
+              "description": "Frekuensi ambang adalah frekuensi minimum cahaya yang diperlukan untuk menyebabkan efek fotolistrik pada suatu logam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Fotolistrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "TERKAIT_DENGAN",
+                  "target": "Fungsi Kerja Logam (W0)",
+                  "description": "Frekuensi ambang berbanding lurus dengan fungsi kerja logam."
+                }
+              ]
+            },
+            {
+              "name": "Energi Kinetik Maksimum (Kmax)",
+              "description": "Energi kinetik maksimum adalah energi kinetik tertinggi dari elektron yang dikeluarkan akibat efek fotolistrik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Fotolistrik",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "TERGANTUNG_PADA",
+                  "target": "Energi Foton",
+                  "description": "Energi kinetik maksimum elektron dipengaruhi oleh energi foton dan fungsi kerja logam."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "C. Efek Compton",
+          "concepts": [
+            {
+              "name": "Efek Compton",
+              "description": "Efek Compton adalah fenomena hamburan sinar-X oleh elektron, di mana foton kehilangan sebagian energinya dan panjang gelombangnya meningkat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Compton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MEMPERKUAT",
+                  "target": "Dualitas Gelombang Partikel",
+                  "description": "Efek Compton memberikan bukti kuat bahwa foton memiliki sifat partikel."
+                },
+                {
+                  "type": "BERKAITAN_DENGAN",
+                  "target": "Perubahan Panjang Gelombang",
+                  "description": "Efek Compton menyebabkan peningkatan panjang gelombang foton."
+                }
+              ]
+            },
+            {
+              "name": "Hamburan Compton",
+              "description": "Hamburan Compton adalah proses di mana foton bertumbukan dengan partikel bermuatan (biasanya elektron) dan mengubah arah serta energinya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Compton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MENYEBABKAN",
+                  "target": "Perubahan Frekuensi Foton",
+                  "description": "Hamburan Compton menyebabkan penurunan frekuensi foton."
+                }
+              ]
+            },
+            {
+              "name": "Panjang Gelombang Foton yang Dihamburkan (λ')",
+              "description": "Panjang gelombang foton setelah hamburan Compton, yang lebih panjang dari panjang gelombang datang.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Efek Compton",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "DITENTUKAN_OLEH",
+                  "target": "Sudut Hamburan (θ)",
+                  "description": "Panjang gelombang foton yang dihamburkan bergantung pada sudut hamburan."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "D. Sinar–X",
+          "concepts": [
+            {
+              "name": "Sinar-X",
+              "description": "Sinar-X adalah bentuk radiasi elektromagnetik berfrekuensi tinggi yang memiliki kemampuan menembus materi dan digunakan dalam pencitraan medis.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Sinar–X",
+              "cross_book_links": [
+                {
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Aplikasi Bioteknologi Modern",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Sinar-X, sebagai radiasi berenergi tinggi, memiliki aplikasi dalam berbagai bidang termasuk yang berkaitan dengan bioteknologi seperti pencitraan."
+                }
+              ],
+              "relations": [
+                {
+                  "type": "MEMILIKI",
+                  "target": "Kemampuan Menembus Materi",
+                  "description": "Sinar-X memiliki kemampuan untuk menembus berbagai jenis materi."
+                },
+                {
+                  "type": "BERASAL_DARI",
+                  "target": "Eksitasi Elektron Orbital Terdalam Atom",
+                  "description": "Sinar-X dipancarkan ketika elektron orbital terdalam atom tereksitasi."
+                }
+              ]
+            },
+            {
+              "name": "Pembentukan Sinar-X",
+              "description": "Sinar-X terbentuk ketika elektron berenergi tinggi menumbuk target logam, seperti tungsten, menyebabkan pelepasan energi dalam bentuk foton sinar-X.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Sinar–X",
+              "cross_book_links": [],
+              "relations": [
+                {
+                  "type": "MELIBATKAN",
+                  "target": "Tumbukan Elektron dan Anoda",
+                  "description": "Pembentukan sinar-X terjadi akibat tumbukan antara elektron berenergi tinggi dan anoda."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "chapter_relations": [
+        {
+          "type": "MEMPERSIAPKAN",
+          "target_chapter": "FISIKA INTI DAN RADIOAKTIVITAS",
+          "description": "Konsep gejala kuantum, termasuk pemahaman tentang foton dan partikel subatomik, menjadi dasar untuk memahami fisika inti dan radioaktivitas.",
+          "concept_links": [
+            {
+              "source_concept": "Foton",
+              "target_concept": "Partikel Penyusun Atom",
+              "explanation": "Pemahaman tentang partikel fundamental seperti foton dan elektron dalam gejala kuantum membantu dalam mempelajari struktur inti atom."
+            },
+            {
+              "source_concept": "Dualitas Gelombang Partikel",
+              "target_concept": "Model Atom",
+              "explanation": "Dualitas gelombang partikel menjelaskan perilaku partikel subatomik yang fundamental untuk model atom dan inti atom."
+            }
+          ]
+        },
+        {
+          "type": "PRASYARAT",
+          "target_chapter": "RELATIVITAS",
+          "description": "Konsep energi dan momentum dalam fisika kuantum, terutama yang terkait dengan foton dan efek Compton, memiliki keterkaitan dengan prinsip-prinsip relativitas.",
+          "concept_links": [
+            {
+              "source_concept": "Foton",
+              "target_concept": "E=mc^2",
+              "explanation": "Energi foton (E=hf) dan kesetaraan massa-energi Einstein (E=mc^2) menunjukkan hubungan mendalam antara energi, massa, dan kecepatan cahaya, yang merupakan inti dari relativitas."
+            },
+            {
+              "source_concept": "Efek Compton",
+              "target_concept": "Momentum Relativistik",
+              "explanation": "Analisis momentum dalam efek Compton membutuhkan pertimbangan relativistik karena foton bergerak dengan kecepatan cahaya."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chapter": "FISIKA INTI DAN RADIOAKTIVITAS",
+      "chapter_summary": "Bab Fisika Inti dan Radioaktivitas membahas struktur atom, termasuk penemuan inti atom melalui eksperimen Rutherford. Konsep defek massa dan energi ikat menjelaskan hubungan antara massa dan energi dalam inti atom. Bab ini juga mengulas tentang radioaktivitas, berbagai jenis partikel radiasi (alfa, beta, gamma), serta proses peluruhan radioaktif dan waktu paruhnya. Terakhir, dibahas reaksi inti seperti fisi dan fusi nuklir yang memiliki aplikasi signifikan dalam teknologi energi dan persenjataan.",
+      "previous": "GEJALA KUANTUM",
+      "next": null,
+      "subchapters": [
+        "Penemuan Inti Atom",
+        "Defek Massa dan Energi Ikat",
+        "Radioaktivitas",
+        "Partikel Radiasi",
+        "Peluruhan Radioaktif",
+        "Reaksi Inti (Fisi dan Fusi)"
+      ],
+      "subtopics": [
+        {
+          "name": "A. Penemuan Inti Atom",
+          "concepts": [
+            {
+              "name": "Penemuan Inti Atom oleh Rutherford",
+              "description": "Penemuan inti atom didasarkan pada eksperimen Rutherford yang menembakkan partikel alfa melalui lempeng emas, yang menunjukkan adanya inti atom yang padat dan bermuatan positif di pusat atom.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Sejarah Penemuan Inti Atom",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Penyusun Inti Atom",
+              "description": "Inti atom terdiri dari proton dan neutron yang secara bersama-sama disebut nukleon. Proton bermuatan positif, sedangkan neutron tidak bermuatan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Penyusun Atom",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Karakteristik Inti Atom",
+              "description": "Karakteristik inti atom meliputi nomor atom (jumlah proton), nomor massa (jumlah proton + neutron), dan massa atom yang dapat dinyatakan dalam satuan massa atom (u).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Karakteristik inti",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "B. Defek Massa dan Energi Ikat",
+          "concepts": [
+            {
+              "name": "Defek Massa",
+              "description": "Defek massa adalah perbedaan antara jumlah massa nukleon penyusun inti atom dengan massa inti atom itu sendiri, yang menunjukkan bahwa sebagian massa hilang dan berubah menjadi energi ikat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Defek massa",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Energi Ikat Inti",
+              "description": "Energi ikat adalah energi yang dibutuhkan untuk memisahkan semua nukleon dalam inti atom. Besarnya energi ikat dihitung berdasarkan defek massa yang dikonversi menjadi energi melalui persamaan E = Δmc².",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Energi Ikat",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Kestabilan Inti Atom",
+              "description": "Kestabilan inti atom berkaitan erat dengan energi ikat per nukleon. Inti dengan energi ikat per nukleon yang besar cenderung lebih stabil.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kestabilan inti",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "C. Radioaktivitas",
+          "concepts": [
+            {
+              "name": "Isotop",
+              "description": "Isotop adalah atom-atom dari unsur yang sama yang memiliki jumlah proton sama tetapi jumlah neutron berbeda, sehingga memiliki sifat kimia yang sama tetapi sifat fisika yang berbeda.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Isotop",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "isotop",
+                  "relation_type": "SAMA_DENGAN",
+                  "explanation": "Konsep isotop dalam fisika inti sama dengan konsep isotop dalam kimia, yaitu variasi atom dari unsur yang sama dengan jumlah neutron berbeda."
+                }
+              ],
+              "relations": []
+            },
+            {
+              "name": "Kestabilan Inti (Pita Kestabilan)",
+              "description": "Kestabilan inti atom dapat digambarkan melalui pita kestabilan yang menunjukkan perbandingan neutron terhadap proton. Inti di luar pita kestabilan cenderung tidak stabil dan mengalami peluruhan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kestabilan inti",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Radioaktivitas",
+              "description": "Radioaktivitas adalah proses peluruhan inti atom yang tidak stabil untuk mencapai kestabilan dengan memancarkan partikel radiasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Radioaktivitas",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Waktu Paruh",
+              "description": "Waktu paruh adalah waktu yang dibutuhkan oleh setengah dari jumlah inti radioaktif dalam suatu sampel untuk meluruh.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Waktu paruh",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "D. Partikel Radiasi",
+          "concepts": [
+            {
+              "name": "Partikel Alfa (α)",
+              "description": "Partikel alfa adalah inti atom helium yang terdiri dari dua proton dan dua neutron, memiliki muatan positif dua kali muatan elektron, dan daya tembusnya lemah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Partikel Radiasi",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Partikel Beta (β)",
+              "description": "Partikel beta adalah elektron atau positron yang dipancarkan dari inti atom. Partikel beta negatif (elektron) memiliki muatan negatif, sedangkan partikel beta positif (positron) memiliki muatan positif.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Partikel Radiasi",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Radiasi Gamma (γ)",
+              "description": "Radiasi gamma adalah gelombang elektromagnetik berenergi tinggi yang tidak bermassa dan tidak bermuatan, memiliki daya tembus yang sangat kuat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Partikel Radiasi",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Daya Tembus Partikel Radiasi",
+              "description": "Daya tembus partikel radiasi dipengaruhi oleh massa, muatan, dan energinya. Partikel yang lebih kecil dan bermuatan memiliki daya tembus yang lebih besar.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Partikel Radiasi",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "E. Peluruhan Radioaktif",
+          "concepts": [
+            {
+              "name": "Peluruhan Alfa",
+              "description": "Peluruhan alfa adalah proses di mana inti atom memancarkan partikel alfa, biasanya terjadi pada inti berat untuk mencapai kestabilan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Peluruhan",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Peluruhan Beta",
+              "description": "Peluruhan beta melibatkan perubahan neutron menjadi proton (atau sebaliknya) dalam inti, disertai emisi elektron atau positron. Nomor massa inti tidak berubah, tetapi nomor atomnya berubah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Peluruhan",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Peluruhan Gamma",
+              "description": "Peluruhan gamma adalah emisi radiasi elektromagnetik berenergi tinggi dari inti atom yang tereksitasi, yang bertujuan untuk mengurangi kelebihan energi inti agar menjadi stabil. Nomor massa dan nomor atom inti tidak berubah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Peluruhan",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Penanggalan Karbon (Radiometrik)",
+              "description": "Penanggalan karbon menggunakan peluruhan radioaktif isotop karbon-14 untuk menentukan usia artefak organik, berdasarkan waktu paruh C-14.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Radioaktivitas",
+              "cross_book_links": [
+                {
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Senyawa Organik Tersusun atas Rantai Karbon",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "explanation": "Konsep berbagi kata kunci ilmiah: karbon, organik."
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        {
+          "name": "F. Reaksi Inti (Fisi dan Fusi)",
+          "concepts": [
+            {
+              "name": "Reaksi Fisi Nuklir",
+              "description": "Reaksi fisi adalah pembelahan inti atom berat menjadi dua atau lebih inti yang lebih ringan, biasanya dipicu oleh penembakan neutron, dan melepaskan energi yang sangat besar.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Reaksi Inti (Fisi dan Fusi)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Reaksi Fusi Nuklir",
+              "description": "Reaksi fusi adalah penggabungan dua inti atom ringan menjadi satu inti yang lebih berat, melepaskan energi yang lebih besar dibandingkan fisi nuklir. Contohnya terjadi di bintang-bintang.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Reaksi Inti (Fisi dan Fusi)",
+              "cross_book_links": [],
+              "relations": []
+            },
+            {
+              "name": "Aplikasi Energi Nuklir",
+              "description": "Reaksi fisi dan fusi memiliki aplikasi penting dalam pembangkit listrik tenaga nuklir, bom nuklir, dan penelitian ilmiah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Inti (Fisi dan Fusi)",
+              "cross_book_links": [],
+              "relations": []
+            }
+          ]
+        }
+      ],
+      "chapter_relations": []
+    }
+  ]
+}

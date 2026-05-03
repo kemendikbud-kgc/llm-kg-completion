@@ -1,0 +1,161 @@
+REVISED RELATION TAXONOMY FOR YHOGA'S PIPELINE
+================================================
+
+Current state (TA_KG_INTERKONEKSI.ipynb): 8 within-book + 5 cross-book = 13 types,
+no confidence scores, BERKAITAN_DENGAN used as junk-drawer default.
+
+Recommendation: collapse to 6 unified types, move cross-book signal to edge
+properties, add confidence ∈ [0, 1].
+
+
+PROPOSED 6 TYPES (UNIFIED, WITHIN + CROSS-BOOK)
+------------------------------------------------
+
+  1. BAGIAN_DARI        (asym, structural)     A is part of / contained by B
+                        Replaces: BAGIAN_DARI, TERDIRI_DARI (flip direction)
+
+  2. MENYEBABKAN        (asym, causal)         A causes / produces B
+                        Replaces: MENYEBABKAN, MENGHASILKAN,
+                                  directional MEMPENGARUHI
+
+  3. MEMUNGKINKAN       (asym, functional)     A enables / is precondition for B
+                        Replaces: MEMUNGKINKAN, MENGATUR,
+                                  BERGANTUNG_PADA (inverse)
+
+  4. PRASYARAT_UNTUK    (asym, pedagogical)    A must be learned before B
+                        Promote from cross-book-only to universal
+
+  5. APLIKASI_DARI      (asym, specialization) A is application/specialization of B
+                        Replaces: APLIKASI_DARI, MEMPERDALAM,
+                                  most MENDEFINISIKAN
+
+  6. ANALOGI_DENGAN     (sym,  structural)     A and B share principle/pattern
+                        Replaces: SAMA_DENGAN, symmetric BERINTERAKSI_DENGAN
+
+
+DROP ENTIRELY
+-------------
+
+  - BERKAITAN_DENGAN    Junk-drawer default. Force LLM commitment; if it cannot
+                        pick a type, omit the edge. Better precision than a
+                        weak generic class.
+
+  - MENDEFINISIKAN      Textbook pedagogy artifact, not a scientific relation.
+                        Collapse into APLIKASI_DARI when applicable.
+
+  - MEMPENGARUHI        Too vague — must collapse into MENYEBABKAN
+                        (causal) or MEMUNGKINKAN (functional).
+
+
+MOVE CROSS-BOOK SIGNAL TO EDGE PROPERTIES
+------------------------------------------
+
+Current (bad):
+  LINTAS_BUKU_PRASYARAT_UNTUK as a relation type
+
+This doubles type cardinality at the Cypher level and breaks
+`type(r) IN [...]` queries.
+
+Replace with:
+
+  (:Concept)-[:PRASYARAT_UNTUK {
+    confidence:  0.85,
+    lintas_buku: true,
+    source_book: "Kimia XII",
+    target_book: "Biologi XII",
+    description: "..."
+  }]->(:Concept)
+
+Now one Cypher family handles all queries; cross-book filter is just:
+  WHERE r.lintas_buku = true
+
+
+ADD CONFIDENCE SCORE
+--------------------
+
+Every relation must carry confidence ∈ [0, 1] emitted by the LLM.
+
+Enables:
+  - Expert review thresholding ("show me edges with confidence < 0.6")
+  - Quantitative graph quality metric for the thesis
+  - Direct comparability with Soros's pipeline (which already has confidence)
+
+
+WHY THIS REVISION IS STRONGER
+------------------------------
+
+  1. 6 types vs 13 → LLM consistency rises substantially.
+     Cardinality is the single biggest cause of label drift in
+     extraction-time relation emission.
+
+  2. Each type sits on a distinct semantic axis:
+     structural / causal / functional / pedagogical / specialization / analogy.
+     Overlap-by-design is gone.
+
+  3. Symmetry encoded in the schema — only ANALOGI_DENGAN is symmetric.
+     Prompt can enforce this.
+
+  4. Within/cross-book unified → simpler ingestion, simpler queries,
+     simpler statistics.
+
+  5. Aligns with Soros's pipeline (src/completion.py):
+       PRASYARAT_UNTUK            <-> isPrerequisiteOf
+       MEMUNGKINKAN / APLIKASI_DARI <-> supports
+       ANALOGI_DENGAN              <-> analogousTo
+
+     If the two theses ever need to compare or merge KGs,
+     the mapping is now a one-liner.
+
+
+OPTIONAL TIER-2 IMPROVEMENT (METHODOLOGY)
+------------------------------------------
+
+If Yhoga wants to improve the pipeline (not just the schema):
+
+Add an ANN-based completion pass post-extraction:
+  1. Embed all concepts (multilingual text embedding model).
+  2. Find similar pairs that chapter-parsing extraction missed
+     (cosine similarity above threshold).
+  3. Run those pairs through a separate relation classifier
+     using the same 6-type schema.
+
+This converts the pipeline from pure construction to
+construction + completion — and gives Yhoga a methodological story
+symmetric to Soros's.
+
+
+MINIMAL VS IDEAL CHANGE
+-----------------------
+
+Smallest disruption (3 changes):
+  1. Drop MEMPENGARUHI.
+  2. Drop BERKAITAN_DENGAN as a default fallback (keep as last resort only).
+  3. Add confidence ∈ [0, 1] field to every emitted relation.
+
+Methodologically defensible version:
+  Full 6-type revision above + edge properties + confidence.
+
+
+MAPPING FROM CURRENT TO REVISED
+-------------------------------
+
+  Within-book (current → revised)
+  --------------------------------
+  MENDEFINISIKAN       -> APLIKASI_DARI  (or omit if weak)
+  MENYEBABKAN          -> MENYEBABKAN
+  MEMUNGKINKAN         -> MEMUNGKINKAN
+  MENGATUR             -> MEMUNGKINKAN
+  BAGIAN_DARI          -> BAGIAN_DARI
+  TERDIRI_DARI         -> BAGIAN_DARI    (flip direction)
+  BERGANTUNG_PADA      -> MEMUNGKINKAN   (flip direction)
+  BERINTERAKSI_DENGAN  -> ANALOGI_DENGAN (if symmetric) or omit
+  MENGHASILKAN         -> MENYEBABKAN
+  MEMPENGARUHI         -> MENYEBABKAN or MEMUNGKINKAN (force choice)
+
+  Cross-book (current → revised, all get lintas_buku=true property)
+  -----------------------------------------------------------------
+  SAMA_DENGAN          -> ANALOGI_DENGAN
+  APLIKASI_DARI        -> APLIKASI_DARI
+  PRASYARAT_UNTUK      -> PRASYARAT_UNTUK
+  MEMPERDALAM          -> APLIKASI_DARI
+  BERKAITAN_DENGAN     -> omit (or APLIKASI_DARI if context implies it)
