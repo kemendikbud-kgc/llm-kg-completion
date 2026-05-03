@@ -55,11 +55,16 @@ from src.notify import send_notification
 from src.prompts import PROMPT_REGISTRY, get_prompt
 from src.schemas import SUBJECT_CHOICES, PHASE_CHOICES, KELAS_CHOICES
 from src.health import check_all
+from src.streamlit_log_handler import setup_log_capture, render_log_container
 
 logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="KG Completion Pipeline", layout="wide")
 st.title("LLM-Assisted Knowledge Graph Completion")
+
+# Clear logs from previous render at the start of each script run
+if "log_handler" in st.session_state:
+    st.session_state["log_handler"].clear()
 
 # --- Custom CSS for step states ---
 st.markdown(
@@ -531,6 +536,7 @@ else:
 
     raw_text = None
     if uploaded_file:
+        log_handler = setup_log_capture("Step 1: Upload")
         import tempfile
         import os
 
@@ -691,15 +697,14 @@ else:
             )
 
         if st.button("Run Extraction", type="primary"):
+            log_handler = setup_log_capture("Step 2: Extract")
             progress_bar = st.progress(0, text="Preparing...")
-            status_text = st.empty()
 
             def update_progress(current: int, total: int, message: str):
                 if total > 0:
                     progress_bar.progress(
                         current / total, text=f"{message} ({current}/{total})"
                     )
-                status_text.info(message)
                 logger.info("[Step 2] %s (%d/%d)", message, current, total)
 
             ingestion_mode = st.session_state.get("ingestion_mode", "enhanced")
@@ -767,7 +772,6 @@ else:
                     pages=_pdf_pages,
                 )
             progress_bar.empty()
-            status_text.empty()
 
             st.session_state["extracted"] = result
             st.session_state["filter_result"] = filter_result
@@ -888,6 +892,7 @@ else:
         if not document_name or not document_name.strip():
             st.error("Please provide a document name!")
         else:
+            log_handler = setup_log_capture("Step 4: Save")
             data = json.loads(edited)
             if not data.get("konsep"):
                 st.error("No konsep in the data.")
@@ -999,3 +1004,7 @@ if st.button("Save as Experiment", type="secondary"):
     except Exception as e:
         st.error(f"Failed to save experiment: {e}")
         logger.error("[Experiment] Failed to save: %s", e)
+
+# --- Output Log Container ---
+st.divider()
+render_log_container()

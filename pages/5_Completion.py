@@ -7,20 +7,6 @@ logging.getLogger("neo4j").setLevel(logging.ERROR)
 
 import streamlit as st
 
-from src.graph import (
-    get_driver,
-    get_graph_stats,
-    get_all_documents,
-    get_nodes_with_descriptions,
-    get_similar_relationships,
-    create_typed_relationship,
-    create_vector_index,
-    drop_vector_index,
-    get_index_info,
-    count_nodes_with_embeddings,
-    get_embedding_dimensions,
-    store_node_embeddings,
-)
 from src.completion import (
     find_similar_pairs_ann,
     classify_similar_pairs,
@@ -33,7 +19,9 @@ from src.config import (
     DEFAULT_CHAT_MODEL,
     DEFAULT_EMBEDDING_MODEL,
 )
+from src.graph import get_embedding_dimensions
 from src.notify import send_notification
+from src.schema_adapter import get_adapter
 from src.streamlit_log_handler import setup_log_capture, render_log_container
 
 logger = logging.getLogger(__name__)
@@ -41,15 +29,41 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="KG Completion", layout="wide")
 st.title("Knowledge Graph Completion")
 st.write(
-    "Discover similar konsep using semantic embeddings, then classify relationships."
+    "Discover similar concepts using semantic embeddings, then classify relationships."
 )
 
 # Clear logs from previous render
 if "log_handler" in st.session_state:
     st.session_state["log_handler"].clear()
 
-# --- Sidebar: Model Selection ---
+# --- Sidebar: Schema + Model Selection ---
 with st.sidebar:
+    st.header("Database Schema")
+    schema_name = st.selectbox(
+        "Schema",
+        options=["soros", "yhoga"],
+        index=0,
+        help=(
+            "soros: Konsep/SubKonsep ontology (default project DB).\n"
+            "yhoga: Concept/Subtopic/Chapter/Grade ontology (separate Aura instance)."
+        ),
+    )
+    adapter = get_adapter(schema_name)
+    spec = adapter.spec
+    st.caption(
+        f"Labels: `{', '.join(spec.node_labels)}` · "
+        f"Index: `{', '.join(spec.index_names.values())}` · "
+        f"Env: `{spec.neo4j_uri_env}`"
+    )
+
+    # If the user switches schema we want to drop stale cross-schema state
+    # (similar pairs found on the previous DB are not valid on the new one).
+    if st.session_state.get("active_schema") != schema_name:
+        st.session_state["active_schema"] = schema_name
+        st.session_state["found_pairs"] = None
+        st.session_state.pop("pairs_scope", None)
+
+    st.divider()
     st.header("Model Settings")
 
     chat_model_name = st.selectbox(
@@ -68,48 +82,173 @@ with st.sidebar:
     selected_embedding_model = EMBEDDING_CHOICES[embedding_model_name]
     st.caption(f"`{selected_embedding_model}`")
 
-# --- Check Neo4j data ---
+# --- Check Neo4j data on the selected schema ---
 has_neo4j_data = False
+connection_error: str | None = None
 try:
-    _driver = get_driver()
-    _stats = get_graph_stats(_driver)
+    _driver = adapter.get_driver()
+    has_neo4j_data = adapter.get_total_concept_count(_driver) > 0
     _driver.close()
-    has_neo4j_data = _stats.get("konsep", _stats.get("topics", 0)) > 0
-except Exception:
-    pass
+except Exception as e:
+    connection_error = str(e)
 
-if not has_neo4j_data:
-    st.warning(
-        "No konsep found in the knowledge graph. "
-        "Go to the main pipeline page to upload and extract documents first."
+if connection_error:
+    st.error(
+        f"Could not connect to the **{schema_name}** schema "
+        f"(`{spec.neo4j_uri_env}` / `{spec.neo4j_password_env}`):\n\n{connection_error}"
     )
     st.stop()
 
-# --- Get available documents ---
+if not has_neo4j_data:
+    st.warning(
+        f"No concepts found in the **{schema_name}** knowledge graph. "
+        + (
+            "Go to the main pipeline page to upload and extract documents first."
+            if schema_name == "soros"
+            else "The yhoga DB is read-only here — verify the connection points to the right Aura instance."
+        )
+    )
+    st.stop()
+
+# --- Get available documents for the selected schema ---
 try:
-    driver = get_driver()
-    available_docs = get_all_documents(driver)
+    driver = adapter.get_driver()
+    available_docs = adapter.get_documents(driver)
     driver.close()
     doc_names = [d["name"] for d in available_docs]
 except Exception:
     doc_names = []
 
+# --- Index Setup (collapsible, prerequisite for similarity search) ---
+with st.expander("⚙️ Index Setup", expanded=False):
+    st.caption(
+        "Vector index and node embeddings. Expand only when changing embedding "
+        "models or rebuilding the index."
+    )
+    try:
+        driver = adapter.get_driver()
+        index_info = adapter.get_index_info(driver)
+        embedding_stats = adapter.count_nodes_with_embeddings(driver)
+        driver.close()
+
+        col_info1, col_info2, col_info3 = st.columns(3)
+        with col_info1:
+            if index_info.get("exists"):
+                st.metric("Index Status", index_info.get("state", "ONLINE"))
+            else:
+                st.metric("Index Status", "Not Created")
+        with col_info2:
+            st.metric("Nodes with Embeddings", embedding_stats["with_embedding"])
+        with col_info3:
+            st.metric("Total Nodes", embedding_stats["total"])
+
+        if embedding_stats["models"]:
+            st.caption(
+                f"Embedding models used: {', '.join(embedding_stats['models'])}"
+            )
+
+        st.divider()
+
+        col_action1, col_action2, col_action3 = st.columns(3)
+
+        with col_action1:
+            dimensions = get_embedding_dimensions(selected_embedding_model)
+            if st.button(
+                "Create/Refresh Index",
+                help=f"Create vector index with {dimensions} dimensions for the selected embedding model",
+            ):
+                try:
+                    driver = adapter.get_driver()
+                    success = adapter.create_vector_indexes(driver, dimensions=dimensions)
+                    driver.close()
+                    if success:
+                        st.success(
+                            f"Vector index created with {dimensions} dimensions"
+                        )
+                        st.rerun()
+                    else:
+                        st.error("Failed to create vector index")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+        with col_action2:
+            if st.button(
+                "Drop Index",
+                help="Remove vector indexes (useful when changing embedding models)",
+            ):
+                try:
+                    driver = adapter.get_driver()
+                    success = adapter.drop_vector_indexes(driver)
+                    driver.close()
+                    if success:
+                        st.success("Vector indexes dropped")
+                        st.rerun()
+                    else:
+                        st.error("Failed to drop vector index")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+        with col_action3:
+            if st.button(
+                "Refresh All Embeddings",
+                help="Re-embed all nodes with the selected model and store in Neo4j",
+            ):
+                try:
+                    driver = adapter.get_driver()
+                    nodes = adapter.get_nodes_for_completion(driver)
+                    if not nodes:
+                        st.warning("No nodes found to embed")
+                        driver.close()
+                    else:
+                        log_handler = setup_log_capture("Step 5: Embeddings")
+                        progress_bar = st.progress(0, text="Embedding nodes...")
+
+                        def update_embed_progress(
+                            current: int, total: int, message: str
+                        ):
+                            progress_bar.progress(current / total, text=message)
+
+                        combined_texts = [build_embed_text(n, adapter=adapter) for n in nodes]
+                        embeddings = get_embeddings(
+                            combined_texts,
+                            model=selected_embedding_model,
+                            progress_callback=update_embed_progress,
+                        )
+
+                        updated = adapter.store_node_embeddings(
+                            driver, nodes, embeddings, selected_embedding_model
+                        )
+                        driver.close()
+
+                        progress_bar.empty()
+                        st.success(f"Stored embeddings for {updated} nodes")
+                        st.rerun()
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+    except Exception as e:
+        st.warning(f"Could not connect to Neo4j: {e}")
+
 # --- Scope selection ---
 st.subheader("Scope")
 col_scope1, col_scope2 = st.columns(2)
+
+doc_term = "Grade" if schema_name == "yhoga" else "Document"
 
 with col_scope1:
     scope_mode = st.radio(
         "Analysis scope",
         options=["all", "single", "cross"],
         format_func=lambda x: {
-            "all": "All Documents",
-            "single": "Single Document",
-            "cross": "Cross-Document (selected + related)",
+            "all": f"All {doc_term}s",
+            "single": f"Single {doc_term}",
+            "cross": f"Cross-{doc_term} (selected + related)",
         }[x],
-        help="All: Compare all topics across all documents\n"
-        "Single: Compare topics within one document only\n"
-        "Cross: Compare topics from selected document with all others",
+        help=(
+            f"All: Compare all concepts across all {doc_term.lower()}s\n"
+            f"Single: Compare concepts within one {doc_term.lower()} only\n"
+            f"Cross: Compare concepts from selected {doc_term.lower()} with all others"
+        ),
     )
 
 with col_scope2:
@@ -117,21 +256,21 @@ with col_scope2:
     if scope_mode in ["single", "cross"]:
         if doc_names:
             selected_doc = st.selectbox(
-                "Select document",
+                f"Select {doc_term.lower()}",
                 options=doc_names,
-                help="Choose the document to analyze",
+                help=f"Choose the {doc_term.lower()} to analyze",
             )
         else:
-            st.warning("No documents found in the knowledge graph.")
+            st.warning(f"No {doc_term.lower()}s found in the knowledge graph.")
 
 # Show scope info
 if scope_mode == "all":
-    st.info(f"Will analyze all topics from {len(doc_names)} document(s)")
+    st.info(f"Will analyze all concepts from {len(doc_names)} {doc_term.lower()}(s)")
 elif scope_mode == "single" and selected_doc:
-    st.info(f"Will analyze topics within **{selected_doc}** only")
+    st.info(f"Will analyze concepts within **{selected_doc}** only")
 elif scope_mode == "cross" and selected_doc:
     st.info(
-        f"Will find similarities between **{selected_doc}** and all other documents"
+        f"Will find similarities between **{selected_doc}** and all other {doc_term.lower()}s"
     )
 
 st.divider()
@@ -151,37 +290,15 @@ with col_topk:
         "find more pairs at the cost of runtime and noise.",
     )
 
-# Show vector index status
-try:
-    driver = get_driver()
-    index_info = get_index_info(driver)
-    embedding_stats = count_nodes_with_embeddings(driver)
-    driver.close()
-
-    col_stat1, col_stat2 = st.columns(2)
-    with col_stat1:
-        if index_info.get("exists"):
-            st.success(f"Vector index ready ({index_info.get('state', 'ONLINE')})")
-        else:
-            st.info("Vector index will be created on first run")
-    with col_stat2:
-        st.caption(
-            f"Nodes with embeddings: {embedding_stats['with_embedding']}/{embedding_stats['total']}"
-        )
-        if embedding_stats["models"]:
-            st.caption(f"Models used: {', '.join(embedding_stats['models'])}")
-except Exception as e:
-    st.warning(f"Could not check index status: {e}")
-
 if "found_pairs" not in st.session_state:
     st.session_state["found_pairs"] = None
 
 col_find, col_save = st.columns(2)
 
 with col_find:
-    if st.button("Find Similar Konsep", type="primary"):
+    if st.button("Find Similar Concepts", type="primary"):
         if scope_mode in ["single", "cross"] and not selected_doc:
-            st.error("Please select a document first.")
+            st.error(f"Please select a {doc_term.lower()} first.")
         else:
             log_handler = setup_log_capture("Step 5: Find Similar")
             progress_bar = st.progress(0, text="Initializing...")
@@ -192,11 +309,11 @@ with col_find:
                 logger.info("[Completion] %s (%d/%d)", message, current, total)
 
             try:
-                driver = get_driver()
+                driver = adapter.get_driver()
                 include_cross = scope_mode == "cross"
                 doc_filter = None if scope_mode == "all" else selected_doc
 
-                nodes = get_nodes_with_descriptions(
+                nodes = adapter.get_nodes_for_completion(
                     driver,
                     document_name=doc_filter,
                     include_cross_doc=include_cross,
@@ -208,14 +325,15 @@ with col_find:
                     driver.close()
                 else:
                     logger.info(
-                        "[Completion] Analyzing %d nodes (scope: %s, doc: %s, method: ann)",
+                        "[Completion] Analyzing %d nodes (schema: %s, scope: %s, doc: %s, method: ann)",
                         len(nodes),
+                        schema_name,
                         scope_mode,
                         doc_filter or "all",
                     )
 
                     # Get embeddings first
-                    combined_texts = [build_embed_text(n) for n in nodes]
+                    combined_texts = [build_embed_text(n, adapter=adapter) for n in nodes]
 
                     update_progress(0, len(nodes), "Computing embeddings...")
                     embeddings = get_embeddings(
@@ -239,11 +357,13 @@ with col_find:
                         top_k=top_k,
                         allowed_names=allowed_names,
                         progress_callback=update_progress,
+                        adapter=adapter,
                     )
                     driver.close()
 
                     st.session_state["found_pairs"] = pairs
                     st.session_state["pairs_scope"] = {
+                        "schema": schema_name,
                         "mode": scope_mode,
                         "document": selected_doc,
                         "node_count": len(nodes),
@@ -273,9 +393,10 @@ if st.session_state.get("found_pairs"):
         st.success(f"Found {len(pairs)} similar pair(s)!")
         if scope_info:
             st.caption(
+                f"Schema: {scope_info.get('schema', '?')} | "
                 f"Scope: {scope_info.get('mode', 'all')} | "
                 f"Nodes: {scope_info.get('node_count', '?')} | "
-                f"Document: {scope_info.get('document', 'all')}"
+                f"{doc_term}: {scope_info.get('document', 'all')}"
             )
 
         # Display all pairs in collapsed view
@@ -291,30 +412,21 @@ if st.session_state.get("found_pairs"):
         st.subheader("Save to Knowledge Graph")
         if st.button("Save All Pairs", type="primary"):
             progress_bar = st.progress(0, text="Saving to Neo4j...")
-            driver = get_driver()
+            driver = adapter.get_driver()
             saved_count = 0
-            with driver.session() as session:
-                for i, p in enumerate(pairs):
-                    # Restrict matches to Konsep/SubKonsep so names that happen
-                    # to collide with Bab/Document nodes cannot be linked.
-                    # Pairs are written in a canonical direction (sorted) and
-                    # should be read with `-[r:SIMILAR_TO]-` (undirected).
-                    src, tgt = sorted([p["source"], p["target"]])
-                    session.run(
-                        "MATCH (a:Konsep|SubKonsep {name: $src}), "
-                        "(b:Konsep|SubKonsep {name: $tgt}) "
-                        "MERGE (a)-[r:SIMILAR_TO]->(b) "
-                        "SET r.score = $score",
-                        src=src,
-                        tgt=tgt,
-                        score=p["similarity"],
+            for i, p in enumerate(pairs):
+                adapter.save_similar_pair(
+                    driver,
+                    source=p["source"],
+                    target=p["target"],
+                    score=p["similarity"],
+                )
+                saved_count += 1
+                if i % 10 == 0:
+                    progress_bar.progress(
+                        (i + 1) / len(pairs),
+                        text=f"Saving {i + 1}/{len(pairs)}...",
                     )
-                    saved_count += 1
-                    if i % 10 == 0:
-                        progress_bar.progress(
-                            (i + 1) / len(pairs),
-                            text=f"Saving {i + 1}/{len(pairs)}...",
-                        )
             driver.close()
             progress_bar.progress(1.0, text="Done!")
             logger.info("[Completion] Saved %d SIMILAR_TO relationships", saved_count)
@@ -333,8 +445,8 @@ st.write(
 )
 
 try:
-    driver = get_driver()
-    existing_similar = get_similar_relationships(driver)
+    driver = adapter.get_driver()
+    existing_similar = adapter.get_similar_pairs(driver)
     driver.close()
 except Exception:
     existing_similar = []
@@ -365,19 +477,20 @@ if existing_similar:
                     progress_bar.progress(current / total, text=message)
 
             try:
-                driver = get_driver()
+                driver = adapter.get_driver()
                 classified = classify_similar_pairs(
                     driver,
                     existing_similar,
                     llm_model=selected_chat_model,
                     progress_callback=update_classify_progress,
                     batch_size=classify_batch_size,
+                    adapter=adapter,
                 )
                 # Save typed relationships to Neo4j
                 saved_typed = 0
                 for item in classified:
                     if item["rel_type"] != "none":
-                        create_typed_relationship(
+                        adapter.save_typed_relationship(
                             driver,
                             source=item["source"],
                             target=item["target"],
@@ -410,114 +523,10 @@ if existing_similar:
             "**analogousTo**: A and B share the same pattern (anti-silo signal)"
         )
 else:
-    st.info("Run SIMILAR_TO discovery first (above), then classify relationships.")
-
-# --- Vector Index Management ---
-st.divider()
-st.subheader("Vector Index Management")
-st.write("Manage Neo4j vector indexes for ANN similarity search.")
-
-try:
-    driver = get_driver()
-    index_info = get_index_info(driver)
-    embedding_stats = count_nodes_with_embeddings(driver)
-    driver.close()
-
-    col_info1, col_info2, col_info3 = st.columns(3)
-    with col_info1:
-        if index_info.get("exists"):
-            st.metric("Index Status", index_info.get("state", "ONLINE"))
-        else:
-            st.metric("Index Status", "Not Created")
-
-    with col_info2:
-        st.metric("Nodes with Embeddings", embedding_stats["with_embedding"])
-
-    with col_info3:
-        st.metric("Total Nodes", embedding_stats["total"])
-
-    if embedding_stats["models"]:
-        st.caption(f"Embedding models used: {', '.join(embedding_stats['models'])}")
-
-    st.divider()
-
-    col_action1, col_action2, col_action3 = st.columns(3)
-
-    with col_action1:
-        dimensions = get_embedding_dimensions(selected_embedding_model)
-        if st.button(
-            "Create/Refresh Index",
-            help=f"Create vector index with {dimensions} dimensions for the selected embedding model",
-        ):
-            try:
-                driver = get_driver()
-                success = create_vector_index(driver, dimensions=dimensions)
-                driver.close()
-                if success:
-                    st.success(f"Vector index created with {dimensions} dimensions")
-                    st.rerun()
-                else:
-                    st.error("Failed to create vector index")
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-    with col_action2:
-        if st.button(
-            "Drop Index",
-            help="Remove vector indexes (useful when changing embedding models)",
-        ):
-            try:
-                driver = get_driver()
-                success = drop_vector_index(driver)
-                driver.close()
-                if success:
-                    st.success("Vector indexes dropped")
-                    st.rerun()
-                else:
-                    st.error("Failed to drop vector index")
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-    with col_action3:
-        if st.button(
-            "Refresh All Embeddings",
-            help="Re-embed all nodes with the selected model and store in Neo4j",
-        ):
-            try:
-                driver = get_driver()
-                nodes = get_nodes_with_descriptions(driver)
-                if not nodes:
-                    st.warning("No nodes found to embed")
-                    driver.close()
-                else:
-                    log_handler = setup_log_capture("Step 5: Embeddings")
-                    progress_bar = st.progress(0, text="Embedding nodes...")
-
-                    def update_embed_progress(current: int, total: int, message: str):
-                        progress_bar.progress(current / total, text=message)
-
-                    # Get embeddings
-                    combined_texts = [build_embed_text(n) for n in nodes]
-                    embeddings = get_embeddings(
-                        combined_texts,
-                        model=selected_embedding_model,
-                        progress_callback=update_embed_progress,
-                    )
-
-                    # Store in Neo4j
-                    updated = store_node_embeddings(
-                        driver, nodes, embeddings, selected_embedding_model
-                    )
-                    driver.close()
-
-                    progress_bar.empty()
-                    st.success(f"Stored embeddings for {updated} nodes")
-                    st.rerun()
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-except Exception as e:
-    st.warning(f"Could not connect to Neo4j: {e}")
+    st.info(
+        "No SIMILAR_TO relationships yet. Run **Find Similar Concepts** above first, "
+        "then return here to classify them."
+    )
 
 # --- Output Log Container ---
 st.divider()

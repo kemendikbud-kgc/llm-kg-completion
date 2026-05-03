@@ -10,10 +10,16 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 ZAI_API_KEY = os.getenv("ZAI_API_KEY")
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
-# --- Neo4j ---
+# --- Neo4j (default / soros schema) ---
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
+
+# --- Neo4j (yhoga schema — separate Aura/instance) ---
+# Falls back to the default vars so single-DB users don't need both sets.
+NEO4J_URI_YHOGA = os.getenv("NEO4J_URI_YHOGA", NEO4J_URI)
+NEO4J_USERNAME_YHOGA = os.getenv("NEO4J_USERNAME_YHOGA", NEO4J_USERNAME)
+NEO4J_PASSWORD_YHOGA = os.getenv("NEO4J_PASSWORD_YHOGA", NEO4J_PASSWORD)
 
 # --- Chat Model Choices (display name -> LiteLLM model string) ---
 MODEL_CHOICES = {
