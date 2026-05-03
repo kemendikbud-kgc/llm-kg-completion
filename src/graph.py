@@ -441,7 +441,9 @@ def _insert_variable(session, node_name: str, label: str, var_str: str) -> None:
             node_name=node_name,
         )
     except Exception as e:
-        logger.warning("Failed to insert variable '%s' for '%s': %s", var_str, node_name, e)
+        logger.warning(
+            "Failed to insert variable '%s' for '%s': %s", var_str, node_name, e
+        )
 
 
 # Backward-compat wrapper
@@ -675,14 +677,16 @@ def get_nodes_with_descriptions(
                 RETURN k.name AS name, k.description AS description,
                        labels(k) AS labels, d.name AS doc_name,
                        coalesce(k.formula, []) AS formula,
-                       coalesce(k.variables, []) AS variables
+                       coalesce(k.variables, []) AS variables,
+                       coalesce(k.kondisi, []) AS kondisi
                 UNION
                 MATCH (d:Document {name: $doc_name})-[:hasBab]->(:Bab)-[:hasKonsep]->(:Konsep)
                       -[:hasSubKonsep]->(sk:SubKonsep)
                 RETURN sk.name AS name, sk.description AS description,
                        labels(sk) AS labels, d.name AS doc_name,
                        coalesce(sk.formula, []) AS formula,
-                       coalesce(sk.variables, []) AS variables
+                       coalesce(sk.variables, []) AS variables,
+                       coalesce(sk.kondisi, []) AS kondisi
                 ORDER BY name
                 """,
                 doc_name=document_name,
@@ -695,7 +699,8 @@ def get_nodes_with_descriptions(
                 RETURN n.name AS name, n.description AS description,
                        labels(n) AS labels, NULL AS doc_name,
                        coalesce(n.formula, []) AS formula,
-                       coalesce(n.variables, []) AS variables
+                       coalesce(n.variables, []) AS variables,
+                       coalesce(n.kondisi, []) AS kondisi
                 ORDER BY name
                 """,
                 doc_name=document_name,
@@ -712,7 +717,8 @@ def get_nodes_with_descriptions(
                 RETURN n.name AS name, n.description AS description,
                        labels(n) AS labels, doc_name,
                        coalesce(n.formula, []) AS formula,
-                       coalesce(n.variables, []) AS variables
+                       coalesce(n.variables, []) AS variables,
+                       coalesce(n.kondisi, []) AS kondisi
                 ORDER BY n.name
                 """
             )
@@ -733,9 +739,57 @@ def get_nodes_with_descriptions(
                     "document": r.get("doc_name"),
                     "formula": list(r["formula"]) if r.get("formula") else [],
                     "variables": list(r["variables"]) if r.get("variables") else [],
+                    "kondisi": list(r["kondisi"]) if r.get("kondisi") else [],
                 }
             )
         return nodes
+
+
+def get_concept_context(
+    driver,
+    names: list[str],
+    max_edges: int = 5,
+) -> dict[str, dict]:
+    """Fetch graph context for a batch of Konsep/SubKonsep nodes.
+
+    Returns {name: {"bab": str|None, "out_edges": [{rel_type, target, confidence}]}}.
+    Out-edges are sorted by confidence desc and capped at max_edges. The Bab walk
+    follows structural edges (hasSubBab/hasSubSubBab/hasKonsep/hasSubKonsep) so
+    SubKonsep nodes also resolve to their parent Bab.
+    """
+    if not names:
+        return {}
+    contexts: dict[str, dict] = {}
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n) WHERE (n:Konsep OR n:SubKonsep) AND n.name IN $names
+            OPTIONAL MATCH (n)-[r:isPrerequisiteOf|supports|analogousTo]->(t)
+            WITH n, collect(DISTINCT {
+                    rel_type: type(r),
+                    target: t.name,
+                    confidence: r.confidence
+                 }) AS edges
+            OPTIONAL MATCH (b:Bab)-[:hasSubBab|hasSubSubBab|hasKonsep|hasSubKonsep*1..4]->(n)
+            WITH n, edges, head(collect(DISTINCT b.name)) AS bab
+            RETURN n.name AS name, bab,
+                   [e IN edges WHERE e.target IS NOT NULL] AS out_edges
+            """,
+            names=names,
+        )
+        for r in result:
+            edges = sorted(
+                r["out_edges"],
+                key=lambda e: (e.get("confidence") or 0.0),
+                reverse=True,
+            )[:max_edges]
+            contexts[r["name"]] = {
+                "bab": r["bab"],
+                "out_edges": edges,
+            }
+    for name in names:
+        contexts.setdefault(name, {"bab": None, "out_edges": []})
+    return contexts
 
 
 def get_graph_quality_metrics(driver) -> dict:
@@ -794,7 +848,7 @@ def get_embedding_dimensions(model: str) -> int:
     """Get embedding dimensions for a given model."""
     # Mapping of model patterns to their dimensions
     dimension_map = {
-        "gemini-embedding": 768,
+        "gemini-embedding": 3072,
         "text-embedding-3-small": 1536,
         "text-embedding-3-large": 3072,
         "multilingual-e5-small": 384,
@@ -815,38 +869,49 @@ def create_vector_index(
     index_name: str = "konsep_embedding_idx",
     dimensions: int = 768,
 ) -> bool:
-    """Create a vector index for Konsep and SubKonsep nodes.
+    """Create (or refresh) vector indexes for Konsep and SubKonsep nodes.
+
+    If an index already exists at a different dimension, it is dropped and
+    recreated at the requested dimension. This is the behavior the UI's
+    "Create/Refresh Index" button promises.
 
     Returns True if successful, False otherwise.
     """
+    specs = [
+        (index_name, "Konsep"),
+        ("subkonsep_embedding_idx", "SubKonsep"),
+    ]
     try:
         with driver.session() as session:
-            session.run(
-                f"""
-                CREATE VECTOR INDEX {index_name} IF NOT EXISTS
-                FOR (n:Konsep) ON n.embedding
-                OPTIONS {{
-                    indexConfig: {{
-                        `vector.dimensions`: {dimensions},
-                        `vector.similarity_function`: 'cosine'
+            for name, label in specs:
+                existing = session.run(
+                    "SHOW INDEXES YIELD name, options "
+                    "WHERE name = $name "
+                    "RETURN options.indexConfig.`vector.dimensions` AS dim",
+                    name=name,
+                ).single()
+                if existing is not None and existing["dim"] != dimensions:
+                    logger.warning(
+                        "Dropping stale %s index (was %d-dim, need %d-dim)",
+                        name,
+                        existing["dim"],
+                        dimensions,
+                    )
+                    session.run(f"DROP INDEX {name} IF EXISTS")
+
+                session.run(
+                    f"""
+                    CREATE VECTOR INDEX {name} IF NOT EXISTS
+                    FOR (n:{label}) ON n.embedding
+                    OPTIONS {{
+                        indexConfig: {{
+                            `vector.dimensions`: {dimensions},
+                            `vector.similarity_function`: 'cosine'
+                        }}
                     }}
-                }}
-                """
-            )
-            # Also create for SubKonsep
-            session.run(
-                f"""
-                CREATE VECTOR INDEX subkonsep_embedding_idx IF NOT EXISTS
-                FOR (n:SubKonsep) ON n.embedding
-                OPTIONS {{
-                    indexConfig: {{
-                        `vector.dimensions`: {dimensions},
-                        `vector.similarity_function`: 'cosine'
-                    }}
-                }}
-                """
-            )
-        logger.info("Created vector indexes with %d dimensions", dimensions)
+                    """
+                )
+        logger.info("Vector indexes ready at %d dimensions", dimensions)
         return True
     except Exception as e:
         logger.error("Failed to create vector index: %s", e)
@@ -867,6 +932,31 @@ def drop_vector_index(
     except Exception as e:
         logger.error("Failed to drop vector index: %s", e)
         return False
+
+
+def get_nodes_with_current_embedding(
+    driver,
+    names: list[str],
+    model: str,
+) -> set[str]:
+    """Return the subset of `names` whose Konsep/SubKonsep node already has
+    an embedding stored under `model`. Used to skip redundant re-uploads
+    of vectors that Neo4j already holds."""
+    if not names:
+        return set()
+    with driver.session() as session:
+        result = session.run(
+            """
+            MATCH (n) WHERE (n:Konsep OR n:SubKonsep)
+                AND n.name IN $names
+                AND n.embedding IS NOT NULL
+                AND n.embedding_model = $model
+            RETURN n.name AS name
+            """,
+            names=names,
+            model=model,
+        )
+        return {r["name"] for r in result}
 
 
 def store_node_embeddings(
