@@ -1,5 +1,7 @@
 """Step E: Knowledge Graph Completion via semantic similarity and LLM classification."""
 
+import hashlib
+import json
 import logging
 from collections.abc import Callable
 from typing import Literal
@@ -15,18 +17,19 @@ from tenacity import (
 
 from src.cache import cache_manager
 from src.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_CHAT_MODEL
-from src.graph import (
-    create_vector_index,
-    store_node_embeddings,
-    query_similar_nodes,
-    get_embedding_dimensions,
-)
+from src.graph import get_embedding_dimensions
 from src.llama_setup import get_embed_model, get_llm
+from src.schema_adapter import SchemaAdapter, SorosAdapter
 
 logger = logging.getLogger(__name__)
 
 # Bump when prompt or schema changes to invalidate classification cache.
-CLASSIFICATION_PROMPT_VERSION = "v2"
+# v3: classifier sees each concept's existing graph neighborhood (bab + typed
+# out-edges + shared neighbors) in addition to name/description/formula.
+CLASSIFICATION_PROMPT_VERSION = "v3"
+
+# Cap out-edges per concept in the prompt to bound prompt size.
+NEIGHBORHOOD_MAX_EDGES = 5
 
 
 def _is_rate_limit_error(exception: BaseException) -> bool:
@@ -99,8 +102,15 @@ def _get_embeddings_raw(texts: list[str], model: str) -> list[list[float]]:
     return embed_model.get_text_embedding_batch(texts)
 
 
-def build_embed_text(node: dict) -> str:
-    """Build the text to embed for a node, enriched with formula/variables/kondisi for STEM concepts."""
+def build_embed_text(node: dict, adapter: SchemaAdapter | None = None) -> str:
+    """Build the text to embed for a node.
+
+    When `adapter` is provided, delegates to its `build_embed_text`. Otherwise
+    falls back to the soros-flavored layout (formula/variables/kondisi) for
+    backward compat with older callers.
+    """
+    if adapter is not None:
+        return adapter.build_embed_text(node)
     text = f"{node['name']}. {node.get('description', node['name'])}"
     if node.get("formula"):
         text += f" Rumus: {', '.join(node['formula'])}"
@@ -192,6 +202,7 @@ def find_similar_pairs_ann(
     top_k: int = 10,
     allowed_names: set[str] | None = None,
     progress_callback: Callable[[int, int, str], None] | None = None,
+    adapter: SchemaAdapter | None = None,
 ) -> list[dict]:
     """Find similar pairs using Neo4j Vector Index (ANN search).
 
@@ -209,19 +220,47 @@ def find_similar_pairs_ann(
             matches to the selected document's nodes even though the vector
             index contains embeddings for the entire graph.
         progress_callback: Optional progress callback
+        adapter: SchemaAdapter for the target KG. Defaults to SorosAdapter for
+            backward compat.
 
     Returns list of dicts with 'source', 'target', 'similarity'.
     """
+    if adapter is None:
+        adapter = SorosAdapter()
     dimensions = get_embedding_dimensions(model)
     if progress_callback:
         progress_callback(0, len(nodes), "Creating vector index...")
 
-    create_vector_index(driver, dimensions=dimensions)
+    adapter.create_vector_indexes(driver, dimensions=dimensions)
 
-    if progress_callback:
-        progress_callback(0, len(nodes), "Storing embeddings on nodes...")
+    # Fast path: skip uploading embeddings that Neo4j already has under the
+    # same model. The `embedding` property is the source of truth for the
+    # vector index; re-setting it with identical bytes is pure overhead.
+    node_names = [n["name"] for n in nodes]
+    already_current = adapter.get_nodes_with_current_embedding(driver, node_names, model)
+    to_store = [
+        (n, e) for n, e in zip(nodes, embeddings) if n["name"] not in already_current
+    ]
 
-    store_node_embeddings(driver, nodes, embeddings, model)
+    if to_store:
+        if progress_callback:
+            progress_callback(
+                0,
+                len(nodes),
+                f"Storing embeddings on {len(to_store)} nodes "
+                f"({len(already_current)} already current)...",
+            )
+        store_nodes = [p[0] for p in to_store]
+        store_embs = [p[1] for p in to_store]
+        adapter.store_node_embeddings(driver, store_nodes, store_embs, model)
+    else:
+        logger.info(
+            "All %d embeddings already current on Neo4j, skipping upload", len(nodes)
+        )
+        if progress_callback:
+            progress_callback(
+                0, len(nodes), "Embeddings already current, skipping upload"
+            )
 
     pairs = []
     seen_pairs: set[tuple[str, str]] = set()
@@ -232,7 +271,7 @@ def find_similar_pairs_ann(
             progress_callback(i, total, f"Querying similar for {node['name'][:30]}...")
 
         try:
-            similar = query_similar_nodes(
+            similar = adapter.query_similar_nodes(
                 driver,
                 query_embedding=emb,
                 k=top_k,
@@ -283,6 +322,7 @@ Diberikan dua konsep yang memiliki kemiripan semantik tinggi:
   Variabel: {variables_b}
   Kondisi: {kondisi_b}
 
+{neighborhood_block}
 Klasifikasikan hubungan antara A dan B sebagai SALAH SATU dari:
 1. **isPrerequisiteOf**: A harus dipelajari sebelum B (ketergantungan urutan ketat).
    Contoh: "Bilangan Bulat" → "Persamaan Linear".
@@ -315,6 +355,89 @@ def _format_list(items) -> str:
     return ", ".join(str(x) for x in items)
 
 
+def _format_out_edges(edges: list[dict] | None) -> str:
+    if not edges:
+        return "  (tidak ada)"
+    lines = []
+    for e in edges:
+        conf = e.get("confidence")
+        conf_str = (
+            f" (conf: {conf:.2f})" if isinstance(conf, (int, float)) else ""
+        )
+        lines.append(f'  - {e["rel_type"]} → "{e["target"]}"{conf_str}')
+    return "\n".join(lines)
+
+
+def _compute_shared_neighbors(ctx_a: dict, ctx_b: dict) -> list[str]:
+    """Concepts that both A and B already point to via a typed edge."""
+    targets_a = {
+        e["target"] for e in ctx_a.get("out_edges", []) if e.get("target")
+    }
+    targets_b = {
+        e["target"] for e in ctx_b.get("out_edges", []) if e.get("target")
+    }
+    return sorted(targets_a & targets_b)
+
+
+def _build_neighborhood_block(
+    name_a: str,
+    bab_a: str | None,
+    out_edges_a: list[dict] | None,
+    name_b: str,
+    bab_b: str | None,
+    out_edges_b: list[dict] | None,
+    shared_neighbors: list[str] | None,
+) -> str:
+    """Render the KONTEKS GRAF prompt section. Empty string when no signal."""
+    if not (bab_a or bab_b or out_edges_a or out_edges_b or shared_neighbors):
+        return ""
+
+    if bab_a and bab_b:
+        bab_note = (
+            "(Bab yang sama)" if bab_a == bab_b else "(Bab berbeda)"
+        )
+    else:
+        bab_note = ""
+
+    return (
+        "========================\n"
+        "KONTEKS GRAF (HUBUNGAN YANG SUDAH ADA)\n"
+        "========================\n"
+        f'Konsep A ("{name_a}") berada di Bab: {bab_a or "(tidak diketahui)"}\n'
+        f"Hubungan A yang sudah ada di graf:\n"
+        f"{_format_out_edges(out_edges_a)}\n\n"
+        f'Konsep B ("{name_b}") berada di Bab: {bab_b or "(tidak diketahui)"} '
+        f"{bab_note}\n"
+        f"Hubungan B yang sudah ada di graf:\n"
+        f"{_format_out_edges(out_edges_b)}\n\n"
+        f"Tetangga bersama (target yang sama-sama dirujuk A dan B): "
+        f"{_format_list(shared_neighbors)}\n\n"
+        "Gunakan konteks graf ini sebagai bukti tambahan. Jika A sudah punya "
+        "banyak hubungan `isPrerequisiteOf` dengan konsep di Bab yang sama "
+        "dengan B, klasifikasi `isPrerequisiteOf` lebih mungkin benar. Tetangga "
+        "bersama menandakan A dan B kemungkinan `analogousTo`.\n"
+    )
+
+
+def _context_fingerprint(
+    ctx_a: dict, ctx_b: dict, shared_neighbors: list[str]
+) -> str:
+    """Stable short hash of the neighborhood payload for cache keying."""
+    payload = {
+        "a": {
+            "bab": ctx_a.get("bab"),
+            "edges": ctx_a.get("out_edges", []),
+        },
+        "b": {
+            "bab": ctx_b.get("bab"),
+            "edges": ctx_b.get("out_edges", []),
+        },
+        "shared": shared_neighbors,
+    }
+    blob = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.md5(blob.encode("utf-8")).hexdigest()[:12]
+
+
 _classify_retry = retry(
     retry=retry_if_exception(_is_retriable_error),
     wait=wait_exponential(multiplier=2, min=10, max=120),
@@ -342,12 +465,20 @@ def classify_similar_pair(
     formula_b: list[str] | None = None,
     variables_b: list[str] | None = None,
     kondisi_b: list[str] | None = None,
+    bab_a: str | None = None,
+    out_edges_a: list[dict] | None = None,
+    bab_b: str | None = None,
+    out_edges_b: list[dict] | None = None,
+    shared_neighbors: list[str] | None = None,
 ) -> tuple[str, float]:
     """Use LLM to classify the relationship between two similar konsep.
 
     Returns a tuple of (rel_type, confidence) where rel_type is one of
     isPrerequisiteOf, supports, analogousTo, or none, and confidence is in [0, 1].
     Retries on 429 / 5xx / transient network errors with exponential backoff.
+
+    Optional neighborhood args (bab, out_edges, shared_neighbors) inject the
+    KONTEKS GRAF section so the LLM can use existing typed edges as evidence.
     """
     model = llm_model or DEFAULT_CHAT_MODEL
     llm = get_llm(model)
@@ -356,6 +487,16 @@ def classify_similar_pair(
         llm=llm,
         output_cls=Classification,
         prompt_template_str=_CLASSIFICATION_PROMPT,
+    )
+
+    neighborhood_block = _build_neighborhood_block(
+        name_a=name_a,
+        bab_a=bab_a,
+        out_edges_a=out_edges_a,
+        name_b=name_b,
+        bab_b=bab_b,
+        out_edges_b=out_edges_b,
+        shared_neighbors=shared_neighbors,
     )
 
     result: Classification = program(
@@ -369,6 +510,7 @@ def classify_similar_pair(
         formula_b=_format_list(formula_b),
         variables_b=_format_list(variables_b),
         kondisi_b=_format_list(kondisi_b),
+        neighborhood_block=neighborhood_block,
     )
     return result.rel_type, float(result.confidence)
 
@@ -417,9 +559,18 @@ class ClassificationBatch(BaseModel):
     items: list[ClassificationItem]
 
 
-def _format_pair_block(index: int, info_a: dict, info_b: dict) -> str:
-    """Render one pair block for the batch prompt."""
-    return (
+def _format_pair_block(
+    index: int,
+    info_a: dict,
+    info_b: dict,
+    shared_neighbors: list[str] | None = None,
+) -> str:
+    """Render one pair block for the batch prompt.
+
+    info_a/info_b may carry optional `bab` and `out_edges` keys; when present
+    a KONTEKS GRAF subsection is appended to the pair block.
+    """
+    block = (
         f"[{index}]\n"
         f"  Konsep A: \"{info_a['name']}\"\n"
         f"  Deskripsi A: \"{info_a['description'] or info_a['name']}\"\n"
@@ -433,11 +584,27 @@ def _format_pair_block(index: int, info_a: dict, info_b: dict) -> str:
         f"  Kondisi B: {_format_list(info_b.get('kondisi'))}"
     )
 
+    neighborhood = _build_neighborhood_block(
+        name_a=info_a["name"],
+        bab_a=info_a.get("bab"),
+        out_edges_a=info_a.get("out_edges"),
+        name_b=info_b["name"],
+        bab_b=info_b.get("bab"),
+        out_edges_b=info_b.get("out_edges"),
+        shared_neighbors=shared_neighbors,
+    )
+    if neighborhood:
+        # Indent the block so it visually nests under the pair entry.
+        indented = "\n".join("  " + line for line in neighborhood.splitlines())
+        block += "\n" + indented
+    return block
+
 
 @_classify_retry
 def _classify_batch_raw(
     pair_infos: list[tuple[dict, dict]],
     llm_model: str,
+    pair_neighborhoods: list[dict] | None = None,
 ) -> list[ClassificationItem]:
     """Classify a batch of pairs in one LLM call. Retries on transient errors."""
     llm = get_llm(llm_model)
@@ -446,9 +613,14 @@ def _classify_batch_raw(
         output_cls=ClassificationBatch,
         prompt_template_str=_BATCH_CLASSIFICATION_PROMPT,
     )
-    pairs_block = "\n\n".join(
-        _format_pair_block(i, a, b) for i, (a, b) in enumerate(pair_infos)
-    )
+    blocks = []
+    for i, (a, b) in enumerate(pair_infos):
+        shared = (
+            (pair_neighborhoods[i] or {}).get("shared_neighbors")
+            if pair_neighborhoods else None
+        )
+        blocks.append(_format_pair_block(i, a, b, shared_neighbors=shared))
+    pairs_block = "\n\n".join(blocks)
     result: ClassificationBatch = program(
         pairs_block=pairs_block,
         n_pairs=len(pair_infos),
@@ -459,11 +631,15 @@ def _classify_batch_raw(
 def classify_pairs_batch(
     pair_infos: list[tuple[dict, dict]],
     llm_model: str | None = None,
+    pair_neighborhoods: list[dict] | None = None,
 ) -> list[tuple[str, float]]:
     """Classify a batch of pairs and return aligned [(rel_type, confidence), ...].
 
     `pair_infos[i]` is `(info_a, info_b)` where each info has keys:
-    name, description, formula, variables, kondisi.
+    name, description, formula, variables, kondisi, and optionally
+    bab + out_edges (for the KONTEKS GRAF section).
+
+    `pair_neighborhoods[i]` is an optional dict with shared_neighbors per pair.
 
     The LLM returns items keyed by pair_index; we realign to the input order.
     Missing indices fall back to ("none", 0.0).
@@ -471,7 +647,7 @@ def classify_pairs_batch(
     if not pair_infos:
         return []
     model = llm_model or DEFAULT_CHAT_MODEL
-    items = _classify_batch_raw(pair_infos, model)
+    items = _classify_batch_raw(pair_infos, model, pair_neighborhoods)
 
     by_index: dict[int, tuple[str, float]] = {
         it.pair_index: (it.rel_type, float(it.confidence)) for it in items
@@ -482,9 +658,18 @@ def classify_pairs_batch(
     return out
 
 
-def _classification_cache_text(source: str, target: str) -> str:
-    """Canonical cache key input — order-invariant so (A,B) and (B,A) share a key."""
+def _classification_cache_text(
+    source: str, target: str, fingerprint: str = ""
+) -> str:
+    """Canonical cache key input — order-invariant so (A,B) and (B,A) share a key.
+
+    When `fingerprint` is set (a hash of the neighborhood payload fed to the
+    classifier), it is folded into the key so that re-runs after the graph
+    gains new typed edges produce a cache miss and re-classify.
+    """
     a, b = sorted([source, target])
+    if fingerprint:
+        return f"{a}||{b}||ctx:{fingerprint}"
     return f"{a}||{b}"
 
 
@@ -495,6 +680,7 @@ def classify_similar_pairs(
     progress_callback: Callable[[int, int, str], None] | None = None,
     use_cache: bool = True,
     batch_size: int = 1,
+    adapter: SchemaAdapter | None = None,
 ) -> list[dict]:
     """Classify SIMILAR_TO pairs into typed relationships using LLM.
 
@@ -519,33 +705,35 @@ def classify_similar_pairs(
 
     Returns list of dicts with source, target, similarity, rel_type, confidence.
     """
+    if adapter is None:
+        adapter = SorosAdapter()
     total = len(pairs)
     results: list[dict | None] = [None] * total
     model = llm_model or DEFAULT_CHAT_MODEL
     batch_size = max(1, int(batch_size))
 
     names = list({p["source"] for p in pairs} | {p["target"] for p in pairs})
-    node_map: dict[str, dict] = {}
+    node_map = adapter.get_classification_data(driver, names)
 
-    with driver.session() as session:
-        result = session.run(
-            """
-            MATCH (n) WHERE n.name IN $names AND (n:Konsep OR n:SubKonsep)
-            RETURN n.name AS name,
-                   n.description AS description,
-                   coalesce(n.formula, []) AS formula,
-                   coalesce(n.variables, []) AS variables,
-                   coalesce(n.kondisi, []) AS kondisi
-            """,
-            names=names,
-        )
-        for r in result:
-            node_map[r["name"]] = {
-                "description": r["description"] or "",
-                "formula": list(r["formula"]) if r["formula"] else [],
-                "variables": list(r["variables"]) if r["variables"] else [],
-                "kondisi": list(r["kondisi"]) if r["kondisi"] else [],
+    # Neighborhood: parent (bab/chapter) + existing typed out-edges per concept.
+    contexts = adapter.get_concept_context(
+        driver, names, max_edges=NEIGHBORHOOD_MAX_EDGES
+    )
+
+    # Per-pair derived signals — computed once, reused for cache key and prompt.
+    pair_ctx: list[dict] = []
+    for pair in pairs:
+        ctx_a = contexts.get(pair["source"], {"bab": None, "out_edges": []})
+        ctx_b = contexts.get(pair["target"], {"bab": None, "out_edges": []})
+        shared = _compute_shared_neighbors(ctx_a, ctx_b)
+        pair_ctx.append(
+            {
+                "ctx_a": ctx_a,
+                "ctx_b": ctx_b,
+                "shared": shared,
+                "fingerprint": _context_fingerprint(ctx_a, ctx_b, shared),
             }
+        )
 
     cache_hits = 0
     uncached_indices: list[int] = []
@@ -554,7 +742,9 @@ def classify_similar_pairs(
         source, target = pair["source"], pair["target"]
         cached = None
         if use_cache:
-            cache_text = _classification_cache_text(source, target)
+            cache_text = _classification_cache_text(
+                source, target, fingerprint=pair_ctx[i]["fingerprint"]
+            )
             cached = cache_manager.get_classification(
                 cache_text, model, CLASSIFICATION_PROMPT_VERSION
             )
@@ -573,14 +763,17 @@ def classify_similar_pairs(
             cache_hits, total, f"Loaded {cache_hits}/{total} from cache"
         )
 
-    def _info_for(name: str) -> dict:
+    def _info_for(name: str, ctx: dict | None = None) -> dict:
         info = node_map.get(name, {})
+        ctx = ctx or {}
         return {
             "name": name,
             "description": info.get("description", ""),
             "formula": info.get("formula", []),
             "variables": info.get("variables", []),
             "kondisi": info.get("kondisi", []),
+            "bab": ctx.get("bab"),
+            "out_edges": ctx.get("out_edges", []),
         }
 
     failed_count = 0
@@ -590,7 +783,14 @@ def classify_similar_pairs(
         batch_idx = uncached_indices[batch_start : batch_start + batch_size]
         batch_pairs = [pairs[j] for j in batch_idx]
         pair_infos = [
-            (_info_for(p["source"]), _info_for(p["target"])) for p in batch_pairs
+            (
+                _info_for(p["source"], pair_ctx[j]["ctx_a"]),
+                _info_for(p["target"], pair_ctx[j]["ctx_b"]),
+            )
+            for j, p in zip(batch_idx, batch_pairs)
+        ]
+        batch_neighborhoods = [
+            {"shared_neighbors": pair_ctx[j]["shared"]} for j in batch_idx
         ]
 
         if progress_callback:
@@ -617,10 +817,19 @@ def classify_similar_pairs(
                     formula_b=info_b["formula"],
                     variables_b=info_b["variables"],
                     kondisi_b=info_b["kondisi"],
+                    bab_a=info_a.get("bab"),
+                    out_edges_a=info_a.get("out_edges"),
+                    bab_b=info_b.get("bab"),
+                    out_edges_b=info_b.get("out_edges"),
+                    shared_neighbors=batch_neighborhoods[0]["shared_neighbors"],
                 )
                 outcomes = [(rel_type, confidence)]
             else:
-                outcomes = classify_pairs_batch(pair_infos, llm_model=model)
+                outcomes = classify_pairs_batch(
+                    pair_infos,
+                    llm_model=model,
+                    pair_neighborhoods=batch_neighborhoods,
+                )
         except Exception as e:
             logger.warning(
                 "Batch classify failed for pairs %d–%d (%d pairs): %s",
@@ -645,7 +854,9 @@ def classify_similar_pairs(
             }
             if use_cache:
                 cache_text = _classification_cache_text(
-                    pair["source"], pair["target"]
+                    pair["source"],
+                    pair["target"],
+                    fingerprint=pair_ctx[j]["fingerprint"],
                 )
                 cache_manager.put_classification(
                     cache_text,
