@@ -102,49 +102,49 @@
     rdfs:label "BAGIAN_DARI" ;
     rdfs:comment "A merupakan bagian dari B (komposisi/hierarki universal). Asimetris dan hierarkis (digunakan dalam pengecekan siklus)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :MENYEBABKAN a owl:ObjectProperty ;
     rdfs:label "MENYEBABKAN" ;
     rdfs:comment "A menyebabkan B (kausasi). Asimetris." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :BERGANTUNG_PADA a owl:ObjectProperty ;
     rdfs:label "BERGANTUNG_PADA" ;
     rdfs:comment "A bergantung pada B (dependensi fungsional)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :MENDEFINISIKAN a owl:ObjectProperty ;
     rdfs:label "MENDEFINISIKAN" ;
     rdfs:comment "A mendefinisikan B (relasi definisional)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :MEMPENGARUHI a owl:ObjectProperty ;
     rdfs:label "MEMPENGARUHI" ;
     rdfs:comment "A mempengaruhi B (pengaruh umum, tanpa implikasi kausalitas ketat)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :BERINTERAKSI_DENGAN a owl:ObjectProperty, owl:SymmetricProperty ;
     rdfs:label "BERINTERAKSI_DENGAN" ;
     rdfs:comment "A berinteraksi dengan B (interaksi resiprokal — mis. reaksi kimia, gaya tarik-menarik)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :MEMUNGKINKAN a owl:ObjectProperty ;
     rdfs:label "MEMUNGKINKAN" ;
     rdfs:comment "A memungkinkan B terjadi atau berfungsi (enablement). Asimetris." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 :MENGATUR a owl:ObjectProperty ;
     rdfs:label "MENGATUR" ;
     rdfs:comment "A mengatur atau mengontrol perilaku B (regulasi)." ;
     rdfs:domain :Concept ;
-    rdfs:range :Concept .
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Concept :ConceptTarget ) ] .
 
 
 #################################################################
