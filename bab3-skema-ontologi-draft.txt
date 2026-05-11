@@ -1,0 +1,49 @@
+<!--
+SISIPKAN SETELAH "Gambar 3.2 Kerangka Konsep" (akhir §3.5.1)
+SEBELUM HEADING_2 "Variabel Penelitian dan Definisi Operasional"
+
+Aktifkan parsing markdown di Google Docs:
+  Tools → Preferences → ✓ Automatically detect Markdown
+Lalu paste dengan: Edit → Paste from Markdown (Ctrl+Shift+V)
+-->
+
+
+### 3.5.2 Skema Ontologi Knowledge Graph
+
+Skema knowledge graph yang digunakan dalam penelitian ini diformalkan sebagai ontologi OWL untuk memastikan konsistensi struktur dan vokabulari relasi antar-tahap pipeline (ekstraksi, konstruksi, dan *completion*). Ontologi ini terdiri dari empat kelas struktural utama, satu kelas pendukung untuk *forward reference*, serta dua keluarga relasi semantik antar-konsep (dalam-buku dan lintas-buku).
+
+Hierarki struktural mengikuti rantai **Grade → Chapter → Subtopic → Concept**, dihubungkan oleh relasi struktural `HAS_CHAPTER`, `HAS_SUBTOPIC`, dan `HAS_CONCEPT`. Pada tingkat Chapter, terdapat tiga relasi pedagogis tambahan — `NEXT_CHAPTER` (urutan baca), `PRASYARAT` (ketergantungan pembelajaran), dan `MEMPERSIAPKAN` (kebalikan logis dari `PRASYARAT`) — yang mengkodekan struktur pedagogis buku teks. Node Concept bersifat *shared* lintas-dokumen melalui operasi `MERGE` berdasarkan nama, sehingga konsep yang muncul di lebih dari satu buku teks diwakili oleh satu node — fondasi untuk penemuan keterkaitan lintas-disiplin pada tahap *completion*.
+
+Vokabulari relasi semantik antar-konsep dibagi menjadi dua kelompok dengan peran berbeda dalam pipeline:
+
+1. **Relasi dalam-buku (*within-book*)** — delapan tipe yang ditegakkan oleh *prompt* LLM saat ekstraksi per-Bab. Tipe relasi ini menangkap struktur konseptual lokal dalam satu mata pelajaran (lihat Tabel 3.X).
+2. **Relasi lintas-buku (`LINTAS_BUKU_*`)** — lima tipe yang dihasilkan pada tahap *completion* lintas-disiplin. Relasi ini menangkap interkoneksi semantik antar-mata-pelajaran (Fisika, Kimia, Biologi) yang tidak tersurat dalam teks satu buku tunggal (lihat Tabel 3.Y).
+
+Untuk menampung *forward reference* — konsep yang disebutkan sebagai target relasi tetapi belum diekstrak sebagai Concept lengkap — digunakan kelas pendukung `ConceptTarget`. Node `ConceptTarget` bersifat sementara dan akan di-*promote* menjadi Concept saat ekstraksi berikutnya menemukan deskripsi lengkapnya. Skema lengkap ontologi ditunjukkan pada Gambar 3.3.
+
+> **Gambar 3.3** Skema Ontologi Knowledge Graph (dirender dari spesifikasi OWL/Turtle menggunakan WebVOWL).
+
+
+**Tabel 3.X** Vokabulari Relasi Dalam-Buku (Concept ↔ Concept)
+
+| Tipe Relasi | Semantik | Sifat |
+| --- | --- | --- |
+| `BAGIAN_DARI` | A merupakan bagian dari B (komposisi/hierarki) | asimetris, hierarkis |
+| `MENYEBABKAN` | A menyebabkan B (kausasi) | asimetris |
+| `BERGANTUNG_PADA` | A bergantung pada B (dependensi fungsional) | asimetris |
+| `MENDEFINISIKAN` | A mendefinisikan B (definisional) | asimetris |
+| `MEMPENGARUHI` | A mempengaruhi B (pengaruh umum) | asimetris |
+| `BERINTERAKSI_DENGAN` | A dan B berinteraksi resiprokal | simetris |
+| `MEMUNGKINKAN` | A memungkinkan B terjadi/berfungsi (*enablement*) | asimetris |
+| `MENGATUR` | A mengatur atau mengontrol perilaku B (regulasi) | asimetris |
+
+
+**Tabel 3.Y** Vokabulari Relasi Lintas-Buku (Cross-disciplinary)
+
+| Tipe Relasi | Semantik | Sifat |
+| --- | --- | --- |
+| `LINTAS_BUKU_SAMA_DENGAN` | Konsep di buku berbeda merujuk pada entitas yang sama | simetris |
+| `LINTAS_BUKU_APLIKASI_DARI` | Konsep A adalah penerapan konsep B di disiplin lain | asimetris |
+| `LINTAS_BUKU_PRASYARAT_UNTUK` | Konsep A prasyarat pemahaman konsep B di mata pelajaran lain | asimetris, hierarkis |
+| `LINTAS_BUKU_MEMPERDALAM` | Konsep A memperdalam/memperluas pemahaman konsep B | asimetris |
+| `LINTAS_BUKU_BERKAITAN_DENGAN` | Berkaitan secara umum (*fallback*) | simetris |

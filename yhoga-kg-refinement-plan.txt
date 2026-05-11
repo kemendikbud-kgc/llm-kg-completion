@@ -1,0 +1,181 @@
+YHOGA KG REFINEMENT PLAN — WHAT I'M DOING & WHY
+=================================================
+Author: Soros
+Date: 2026-05-08
+Audience: lab-mates / thesis friends
+
+
+TL;DR
+-----
+I'm switching to Yhoga's ontology as canonical for our shared KG-completion
+work. Before I run the cross-document completion step (Step 2), I'm doing a
+one-time refinement pass on Yhoga's KG using my own KG as a reference.
+
+The goal: make Yhoga's graph capture as much of the textbook content as
+possible, so that when the LLM-driven completion step runs, the inputs are
+clean and the cross-disciplinary links it discovers are real (not artifacts
+of missing nodes or duplicate stubs).
+
+
+THE CONTEXT
+-----------
+We have two KGs over the same three textbooks (Biologi / Fisika / Kimia,
+Kelas XII Kurikulum Merdeka):
+
+- My KG (Soros)  : 511 Konsep, 17 Bab. Schema is Konsep/SubKonsep style.
+- Yhoga's KG     : 438 Concept + 181 ConceptTarget, 17 Chapter.
+                   Schema is Concept/Subtopic/Chapter/Grade style — the
+                   one defined in docs/yhoga-ontology.ttl.
+
+Chapter coverage matches 1:1 across both KGs (same source PDFs).
+
+We're going with Yhoga's ontology because it has:
+  - A cleaner relation taxonomy (8 within-book + 5 cross-book LINTAS_BUKU_*).
+  - First-class cross-disciplinary relations (LINTAS_BUKU_SAMA_DENGAN,
+    LINTAS_BUKU_APLIKASI_DARI, etc.) — which is what our thesis is about.
+  - A `ConceptTarget` mechanism for forward-references that makes
+    incremental extraction tractable.
+
+
+WHAT I FOUND COMPARING THE TWO KGs
+----------------------------------
+Of my 511 Konsep names, when matched (case-insensitive) against Yhoga:
+
+  162 (32%)  → already in Yhoga as Concept     (overlap, no action)
+   37 (7%)   → in Yhoga only as ConceptTarget  (HIGH-VALUE drop-in upgrade)
+  312 (61%)  → not in Yhoga at all             (mix of real gaps and
+                                                near-duplicates)
+
+The 37 ConceptTarget hits are the cleanest win: Yhoga's extractor already
+knows these concepts exist (they're referenced as relation targets in the
+graph) but never extracted full definitions. My pipeline already has the
+descriptions, formulas, and conditions for them.
+
+
+THE PLAN — 4 STEPS, IN ORDER
+----------------------------
+
+STEP 0  Clean Yhoga's own noise FIRST
+-------------------------------------
+Yhoga's extractor produced some garbage Concept nodes that will pollute
+similarity search if left in:
+
+  Junk strings:
+    - "Khusus Guru. Dalam panduan umum dapat dilihat Capaian Pembelajaran"
+      (this is teacher-guide boilerplate that leaked into the graph)
+    - "LISTRIK ARUS SEARAH"  (chapter title captured as a Concept)
+    - "fisika", "garis fluks", "energi" lowercase
+    - In Kimia: "asam amino", "agen pengoksidasi", "amonia", "antibiotik",
+      "belerang", "bilangan oksidasi", "elektron", "fosfor", "hidrogen",
+      "hidrokarbon", "kapasitor", "kimia", "komputasi", "logam"
+      (lowercase generic-word leaks — each has a properly-cased twin)
+
+  Case-variant duplicates to merge:
+    - "Medan Listrik" vs "Medan listrik"
+    - "Medan magnet" vs "Medan Magnet"
+    - "gaya listrik" vs "Gaya Listrik"
+    - "Panjang gelombang" vs "Panjang Gelombang"
+    - "Sinar X" vs "Sinar-X"
+
+  Roughly 30–40 nodes total to clean.
+
+
+STEP 1  Tier A: Promote 37 ConceptTargets → full Concepts
+---------------------------------------------------------
+For each, copy the full description (and formula/variables/kondisi where
+applicable) from my KG, then DELETE the ConceptTarget after rewiring its
+incoming edges to the new Concept.
+
+  Biologi XII (15):  Enzim, Evolusi, Hanyutan Genetik, Interfase,
+                     Pembelahan Sel, Penyakit Keturunan, Pertumbuhan,
+                     Pewarisan Sifat, Protein, RNA, Ribosom,
+                     Sintesis Protein, Teori Abiogenesis, mRNA, tRNA
+
+  Fisika XII (~20):  Daya Listrik, Energi, Frekuensi, Frekuensi Sudut,
+                     Gaya Listrik, Hambatan Jenis, Kapasitansi,
+                     Kecepatan Relatif, Komunikasi, Medan Listrik,
+                     Medan Magnet, Motor Listrik, Panjang Gelombang,
+                     Pemilih Kecepatan, Pencitraan Medis, Penglihatan,
+                     Pengukuran Jarak, Rangkaian Listrik, Rapat Energi (u),
+                     Spektrometer Massa, Tegangan Maksimum
+
+  Kimia XII (12):    Asam Lemah dan Basa Lemah, Baterai Listrik,
+                     Biopolimer Organik, Cahaya, Energi Listrik, Enzim,
+                     Indikator Asam Basa, Nukleotida, Polimer Alam,
+                     Reaktivitas Logam, Sel Elektrokimia, Sifat Polimer,
+                     Sifat-sifat Koloid
+
+This single pass eliminates ~20% of Yhoga's forward-reference debt.
+
+
+STEP 2  Tier B: Selective import of net-new Concepts
+----------------------------------------------------
+~30–50 hand-picked concepts from the 312 "missing" set, focused on areas
+where Yhoga is thin. Examples:
+
+  Fisika (Relativitas + EM):
+    Kontraksi Panjang, Kesetaraan Massa-Energi, Faktor Lorentz,
+    Paradoks Kembar, Massa Relativistik, Kerangka Acuan Inersia,
+    Energi Diam, Aturan Tangan Kanan (Gaya Magnet),
+    Momen Kopel pada Kumparan Berarus, Interaksi Magnetik,
+    Permitivitas Listrik, Permeabilitas Magnetik, Penanggalan Karbon
+
+  Biologi (Evolusi + Bioteknologi):
+    Common Ancestor, Bukti-bukti Mekanisme Evolusi,
+    Hukum Hardy Weinberg dan Mikroevolusi, Kemiripan DNA,
+    Pohon Filogeni, Teori Evolusi Lamarck, Antibodi Monoklonal,
+    Bioremediasi, Etik Klirens, Prinsip 3R (Hewan Uji Coba),
+    Penyuntingan Genom (CRISPR-Cas9), Holoenzim, Apoenzim,
+    Gugus Prostetik, Sisi Aktif/Alosterik Enzim, Substrat
+
+  Kimia (Asam-basa + Senyawa Organik):
+    Spesi Amfiprotik, Pasangan Asam Basa Terkonjugasi,
+    Kekuatan Asam dan Basa, Notasi Sel Standar, Setengah Reaksi,
+    Aturan Zaytsev, Reaksi-Reaksi Spesifik pada Gugus Fungsi,
+    Kepolaran Senyawa Organik, Pembentukan {Aldehida, Keton,
+    Asam Karboksilat, Alkohol Primer/Sekunder, Ester, Ikatan Rangkap}
+
+NOT importing:
+  - Soros's own stub/orphan junk: "Magnet", "Atom", "Proton", "Neutron",
+    "Elektron", "Cahaya", "Komunikasi", "Industri", "Kesehatan", "Panas",
+    "F = ilB sinθ", and assorted cross-document synonyms.
+  - Anything Yhoga already has under a slightly different name (paren
+    variants like "Frekuensi Resonansi" vs "Frekuensi Resonansi (f)").
+
+
+STEP 3  Run Step 2 (KG Completion) on the cleaned Yhoga KG
+----------------------------------------------------------
+Now the similarity search has high-quality nodes to compare across
+disciplines, with descriptions present on every Concept. The classifier
+that emits the LINTAS_BUKU_* relations gets clean inputs.
+
+
+WHY THIS MATTERS FOR THE THESIS
+-------------------------------
+Two reasons.
+
+1. Validity of the completion step.
+   If the input graph is half-stubs and case-duplicates, the cosine
+   similarity will surface fake matches (lowercase "energi" pseudo-matching
+   real "Energi", junk strings clustering with random Concepts). The
+   completion step's precision/recall numbers become uninterpretable.
+
+2. Cross-disciplinary signal.
+   The whole point of LINTAS_BUKU_* relations is to discover that
+   "Difusi" in Biologi corresponds to "Gerak Brown" in Fisika, etc.
+   That only works if BOTH sides have the concepts present as proper
+   Concept nodes with descriptions. Promoting Yhoga's 37 ConceptTargets
+   directly increases the number of valid bridge candidates.
+
+
+WHAT'S NEXT FROM ME
+-------------------
+- I'll generate a Cypher migration script for Tier A's 37 upgrades and
+  the Step-0 cleanup. Both run in one pass against the Yhoga Aura.
+- Tier B (the ~30–50 selective imports) we should review together —
+  I don't want to unilaterally decide which sub-fragmentations belong
+  in Yhoga's ontology.
+- After the migration, I'll re-run Step 1 (similarity) and Step 2
+  (classification) end-to-end on the refined Yhoga KG, with the schema
+  adapter wired up to Yhoga's relation vocabulary (the soros default
+  vocabulary won't fit anymore — separate task).
