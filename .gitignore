@@ -16,3 +16,10 @@ data/classification_cache/*.json
 settings.local.json
 nul
 .mcp.json
+
+# Local caches for thesis Google Doc roundtrips (see CLAUDE.md → Google Workspace References)
+.thesis-*.json
+.schema-batchupdate.json
+
+# Playwright MCP session artifacts
+.playwright-mcp/
