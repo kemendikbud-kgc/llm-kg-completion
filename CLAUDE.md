@@ -46,3 +46,14 @@ Supporting modules:
 ## Environment
 
 Requires `.env` with: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`. See `.env.example`.
+
+## Google Workspace References
+
+Thesis artifacts live in Google Drive. Use the `gws` CLI (see `.claude/skills/gws-*`) to read/write.
+
+- **Drive folder** (TA project root): `16WWv6zDdTuxqgxMchGm0RarR2lnTpY_D`
+  - URL: https://drive.google.com/drive/u/0/folders/16WWv6zDdTuxqgxMchGm0RarR2lnTpY_D
+- **Thesis Doc** (Bab 1–5 draft): `1NUFWP1JHmpH-c_glTlm4t6fzcwJjqAM1BmGS1BzeSGM`
+  - Fetch: `gws docs documents get --params '{"documentId":"1NUFWP1JHmpH-c_glTlm4t6fzcwJjqAM1BmGS1BzeSGM"}' --format json`
+  - Local cache (gitignored): `.thesis-clean.json` / `.thesis-verify.json`
+  - Edits use `batchUpdate` with `writeControl.requiredRevisionId` to prevent collision with concurrent edits in the browser.
