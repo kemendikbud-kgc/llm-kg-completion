@@ -23,3 +23,7 @@ nul
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# Neo4j Aura binary snapshots — pointers (.ref files) are in git instead.
+# See experiments/knowledge_graph_states/*/snapshot.backup.ref
+*.backup
