@@ -1,0 +1,18 @@
+# Pointer to the binary Neo4j Aura .backup file for v2-friend-completion-llm.
+# This file is in git; the .backup it references is in Drive.
+
+version: v2-friend-completion-llm
+url: https://drive.google.com/drive/u/0/folders/1Ry04XK_sLqUbdjKOGgRbdUT97hkhmi6s
+# Replace with direct file URL once the specific .backup file is identified
+direct_file_url: TBD
+sha256: TBD          # compute with: certutil -hashfile <file> SHA256  (Windows)
+size_bytes: TBD
+taken_at: 2026-05-12
+instance: yhoga (Neo4j Aura Free)
+file_format: Neo4j Aura .backup (binary)
+
+notes: |
+  Captured AFTER friend's LLM cross-book completion experiment.
+  91 LINTAS_BUKU_* edges present.
+  Concept count: 406, ConceptTarget count: 173, total relationships: 1,654.
+  See derivation.md in this folder for full context.

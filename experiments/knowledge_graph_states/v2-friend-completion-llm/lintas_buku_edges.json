@@ -1,0 +1,1210 @@
+{
+  "version": "v2-friend-completion-llm",
+  "source_state": "v1-extraction",
+  "date_captured": "2026-05-13",
+  "captured_from": "Yhoga Neo4j Aura Free instance",
+  "instance_counts_at_capture": {
+    "Grade": 3,
+    "Chapter": 17,
+    "Subtopic": 77,
+    "Concept": 406,
+    "ConceptTarget": 173,
+    "total_relationships": 1654
+  },
+  "edge_count": 91,
+  "edge_type_breakdown": {
+    "LINTAS_BUKU_BERKAITAN_DENGAN": 50,
+    "LINTAS_BUKU_APLIKASI_DARI": 13,
+    "LINTAS_BUKU_MEMPERDALAM": 13,
+    "LINTAS_BUKU_SAMA_DENGAN": 5,
+    "LINTAS_BUKU_BAGIAN_DARI": 4,
+    "LINTAS_BUKU_PRASYARAT_UNTUK": 3,
+    "LINTAS_BUKU_DIBUTUHKAN_UNTUK_PEMBENTUKAN": 2,
+    "LINTAS_BUKU_PENGGUNA_GAS_RUMAH_KACA": 1
+  },
+  "edges": [
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Fermentasi Asam Laktat",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Asam laktat adalah turunan dari asam piruvat dan terkait dengan metabolisme asam amino.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Inhibitor Kompetitif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "antibiotik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Penisilin adalah contoh antibiotik yang bekerja sebagai inhibitor kompetitif terhadap enzim bakteri.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "LED (Light Emitting Diode)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "semikonduktor",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "LED adalah perangkat semikonduktor yang prinsip kerjanya terkait dengan sifat-sifat semikonduktor.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Penyuntingan Genom (Genome Editing)",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Penyuntingan genom merupakan aplikasi langsung dari pemahaman struktur dan manipulasi molekul DNA.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Banyak enzim adalah protein, yang merupakan biopolimer.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Reaksi Terang Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Energi",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Reaksi terang adalah proses konversi energi cahaya menjadi energi kimia.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Reaktansi Kapasitif (XC)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "kapasitor",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep kapasitor dalam fisika berhubungan dengan kemampuannya menyimpan muatan, yang di kimia dipelajari dalam konteks senyawa atau bahan yang memiliki sifat serupa.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Respirasi Seluler",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Energi",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Respirasi seluler adalah proses biokimia yang mengubah energi kimia makanan menjadi energi yang dapat digunakan sel.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Sifat-sifat Koloid",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Bioteknologi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Beberapa proses dalam bioteknologi, seperti pemisahan protein, memanfaatkan sifat elektroforesis koloid.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Sinar-X",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Bioteknologi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Sinar-X digunakan dalam berbagai aplikasi bioteknologi, seperti dalam pencitraan struktur molekul kompleks atau dalam terapi radiasi untuk pengobatan.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Teori Evolusi Kimia",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Asam amino adalah salah satu hasil penting dari reaksi kimia yang diprediksi dalam teori evolusi kimia.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Teori Evolusi Kimia",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "hidrogen",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Hidrogen merupakan salah satu senyawa dasar yang diduga berperan dalam pembentukan senyawa organik kompleks.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Waktu Paruh",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Definisi Evolusi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep waktu paruh radioaktif digunakan dalam penanggalan radiometrik untuk menentukan usia fosil dan situs arkeologi.",
+        "relation_type": "APLIKASI_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BAGIAN_DARI",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Asam amino adalah blok bangunan dasar untuk protein.",
+        "relation_type": "BAGIAN_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BAGIAN_DARI",
+      "source_label": "Concept",
+      "source_name": "Pati",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karbohidrat",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pati adalah salah satu jenis karbohidrat kompleks yang merupakan biopolimer.",
+        "relation_type": "BAGIAN_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BAGIAN_DARI",
+      "source_label": "Concept",
+      "source_name": "Selulosa",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karbohidrat",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Selulosa adalah salah satu bentuk karbohidrat kompleks yang merupakan biopolimer.",
+        "relation_type": "BAGIAN_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BAGIAN_DARI",
+      "source_label": "Concept",
+      "source_name": "Sutera",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Sutera tersusun dari protein, yang merupakan biopolimer.",
+        "relation_type": "BAGIAN_DARI"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Alkohol (Metanol, Etanol, Fenol, Gliserol)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Etanol dihasilkan dari fermentasi karbohidrat oleh mikroorganisme yang melibatkan enzim.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Anabolisme",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "esterifikasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Esterifikasi adalah contoh reaksi sintesis organik yang dapat dikategorikan sebagai anabolisme jika terjadi dalam konteks biologis.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Aplikasi Resonansi",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Aplikasi Bioteknologi Modern",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Beberapa aplikasi bioteknologi modern mungkin menggunakan prinsip resonansi dalam alat ukurnya, meskipun secara langsung tidak ada keterkaitan konsep inti.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Baterai Litium-ion",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Materi Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan interaksi molekuler kompleks dan transfer muatan/energi pada tingkat atom/molekul, meskipun dalam konteks yang berbeda (kimia vs biologi).",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Baterai Mobil Listrik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Meskipun tidak langsung, kedua bidang ini mempelajari sistem yang memanfaatkan perpindahan energi atau materi secara efisien, seperti enzim dalam metabolisme biologis dan sel elektrokimia dalam konversi energi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Dilatasi Waktu",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Metabolisme",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Perbedaan laju metabolisme dapat dipengaruhi oleh perbedaan pengalaman waktu jika ada perbedaan kecepatan yang signifikan, meskipun dalam skala biologis dampaknya kecil.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Efek Compton",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Evolusi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Prinsip konservasi momentum dan energi yang berlaku pada efek Compton juga merupakan prinsip fundamental dalam studi mekanika, yang secara luas diterapkan dalam berbagai fenomena ilmiah, termasuk dalam menjelaskan bagaimana interaksi energi mempengaruhi sistem biologis dalam jangka waktu yang lama (evolusi).",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Efek Fotolistrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Meskipun efek fotolistrik adalah fenomena fisika, konsep energi yang dapat mengaktifkan suatu proses (seperti pelepasan elektron) memiliki analogi dengan energi aktivasi yang dibutuhkan enzim untuk mempercepat reaksi kimia.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fermentasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Fermentasi asam laktat merupakan salah satu jalur metabolisme asam amino.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fermentasi Alkohol",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "belerang",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Senyawa yang mengandung belerang dapat berperan dalam reaksi fermentasi atau metabolismenya.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "garis fluks",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep aliran elektron dalam rantai transpor elektron mirip dengan konsep fluks dalam fisika.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Gaya Antar Molekul",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gaya Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Gaya antar molekul pada polimer mirip dengan konsep gaya listrik yang mempengaruhi interaksi antar partikel.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Gaya Magnet pada Muatan Bergerak",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "bilangan oksidasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Perubahan bilangan oksidasi dapat terjadi akibat interaksi muatan dalam medan magnet, meskipun hubungan langsungnya tidak eksplisit dalam teks.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Gen",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi-Reaksi Spesifik pada Gugus Fungsi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: fungsi, spesifik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Glikolisis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Asam piruvat dapat diubah menjadi asam amino melalui proses metabolisme yang berbeda.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Holoenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gugus Fungsi sebagai Pusat Aktif pada Senyawa Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: aktif, gugus.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Holoenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi-Reaksi Spesifik pada Gugus Fungsi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: gugus, reaksi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Ilmu Pendukung Bioteknologi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Medan Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Prinsip fisika seperti medan listrik dapat berperan dalam beberapa proses bioteknologi, misalnya dalam pemisahan molekul atau stimulasi sel.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Isotop",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Isomer",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Isotop dan isomer adalah konsep yang berkaitan dengan variasi struktur atom atau molekul.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Kemosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "belerang",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Bakteri belerang menggunakan senyawa yang mengandung belerang dalam kemosintesisnya.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Kemosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "hidrogen",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Oksidasi senyawa yang mengandung hidrogen seringkali menjadi sumber energi dalam kemosintesis.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Koenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "vitamin",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Vitamin adalah komponen organik yang berfungsi sebagai koenzim.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Kofaktor",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "ion logam",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Kofaktor enzim seringkali berupa ion logam.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Komponen Bioteknologi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Senyawa Organik Tersusun atas Rantai Karbon",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: atas, tersusun.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Larutan Penyangga",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim dan Metabolisme",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Fungsi enzim sangat bergantung pada pH yang stabil, yang dapat dipertahankan oleh larutan penyangga dalam sistem biologis.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Mutasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Hubungan Struktur dan Sifat Polimer",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: sifat, struktur.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Partikel Beta (β)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "elektron",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Partikel beta adalah elektron yang memiliki peran dalam struktur atom dan reaksi kimia.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pelapisan Logam (Electroplating)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Arus Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: arus, listrik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pelapisan Logam (Electroplating)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "LISTRIK ARUS SEARAH",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: arus, listrik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pemanfaatan Sinar Gamma dan Sinar X",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "radioaktif",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Sinar gamma seringkali berkaitan dengan unsur radioaktif yang dipelajari dalam kimia.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pengaruh Suhu terhadap Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Suhu",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Suhu merupakan faktor fisik yang mempengaruhi laju reaksi enzim.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pengaruh Suhu terhadap Hambatan Jenis",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "suhu",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Suhu merupakan parameter penting yang mempengaruhi sifat fisik material seperti hambatan jenis.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Pengaruh pH terhadap Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "pH",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Tingkat keasaman atau kebasaan (pH) mempengaruhi aktivitas enzim.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Penurunan Energi Aktivasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Energi",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Enzim mempengaruhi energi yang dibutuhkan untuk memicu suatu reaksi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Polimer Alam (Biopolimer)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karbohidrat",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Karbohidrat adalah contoh biopolimer yang juga dipelajari dalam biologi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Polimer Alam (Biopolimer)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Protein adalah contoh biopolimer yang juga dipelajari dalam biologi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Reaksi Reduksi/Oksidasi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Arus Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep redoks sangat penting dalam elektrokimia, yang berkaitan dengan arus listrik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Resonansi Rangkaian RLC",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Getaran",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Prinsip resonansi pada rangkaian RLC memiliki analogi dengan resonansi pada sistem mekanik atau getaran dalam biologi, di mana frekuensi alami suatu sistem cocok dengan frekuensi eksternal.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Seleksi Alam",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gaya Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Meskipun tidak langsung, prinsip pemilihan dan eliminasi dalam seleksi alam dapat dianalogikan dengan interaksi gaya yang menentukan kelangsungan suatu sistem.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Semikonduktor",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Silikon",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Silikon adalah salah satu unsur yang menjadi dasar semikonduktor, yang juga merupakan unsur kimia.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Sifat-sifat Koloid",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Permukaan enzim yang berinteraksi dengan substrat dapat menunjukkan sifat adsorpsi.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Sinar Gamma",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "radioaktivitas",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Sinar gamma dihasilkan dari proses radioaktivitas dalam kimia inti.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Sinar-X",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Bilangan Oksidasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Penentuan struktur kristal menggunakan difraksi sinar-X adalah teknik penting dalam kimia anorganik dan organik untuk menentukan susunan atom dan bilangan oksidasi dalam suatu senyawa.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Spesifisitas Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi-Reaksi Spesifik pada Gugus Fungsi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: reaksi, spesifik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Struktur Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gugus Fungsi sebagai Pusat Aktif pada Senyawa Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: aktif, gugus, organik.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Struktur Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Senyawa Organik Tersusun atas Rantai Karbon",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: atas, organik, tersusun.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Tekanan Osmosis Larutan",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Definisi Bioteknologi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Proses osmosis dan tekanan osmosis penting dalam berbagai aplikasi bioteknologi, seperti pemisahan membran.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Translasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: amino, asam.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Vaksin",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "aditif",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pembuatan vaksin seringkali melibatkan penggunaan berbagai aditif untuk stabilisasi, pengawetan, atau peningkatan respons imun.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "tRNA",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep berbagi kata kunci ilmiah: amino, asam.",
+        "relation_type": "BERKAITAN_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_DIBUTUHKAN_UNTUK_PEMBENTUKAN",
+      "source_label": "Concept",
+      "source_name": "Pemanfaatan Sinar Ultraviolet (UV)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Vitamin D",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Sinar UV diperlukan untuk proses pembentukan Vitamin D di dalam tubuh.",
+        "relation_type": "DIBUTUHKAN_UNTUK_PEMBENTUKAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_DIBUTUHKAN_UNTUK_PEMBENTUKAN",
+      "source_label": "Concept",
+      "source_name": "Sinar Ultraviolet (UV)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Vitamin D",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Sinar UV berperan dalam sintesis Vitamin D dalam tubuh manusia.",
+        "relation_type": "DIBUTUHKAN_UNTUK_PEMBENTUKAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Asam Nukleat (DNA & RNA)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sintesis Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "RNA berperan krusial dalam proses sintesis protein.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Baterai Mobil Listrik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Arus Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Prinsip kerja baterai mobil listrik sangat bergantung pada pemahaman tentang aliran arus listrik dan konsep energi listrik.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Bioinformatika",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "komputasi kuantum",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Bioinformatika memanfaatkan teknik komputasi, termasuk konsep-konsep dari komputasi kuantum untuk analisis data biologis yang kompleks.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Elektrode Hidrogen Standar",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Medan Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep potensial elektrode standar berkaitan dengan perbedaan potensial listrik yang timbul akibat pergerakan muatan pada elektroda, yang dapat dikaitkan dengan studi medan listrik.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Evaluasi Bioteknologi Modern dengan Bioetika",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Diskusi bioetika seringkali berkaitan dengan modifikasi DNA pada organisme, termasuk manusia.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Ilmu Pendukung Bioteknologi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman kimia, khususnya mengenai asam amino, sangat penting dalam studi biokimia dan bioteknologi pangan.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Konversi Massa-Energi (E=mc²)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Energi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep E=mc² adalah dasar pemahaman perubahan energi dalam reaksi kimia dan fisika.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "antibiotik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep antibiotik dalam bioteknologi kesehatan merupakan aplikasi langsung dari pengetahuan kimia tentang senyawa antibiotik.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Penanggalan Karbon",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Perkembangan Teori Evolusi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Penanggalan karbon penting untuk memahami kronologi evolusi dan sejarah kehidupan.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Radioaktivitas",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Evolusi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Proses radioaktif dapat dimanfaatkan dalam penanggalan arkeologi untuk memahami sejarah evolusi.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Sel Elektrolisis",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Arus Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Sel elektrolisis membutuhkan arus listrik eksternal untuk menjalankan reaksi kimia, yang konsepnya dipelajari dalam fisika listrik arus searah.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Teori Evolusi Modern",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Penemuan struktur dan fungsi DNA sangat krusial dalam perkembangan teori evolusi modern.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Variasi Genetik",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Variasi genetik secara fundamental berasal dari struktur dan perubahan pada molekul DNA.",
+        "relation_type": "MEMPERDALAM"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PENGGUNA_GAS_RUMAH_KACA",
+      "source_label": "Concept",
+      "source_name": "Efek Rumah Kaca",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "karbondioksida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Karbondioksida adalah salah satu gas rumah kaca utama yang berkontribusi terhadap efek rumah kaca.",
+        "relation_type": "PENGGUNA_GAS_RUMAH_KACA"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Bioteknologi Modern",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang struktur dan fungsi DNA sangat fundamental untuk memahami teknologi rekayasa genetika pada bioteknologi modern.",
+        "relation_type": "PRASYARAT_UNTUK"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "karbon dioksida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Karbon dioksida adalah salah satu reaktan penting dalam fotosintesis.",
+        "relation_type": "PRASYARAT_UNTUK"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Rekayasa Genetika",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Rekayasa genetika sangat bergantung pada pemahaman mendalam tentang struktur dan manipulasi DNA.",
+        "relation_type": "PRASYARAT_UNTUK"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "asam amino",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep asam amino sebagai penyusun protein adalah sama antara buku Biologi dan Kimia.",
+        "relation_type": "SAMA_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Asam Nukleat (DNA & RNA)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Materi Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Asam nukleat, khususnya DNA, merupakan inti dari materi genetik yang dipelajari dalam biologi.",
+        "relation_type": "SAMA_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "DNA",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (asam 2-deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep DNA pada buku Kimia Kelas XII merujuk pada molekul yang sama dengan materi genetik dalam Biologi.",
+        "relation_type": "SAMA_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Karbohidrat",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karbohidrat (sakarida)",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep karbohidrat sebagai biopolimer sangat terkait dengan pemahaman dalam biologi.",
+        "relation_type": "SAMA_DENGAN"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Protein sebagai biopolimer adalah konsep fundamental yang juga dibahas dalam biologi.",
+        "relation_type": "SAMA_DENGAN"
+      }
+    }
+  ]
+}
