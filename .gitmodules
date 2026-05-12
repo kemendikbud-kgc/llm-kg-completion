@@ -1,3 +1,6 @@
 [submodule "kg-review-app"]
 	path = kg-review-app
 	url = https://github.com/tegar-wahyu/kg-review-app.git
+[submodule "experiments/yhoga/kg-completion"]
+	path = experiments/yhoga/kg-completion
+	url = https://github.com/Kemendickbud/kg-completion
