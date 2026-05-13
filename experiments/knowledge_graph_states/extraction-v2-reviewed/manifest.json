@@ -1,0 +1,46 @@
+{
+  "version": "extraction-v2-reviewed",
+  "source_state": "extraction-v1",
+  "built_at": "2026-05-13",
+  "feedback_snapshot": "redis_snapshot_2026-05-13",
+  "per_grade": {
+    "Biologi Kelas XII": {
+      "kept": 151,
+      "dropped": 0,
+      "annotated_correct": 147,
+      "annotated_partial": 3,
+      "annotated_needs_context": 1,
+      "added": 0
+    },
+    "Fisika Kelas XII": {
+      "kept": 237,
+      "dropped": 3,
+      "annotated_correct": 186,
+      "annotated_partial": 40,
+      "annotated_needs_context": 11,
+      "added": 0
+    },
+    "Kimia Kelas XII": {
+      "kept": 164,
+      "dropped": 2,
+      "annotated_correct": 140,
+      "annotated_partial": 5,
+      "annotated_needs_context": 19,
+      "added": 29
+    }
+  },
+  "totals": {
+    "operations": {
+      "keep+annotate": 473,
+      "flag-partial": 48,
+      "needs-context": 31,
+      "drop": 5,
+      "add": 29
+    },
+    "n_dropped": 5
+  },
+  "policy": {
+    "single_reviewer_drops": "honored",
+    "comment_handling": "flag-only (annotation, no rating override)"
+  }
+}

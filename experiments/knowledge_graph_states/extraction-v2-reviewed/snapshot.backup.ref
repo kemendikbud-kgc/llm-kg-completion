@@ -1,0 +1,23 @@
+# Pointer to a binary Neo4j .backup capturing extraction-v2-reviewed.
+# This file is in git; the .backup it references will live in Drive once
+# extraction-v2-reviewed has been ingested into a Neo4j instance and a
+# snapshot taken.
+
+version: extraction-v2-reviewed
+drive_folder_url: https://drive.google.com/drive/u/0/folders/1Ry04XK_sLqUbdjKOGgRbdUT97hkhmi6s
+drive_folder_id: 1bXdoqZzPY4DDgDy9ADLIBiwUexkmsMAh    # extraction-v2-reviewed subfolder
+
+direct_file_id: TBD
+direct_file_name: TBD
+size_bytes: TBD
+taken_at: TBD
+sha256: TBD                # certutil -hashfile <file> SHA256
+
+instance: TBD              # Yhoga Aura Free, OR a fresh team-shared instance
+file_format: Neo4j Aura .backup (binary)
+
+notes: |
+  extraction-v2-reviewed is currently materialized as JSON only (see this
+  folder). The .backup will be produced after first ingest. Until then, the
+  JSONs in this folder ARE the canonical state — they replay into any Neo4j
+  via UNWIND+MERGE.
