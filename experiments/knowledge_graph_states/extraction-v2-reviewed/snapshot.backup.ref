@@ -1,23 +1,31 @@
-# Pointer to a binary Neo4j .backup capturing extraction-v2-reviewed.
-# This file is in git; the .backup it references will live in Drive once
-# extraction-v2-reviewed has been ingested into a Neo4j instance and a
-# snapshot taken.
+# Pointer to the binary Neo4j .backup capturing extraction-v2-reviewed.
+# This file is in git; the .backup it references is in Drive.
 
 version: extraction-v2-reviewed
 drive_folder_url: https://drive.google.com/drive/u/0/folders/1Ry04XK_sLqUbdjKOGgRbdUT97hkhmi6s
 drive_folder_id: 1bXdoqZzPY4DDgDy9ADLIBiwUexkmsMAh    # extraction-v2-reviewed subfolder
 
-direct_file_id: TBD
-direct_file_name: TBD
-size_bytes: TBD
-taken_at: TBD
-sha256: TBD                # certutil -hashfile <file> SHA256
+direct_file_id: 1UNFkF1cezqxeDYbTq4K5JCtfQoUcIExF
+direct_file_name: 5bdd4856-2026-05-13T10-31-34-5bdd4856.backup
+direct_file_url: https://drive.google.com/file/d/1UNFkF1cezqxeDYbTq4K5JCtfQoUcIExF/view
+size_bytes: 20560609                                                              # 20.6 MB
+taken_at: 2026-05-13T10:31:34Z                                                    # from filename, Aura snapshot time
+uploaded_at: 2026-05-13T10:42:52Z                                                 # Drive modifiedTime
+sha256: 03c42351608b7f66894fe122eac1c4abe40d9c6fdd89d2dc3d9637cb967a2154
 
-instance: TBD              # Yhoga Aura Free, OR a fresh team-shared instance
+instance: yhoga (Neo4j Aura Free)
 file_format: Neo4j Aura .backup (binary)
 
 notes: |
-  extraction-v2-reviewed is currently materialized as JSON only (see this
-  folder). The .backup will be produced after first ingest. Until then, the
-  JSONs in this folder ARE the canonical state — they replay into any Neo4j
-  via UNWIND+MERGE.
+  Snapshot taken AFTER experiments/ingest_extraction_v2_reviewed.py wiped
+  and rebuilt the Yhoga Aura instance from this folder's JSONs on 2026-05-13.
+  Verified state at capture: 3 Grade / 17 Chapter / 81 Subtopic / 342 Concept /
+  418 ConceptTarget; 1,064 total relationships; 0 LINTAS_BUKU_* edges
+  (pre-completion baseline); 580 typed edges carry expert_review_* annotations
+  (472 correct / 48 partial / 31 missing / 29 expert-proposed).
+  The synthetic "Expert Proposed Triples" subtopics are present under 4 Kimia
+  chapters with 27 concepts / 29 expert-proposed triples in total.
+
+  Use this .backup as the canonical rollback point for the team's shared
+  pre-completion baseline. Restoring it returns the live DB to byte-identical
+  state with the JSONs in this folder.
