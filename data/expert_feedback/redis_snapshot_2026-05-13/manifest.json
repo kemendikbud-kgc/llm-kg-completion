@@ -1,0 +1,44 @@
+{
+  "captured_at": "2026-05-13",
+  "redis_url_host": "communal-horse-92107.upstash.io:6379",
+  "courses_keys": [
+    "kg:courses"
+  ],
+  "substantive_reviewers": [
+    {
+      "reviewer": "expert-biologi-1",
+      "course": "biologi-kelas-xii-1775626587840",
+      "n_ratings": 42
+    },
+    {
+      "reviewer": "expert-biologi-4",
+      "course": "biologi-kelas-xii-1775626587840",
+      "n_ratings": 80
+    },
+    {
+      "reviewer": "expert-biologi-6",
+      "course": "biologi-kelas-xii-1775626587840",
+      "n_ratings": 151
+    },
+    {
+      "reviewer": "expert-fisika-2",
+      "course": "kimia-kelas-xii-1775626600569",
+      "n_ratings": 54
+    },
+    {
+      "reviewer": "expert-fisika-6",
+      "course": "fisika-kelas-xii-1775626594842",
+      "n_ratings": 240
+    },
+    {
+      "reviewer": "expert-kimia-6",
+      "course": "kimia-kelas-xii-1775626600569",
+      "n_ratings": 166
+    }
+  ],
+  "excluded": [
+    "admin",
+    "dummy-user-1"
+  ],
+  "substantive_min_ratings": 10
+}
