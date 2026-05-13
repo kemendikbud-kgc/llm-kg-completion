@@ -1,15 +1,15 @@
-# v2-friend-completion-llm — derivation
+# completion-experiments/friend-llm — derivation
 
 ## What this state is
 
 The KG after the friend's LLM-driven cross-book completion experiment
-ran on top of `v1-extraction`. Adds **91 `LINTAS_BUKU_*` edges** between
+ran on top of `extraction-v1`. Adds **91 `LINTAS_BUKU_*` edges** between
 Concepts in different grades. No nodes added; only new edges and edge
 properties.
 
 ## Source state
 
-`v1-extraction` (ingested into Neo4j as the Yhoga Aura Free instance).
+`extraction-v1` (ingested into Neo4j as the Yhoga Aura Free instance).
 
 ## Derivation summary
 
@@ -64,7 +64,7 @@ discussing with Yhoga before evaluation.
 
 ## Reset path
 
-To revert to pre-completion (`v3-pre-completion-reset`), run:
+To revert the live Yhoga Aura to its pre-completion form, run:
 
 ```cypher
 MATCH ()-[r]->() WHERE type(r) STARTS WITH 'LINTAS_BUKU'
@@ -73,4 +73,6 @@ RETURN count(r) AS deleted;   -- expect 91
 ```
 
 This is reversible from the `.backup` snapshot or by replaying
-`lintas_buku_edges.json`.
+`lintas_buku_edges.json`. For the team's canonical pre-completion
+baseline, ingest `extraction-v2-reviewed/` instead (richer than the
+mere reset, since it folds in the expert feedback).

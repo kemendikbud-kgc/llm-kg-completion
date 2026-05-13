@@ -1,4 +1,4 @@
-# v1-extraction — derivation
+# extraction-v1 — derivation
 
 ## What this state is
 

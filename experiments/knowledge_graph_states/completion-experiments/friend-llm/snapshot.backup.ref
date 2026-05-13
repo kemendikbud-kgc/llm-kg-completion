@@ -1,0 +1,31 @@
+# Pointer to the binary Neo4j Aura .backup file for completion-experiments/friend-llm.
+# This file is in git; the .backup it references is in Drive.
+
+version: completion-experiments/friend-llm
+drive_folder_url: https://drive.google.com/drive/u/0/folders/1Ry04XK_sLqUbdjKOGgRbdUT97hkhmi6s
+drive_folder_id: 1Ry04XK_sLqUbdjKOGgRbdUT97hkhmi6s
+
+# Candidate .backup file at the parent folder root (large, recent, likely
+# captures the friend-llm state with the 91 LINTAS_BUKU_* edges):
+direct_file_id: 14pPChp4EzhQ3Q-q9j8szEyyqukE1douT
+direct_file_name: 5bdd4856-2026-05-11T13-21-36-5bdd4856.backup
+size_bytes: 20565123       # 20.5 MB
+taken_at: 2026-05-12       # from Drive modifiedTime
+sha256: TBD                # compute with: certutil -hashfile <file> SHA256  (Windows)
+
+instance: yhoga (Neo4j Aura Free)
+file_format: Neo4j Aura .backup (binary)
+
+notes: |
+  Captured AFTER the friend's LLM cross-book completion experiment.
+  91 LINTAS_BUKU_* edges present (50 BERKAITAN_DENGAN + 13 APLIKASI_DARI +
+  13 MEMPERDALAM + 5 SAMA_DENGAN + 4 BAGIAN_DARI + 3 PRASYARAT_UNTUK +
+  2 DIBUTUHKAN_UNTUK_PEMBENTUKAN + 1 PENGGUNA_GAS_RUMAH_KACA).
+  Concept count: 406, ConceptTarget count: 173, total relationships: 1,654.
+  See derivation.md in this folder for full context.
+
+  Note: a smaller .backup (180 KB, dated 2026-05-08) is also present in the
+  Drive folder under `completion-experiments/`
+  (id: 1kNDMt2sXgIDOwVgl9rS4-HSzsb5R_Tuw,
+  name: 772674a6-2026-05-08T11-24-51-772674a6.backup). It pre-dates this
+  state and is likely an earlier experiment snapshot; assignment TBD.

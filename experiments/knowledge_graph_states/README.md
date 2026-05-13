@@ -8,13 +8,21 @@ This folder catalogs versioned snapshots of the thesis KG (Yhoga schema:
 
 ```
 knowledge_graph_states/
-├── MANIFEST.md                 ← catalog of every state. Read this first.
-├── README.md                   ← you are here
-├── v<N>-<slug>/                ← one folder per state
-│   ├── derivation.md           ← how this state was produced from its source
-│   ├── *.json                  ← text artifacts (extraction output, edge dumps)
-│   └── snapshot.backup.ref     ← pointer (YAML) to the binary .backup file in Drive
+├── MANIFEST.md                          ← catalog of every state. Read this first.
+├── README.md                            ← you are here
+├── extraction-v<N>[-<descriptor>]/      ← ingestion-axis states (canonical pre-completion line)
+│   ├── derivation.md
+│   ├── *.json                            (text artifacts: extraction output / edge dumps)
+│   └── snapshot.backup.ref               (pointer to the binary .backup in Drive)
+└── completion-experiments/              ← branches off an ingestion state, one folder per method run
+    └── <method-slug>/
+        ├── derivation.md
+        ├── *.json
+        └── snapshot.backup.ref
 ```
+
+Ingestion states are linear (v1 → v2 → …). Completion experiments are
+branches — multiple experiments can share the same ingestion baseline.
 
 ## Why this exists
 

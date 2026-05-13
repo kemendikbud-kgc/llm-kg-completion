@@ -3,7 +3,7 @@
 Usage:
     python experiments/dump_lintas_buku.py [output_path]
 
-Default output: experiments/knowledge_graph_states/v2-friend-completion-llm/lintas_buku_edges.json
+Default output: experiments/knowledge_graph_states/completion-experiments/friend-llm/lintas_buku_edges.json
 
 The dump is text-diffable, replayable into any Neo4j via UNWIND+MERGE, and
 serves as the auditable text-form record of the cross-book completion state
@@ -24,7 +24,8 @@ from neo4j import GraphDatabase
 DEFAULT_OUT = (
     Path(__file__).resolve().parent
     / "knowledge_graph_states"
-    / "v2-friend-completion-llm"
+    / "completion-experiments"
+    / "friend-llm"
     / "lintas_buku_edges.json"
 )
 
