@@ -30,6 +30,14 @@ class SchemaSpec:
     neo4j_password_env: str
     # Existing typed rel types whose neighborhoods are surfaced to the classifier.
     existing_typed_rels: tuple[str, ...]
+    # Closed vocabulary the LLM classifier emits for newly-discovered edges.
+    # First N-1 entries are real rel types; last entry is reserved for "none".
+    classifier_vocab: tuple[str, ...] = (
+        "isPrerequisiteOf",
+        "supports",
+        "analogousTo",
+        "none",
+    )
     # Discovery edge name written by the similarity step.
     similar_to_rel: str = "SIMILAR_TO"
 
@@ -73,6 +81,16 @@ YHOGA_SCHEMA = SchemaSpec(
         "DIRUMUSKAN_SEBAGAI",
         "PRASYARAT",
         "MEMPERSIAPKAN",
+    ),
+    # 5-type closed cross-book vocab from docs/yhoga-ontology.ttl:151-185.
+    # Plus "none" so the classifier can decline an edge.
+    classifier_vocab=(
+        "LINTAS_BUKU_SAMA_DENGAN",
+        "LINTAS_BUKU_APLIKASI_DARI",
+        "LINTAS_BUKU_PRASYARAT_UNTUK",
+        "LINTAS_BUKU_MEMPERDALAM",
+        "LINTAS_BUKU_BERKAITAN_DENGAN",
+        "none",
     ),
 )
 

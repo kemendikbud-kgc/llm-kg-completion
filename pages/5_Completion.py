@@ -12,6 +12,7 @@ from src.completion import (
     classify_similar_pairs,
     get_embeddings,
     build_embed_text,
+    dump_lintas_buku_results,
 )
 from src.config import (
     MODEL_CHOICES,
@@ -348,6 +349,19 @@ with col_find:
                         {n["name"] for n in nodes} if scope_mode == "single" else None
                     )
 
+                    # Yhoga + cross scope = LINTAS_BUKU completion (cross-grade only).
+                    # The TTL ontology defines LINTAS_BUKU_* strictly across different
+                    # grades, so enforce that as a hard filter at pair generation.
+                    cross_grade_only = (
+                        schema_name == "yhoga" and scope_mode == "cross"
+                    )
+                    # Skip pairs already typed-connected (rule iii): if A and B
+                    # already share a non-SIMILAR_TO edge, don't rediscover them.
+                    # Applies always for Yhoga — within-grade redundancy from
+                    # extraction and cross-grade LINTAS_BUKU edges from prior
+                    # completion runs are both filtered out.
+                    skip_existing_typed_edges = schema_name == "yhoga"
+
                     pairs = find_similar_pairs_ann(
                         driver=driver,
                         nodes=nodes,
@@ -358,6 +372,8 @@ with col_find:
                         allowed_names=allowed_names,
                         progress_callback=update_progress,
                         adapter=adapter,
+                        cross_grade_only=cross_grade_only,
+                        skip_existing_typed_edges=skip_existing_typed_edges,
                     )
                     driver.close()
 
@@ -439,10 +455,19 @@ if st.session_state.get("found_pairs"):
 # --- Classify Relationships ---
 st.divider()
 st.subheader("Classify Relationships")
-st.write(
-    "Use LLM to classify SIMILAR_TO pairs into typed relationships: "
-    "`isPrerequisiteOf`, `supports`, `analogousTo`."
-)
+if schema_name == "yhoga":
+    st.write(
+        "Use LLM to classify SIMILAR_TO pairs into Yhoga's 5-type closed "
+        "**LINTAS_BUKU_\\*** vocabulary (per `docs/yhoga-ontology.ttl`): "
+        "`SAMA_DENGAN`, `APLIKASI_DARI`, `PRASYARAT_UNTUK`, `MEMPERDALAM`, "
+        "`BERKAITAN_DENGAN`. Output is staged to JSON, not written directly "
+        "to Neo4j — review then replay via `experiments/replay_completion.py`."
+    )
+else:
+    st.write(
+        "Use LLM to classify SIMILAR_TO pairs into typed relationships: "
+        "`isPrerequisiteOf`, `supports`, `analogousTo`."
+    )
 
 try:
     driver = adapter.get_driver()
@@ -466,9 +491,32 @@ if existing_similar:
         ),
     )
 
+    # Yhoga staging output path (canonical experiment folder).
+    default_yhoga_output = (
+        "experiments/knowledge_graph_states/completion-experiments/"
+        "ann-classifier-v1/lintas_buku_edges.json"
+    )
+    yhoga_output_path = (
+        st.text_input(
+            "JSON staging path",
+            value=default_yhoga_output,
+            help=(
+                "LINTAS_BUKU_* edges are written here for audit. Replay into "
+                "Neo4j via `python experiments/replay_completion.py <path>`."
+            ),
+        )
+        if schema_name == "yhoga"
+        else None
+    )
+
     col_classify, col_info = st.columns([1, 2])
     with col_classify:
-        if st.button("Classify Relationships", type="secondary"):
+        button_label = (
+            "Classify & Stage to JSON"
+            if schema_name == "yhoga"
+            else "Classify Relationships"
+        )
+        if st.button(button_label, type="secondary"):
             log_handler = setup_log_capture("Step 5: Classify")
             progress_bar = st.progress(0, text="Classifying...")
 
@@ -486,30 +534,67 @@ if existing_similar:
                     batch_size=classify_batch_size,
                     adapter=adapter,
                 )
-                # Save typed relationships to Neo4j
-                saved_typed = 0
-                for item in classified:
-                    if item["rel_type"] != "none":
-                        adapter.save_typed_relationship(
-                            driver,
-                            source=item["source"],
-                            target=item["target"],
-                            rel_type=item["rel_type"],
-                            confidence=item.get("confidence"),
-                        )
-                        saved_typed += 1
-                driver.close()
-                progress_bar.empty()
-                counts = {}
+
+                counts: dict[str, int] = {}
                 for item in classified:
                     counts[item["rel_type"]] = counts.get(item["rel_type"], 0) + 1
-                msg = (
-                    f"Classified {len(classified)} pairs -> "
-                    f"{saved_typed} typed relationships saved. "
-                    f"({counts})"
-                )
-                st.success(msg)
-                send_notification("Classification Done", f"{saved_typed} relationships")
+
+                if schema_name == "yhoga":
+                    # Stage to JSON — do not touch Yhoga Neo4j here. Replay
+                    # script handles the MERGE-into-Neo4j step separately.
+                    written = dump_lintas_buku_results(
+                        classified,
+                        output_path=yhoga_output_path,
+                        driver=driver,
+                        version="ann-classifier-v1",
+                        source_state="extraction-v2-reviewed",
+                        method="ann + classifier",
+                        params={
+                            "embed_model": selected_embedding_model,
+                            "chat_model": selected_chat_model,
+                            "threshold": float(threshold),
+                            "top_k": int(top_k),
+                            "scope": scope_mode,
+                            "selected_doc": selected_doc,
+                            "batch_size": int(classify_batch_size),
+                        },
+                    )
+                    driver.close()
+                    progress_bar.empty()
+                    st.success(
+                        f"Classified {len(classified)} pairs → staged {written} "
+                        f"LINTAS_BUKU_* edges to `{yhoga_output_path}`. ({counts})"
+                    )
+                    st.caption(
+                        "Next: review the JSON, then run "
+                        "`python experiments/replay_completion.py "
+                        f"{yhoga_output_path}` to MERGE into Yhoga Neo4j."
+                    )
+                    send_notification(
+                        "Classification Staged", f"{written} edges to JSON"
+                    )
+                else:
+                    # Soros: direct write to Neo4j (legacy behavior).
+                    saved_typed = 0
+                    for item in classified:
+                        if item["rel_type"] != "none":
+                            adapter.save_typed_relationship(
+                                driver,
+                                source=item["source"],
+                                target=item["target"],
+                                rel_type=item["rel_type"],
+                                confidence=item.get("confidence"),
+                            )
+                            saved_typed += 1
+                    driver.close()
+                    progress_bar.empty()
+                    st.success(
+                        f"Classified {len(classified)} pairs -> "
+                        f"{saved_typed} typed relationships saved. ({counts})"
+                    )
+                    send_notification(
+                        "Classification Done", f"{saved_typed} relationships"
+                    )
                 st.rerun()
             except Exception as e:
                 progress_bar.empty()
@@ -517,11 +602,20 @@ if existing_similar:
                 logger.error("[Completion] Classification error: %s", e)
 
     with col_info:
-        st.caption(
-            "**isPrerequisiteOf**: A must be learned before B\n\n"
-            "**supports**: A helps with / is applied in B\n\n"
-            "**analogousTo**: A and B share the same pattern (anti-silo signal)"
-        )
+        if schema_name == "yhoga":
+            st.caption(
+                "**LINTAS_BUKU_SAMA_DENGAN**: konsep yang sama di buku berbeda (simetris).\n\n"
+                "**LINTAS_BUKU_APLIKASI_DARI**: A adalah penerapan konsep B di disiplin lain.\n\n"
+                "**LINTAS_BUKU_PRASYARAT_UNTUK**: A prasyarat memahami B di mata pelajaran lain.\n\n"
+                "**LINTAS_BUKU_MEMPERDALAM**: A memperdalam pemahaman B di buku lain.\n\n"
+                "**LINTAS_BUKU_BERKAITAN_DENGAN**: berkaitan umum (fallback, simetris)."
+            )
+        else:
+            st.caption(
+                "**isPrerequisiteOf**: A must be learned before B\n\n"
+                "**supports**: A helps with / is applied in B\n\n"
+                "**analogousTo**: A and B share the same pattern (anti-silo signal)"
+            )
 else:
     st.info(
         "No SIMILAR_TO relationships yet. Run **Find Similar Concepts** above first, "

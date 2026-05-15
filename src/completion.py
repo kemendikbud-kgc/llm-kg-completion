@@ -26,7 +26,10 @@ logger = logging.getLogger(__name__)
 # Bump when prompt or schema changes to invalidate classification cache.
 # v3: classifier sees each concept's existing graph neighborhood (bab + typed
 # out-edges + shared neighbors) in addition to name/description/formula.
-CLASSIFICATION_PROMPT_VERSION = "v3"
+# v4: cache key includes schema name (soros/yhoga) so the two vocabularies'
+# classifications no longer collide; results now carry a `description` field
+# (populated by the Yhoga LINTAS_BUKU prompt, empty for Soros).
+CLASSIFICATION_PROMPT_VERSION = "v4"
 
 # Cap out-edges per concept in the prompt to bound prompt size.
 NEIGHBORHOOD_MAX_EDGES = 5
@@ -203,6 +206,8 @@ def find_similar_pairs_ann(
     allowed_names: set[str] | None = None,
     progress_callback: Callable[[int, int, str], None] | None = None,
     adapter: SchemaAdapter | None = None,
+    cross_grade_only: bool = False,
+    skip_existing_typed_edges: bool = False,
 ) -> list[dict]:
     """Find similar pairs using Neo4j Vector Index (ANN search).
 
@@ -210,7 +215,8 @@ def find_similar_pairs_ann(
 
     Args:
         driver: Neo4j driver
-        nodes: List of dicts with 'name', 'description', 'labels' keys
+        nodes: List of dicts with 'name', 'description', 'labels' keys, and
+            (for Yhoga) 'grade'.
         embeddings: Corresponding embedding vectors
         model: Embedding model name (for index creation)
         threshold: Minimum similarity score
@@ -222,6 +228,16 @@ def find_similar_pairs_ann(
         progress_callback: Optional progress callback
         adapter: SchemaAdapter for the target KG. Defaults to SorosAdapter for
             backward compat.
+        cross_grade_only: If True (Yhoga LINTAS_BUKU scope), drop any pair where
+            source.grade == target.grade. The grade lookup comes from the
+            ``nodes`` list; nodes missing a grade are conservatively excluded
+            from cross-grade pairs.
+        skip_existing_typed_edges: If True, drop any pair where a non-SIMILAR_TO
+            edge already exists between source and target. Prevents redundant
+            discovery (e.g. concepts already connected by within-book extraction
+            edges) and prevents re-classifying pairs already linked by a prior
+            LINTAS_BUKU_* completion run. Adapter-implemented via
+            ``adapter.get_pairs_with_existing_typed_edges``.
 
     Returns list of dicts with 'source', 'target', 'similarity'.
     """
@@ -232,6 +248,12 @@ def find_similar_pairs_ann(
         progress_callback(0, len(nodes), "Creating vector index...")
 
     adapter.create_vector_indexes(driver, dimensions=dimensions)
+
+    # Build name → grade lookup for the cross-grade filter. Built unconditionally
+    # so it's available regardless of flag; cost is trivial for 342-node Yhoga.
+    grade_by_name: dict[str, str] = {
+        n["name"]: (n.get("grade") or "") for n in nodes
+    }
 
     # Fast path: skip uploading embeddings that Neo4j already has under the
     # same model. The `embedding` property is the source of truth for the
@@ -283,6 +305,18 @@ def find_similar_pairs_ann(
                 # caller's allowed set when given (e.g. single-doc scope).
                 if allowed_names is not None and s["name"] not in allowed_names:
                     continue
+                if cross_grade_only:
+                    source_grade = grade_by_name.get(node["name"], "")
+                    target_grade = grade_by_name.get(s["name"], "")
+                    # Drop same-grade pairs and pairs with missing grade info
+                    # (latter would silently let same-grade leak through if
+                    # both nodes happen to lack a grade label).
+                    if (
+                        not source_grade
+                        or not target_grade
+                        or source_grade == target_grade
+                    ):
+                        continue
                 pair_key = tuple(sorted([node["name"], s["name"]]))
                 if pair_key not in seen_pairs:
                     seen_pairs.add(pair_key)
@@ -291,6 +325,8 @@ def find_similar_pairs_ann(
                             "source": node["name"],
                             "target": s["name"],
                             "similarity": float(s["score"]),
+                            "source_grade": grade_by_name.get(node["name"], ""),
+                            "target_grade": grade_by_name.get(s["name"], ""),
                         }
                     )
         except Exception as e:
@@ -298,6 +334,26 @@ def find_similar_pairs_ann(
 
     if progress_callback:
         progress_callback(total, total, f"Found {len(pairs)} similar pairs via ANN")
+
+    if skip_existing_typed_edges and pairs:
+        already = adapter.get_pairs_with_existing_typed_edges(driver, pairs)
+        if already:
+            before = len(pairs)
+            pairs = [
+                p for p in pairs
+                if tuple(sorted([p["source"], p["target"]])) not in already
+            ]
+            logger.info(
+                "Dropped %d/%d pairs already typed-connected (non-SIMILAR_TO edge present)",
+                before - len(pairs),
+                before,
+            )
+            if progress_callback:
+                progress_callback(
+                    total,
+                    total,
+                    f"Found {len(pairs)} similar pairs ({before - len(pairs)} skipped: already typed-connected)",
+                )
 
     return pairs
 
@@ -342,10 +398,82 @@ Kembalikan JSON dengan field:
 
 
 class Classification(BaseModel):
-    """Structured output for a single pair classification."""
+    """Structured output for a single pair classification (Soros 3-type)."""
 
     rel_type: Literal["isPrerequisiteOf", "supports", "analogousTo", "none"]
     confidence: float = Field(ge=0.0, le=1.0, default=0.5)
+
+
+# ── Yhoga LINTAS_BUKU classifier — 5-type closed cross-book vocab ───────────
+# Vocab per docs/yhoga-ontology.ttl:151-185. Emitted only when adapter.spec
+# carries the LINTAS_BUKU classifier_vocab (i.e. schema='yhoga').
+
+_LINTAS_BUKU_CLASSIFICATION_PROMPT = """\
+Anda adalah ahli kurikulum sains yang menganalisis keterkaitan **lintas-buku** antara konsep
+pada Mata Pelajaran berbeda (Biologi/Fisika/Kimia Kelas XII pada Kurikulum Merdeka).
+
+Diberikan dua konsep yang memiliki kemiripan semantik tinggi tetapi berasal dari **buku berbeda**:
+
+- Konsep A: "{name_a}"
+  Mata Pelajaran A: "{grade_a}"
+  Deskripsi A: "{desc_a}"
+  Materi Pokok A: {materi_pokok_a}
+
+- Konsep B: "{name_b}"
+  Mata Pelajaran B: "{grade_b}"
+  Deskripsi B: "{desc_b}"
+  Materi Pokok B: {materi_pokok_b}
+
+{neighborhood_block}
+Klasifikasikan hubungan **lintas-buku** antara A dan B sebagai SALAH SATU dari:
+
+1. **LINTAS_BUKU_SAMA_DENGAN**: A dan B merujuk pada entitas/konsep yang sama secara semantik,
+   meskipun dibahas dalam buku berbeda. Contoh: "Energi" (Fisika) ↔ "Energi" (Kimia) — keduanya
+   merujuk pada konsep energi yang sama. Bersifat simetris.
+
+2. **LINTAS_BUKU_APLIKASI_DARI**: A adalah penerapan/manifestasi konsep B di domain disiplin lain.
+   Contoh: "Difusi" (Biologi) adalah aplikasi dari "Gerak Brown" (Fisika). Asimetris — arahkan
+   dari aplikasi ke prinsip dasar.
+
+3. **LINTAS_BUKU_PRASYARAT_UNTUK**: Konsep A pada satu mata pelajaran adalah prasyarat untuk
+   memahami konsep B pada mata pelajaran lain. Contoh: "Stoikiometri" (Kimia) prasyarat untuk
+   "Termokimia Lanjutan" (Kimia/Fisika lintas-disiplin). Asimetris — arahkan dari prasyarat ke
+   konsep yang membutuhkannya.
+
+4. **LINTAS_BUKU_MEMPERDALAM**: Konsep A memperdalam/memperluas pemahaman konsep B di buku lain.
+   Contoh: "Termodinamika" (Fisika) memperdalam "Reaksi Endoterm/Eksoterm" (Kimia). Asimetris.
+
+5. **LINTAS_BUKU_BERKAITAN_DENGAN**: Konsep A dan B berkaitan secara umum lintas buku tanpa
+   hubungan struktural ketat — fallback bila empat tipe di atas tidak tepat. Simetris.
+
+6. **none**: Kemiripan semantik hanya bersifat permukaan; A dan B tidak benar-benar terkait
+   secara curricular. Pilih ini bila ragu.
+
+PENTING: Anda HANYA boleh mengklasifikasikan hubungan ketika Mata Pelajaran A ≠ Mata Pelajaran B.
+Jika keduanya dari mata pelajaran yang sama, kembalikan "none".
+
+Kembalikan JSON dengan field:
+- "rel_type": salah satu dari "LINTAS_BUKU_SAMA_DENGAN", "LINTAS_BUKU_APLIKASI_DARI",
+  "LINTAS_BUKU_PRASYARAT_UNTUK", "LINTAS_BUKU_MEMPERDALAM", "LINTAS_BUKU_BERKAITAN_DENGAN", "none"
+- "confidence": skor 0.0–1.0 menyatakan keyakinan klasifikasi
+- "description": satu kalimat singkat (≤25 kata) yang menjelaskan ALASAN keterkaitan
+  lintas-buku ini. Wajib bahasa Indonesia. Kosongkan ("") jika rel_type = "none".
+"""
+
+
+class LintasBukuClassification(BaseModel):
+    """Structured output for a single Yhoga LINTAS_BUKU_* pair classification."""
+
+    rel_type: Literal[
+        "LINTAS_BUKU_SAMA_DENGAN",
+        "LINTAS_BUKU_APLIKASI_DARI",
+        "LINTAS_BUKU_PRASYARAT_UNTUK",
+        "LINTAS_BUKU_MEMPERDALAM",
+        "LINTAS_BUKU_BERKAITAN_DENGAN",
+        "none",
+    ]
+    confidence: float = Field(ge=0.0, le=1.0, default=0.5)
+    description: str = Field(default="")
 
 
 def _format_list(items) -> str:
@@ -379,6 +507,24 @@ def _compute_shared_neighbors(ctx_a: dict, ctx_b: dict) -> list[str]:
     return sorted(targets_a & targets_b)
 
 
+_SOROS_VOCAB_ADVICE = (
+    "Gunakan konteks graf ini sebagai bukti tambahan. Jika A sudah punya "
+    "banyak hubungan `isPrerequisiteOf` dengan konsep di Bab yang sama "
+    "dengan B, klasifikasi `isPrerequisiteOf` lebih mungkin benar. Tetangga "
+    "bersama menandakan A dan B kemungkinan `analogousTo`.\n"
+)
+
+_LINTAS_BUKU_VOCAB_ADVICE = (
+    "Gunakan konteks graf ini sebagai bukti tambahan. Tetangga bersama "
+    "menandakan A dan B kemungkinan `LINTAS_BUKU_BERKAITAN_DENGAN` atau "
+    "`LINTAS_BUKU_SAMA_DENGAN`. Jika hubungan yang sudah ada di graf "
+    "menunjukkan A merupakan kasus khusus dari konsep yang lebih umum di "
+    "buku lain (mis. lewat BAGIAN_DARI / TERDIRI_DARI), pertimbangkan "
+    "`LINTAS_BUKU_APLIKASI_DARI`. Jika tipe lain tidak tepat, gunakan "
+    "`LINTAS_BUKU_BERKAITAN_DENGAN` sebagai fallback.\n"
+)
+
+
 def _build_neighborhood_block(
     name_a: str,
     bab_a: str | None,
@@ -387,8 +533,14 @@ def _build_neighborhood_block(
     bab_b: str | None,
     out_edges_b: list[dict] | None,
     shared_neighbors: list[str] | None,
+    vocab_hint: str = "soros",
 ) -> str:
-    """Render the KONTEKS GRAF prompt section. Empty string when no signal."""
+    """Render the KONTEKS GRAF prompt section. Empty string when no signal.
+
+    ``vocab_hint`` selects the closing advice paragraph: ``'soros'`` references
+    the 3-type pedagogical vocab, ``'lintas_buku'`` references the LINTAS_BUKU_*
+    cross-book vocab.
+    """
     if not (bab_a or bab_b or out_edges_a or out_edges_b or shared_neighbors):
         return ""
 
@@ -398,6 +550,12 @@ def _build_neighborhood_block(
         )
     else:
         bab_note = ""
+
+    advice = (
+        _LINTAS_BUKU_VOCAB_ADVICE
+        if vocab_hint == "lintas_buku"
+        else _SOROS_VOCAB_ADVICE
+    )
 
     return (
         "========================\n"
@@ -412,10 +570,7 @@ def _build_neighborhood_block(
         f"{_format_out_edges(out_edges_b)}\n\n"
         f"Tetangga bersama (target yang sama-sama dirujuk A dan B): "
         f"{_format_list(shared_neighbors)}\n\n"
-        "Gunakan konteks graf ini sebagai bukti tambahan. Jika A sudah punya "
-        "banyak hubungan `isPrerequisiteOf` dengan konsep di Bab yang sama "
-        "dengan B, klasifikasi `isPrerequisiteOf` lebih mungkin benar. Tetangga "
-        "bersama menandakan A dan B kemungkinan `analogousTo`.\n"
+        f"{advice}"
     )
 
 
@@ -470,12 +625,19 @@ def classify_similar_pair(
     bab_b: str | None = None,
     out_edges_b: list[dict] | None = None,
     shared_neighbors: list[str] | None = None,
-) -> tuple[str, float]:
+    grade_a: str | None = None,
+    grade_b: str | None = None,
+    materi_pokok_a: str | None = None,
+    materi_pokok_b: str | None = None,
+    adapter: SchemaAdapter | None = None,
+) -> tuple[str, float, str]:
     """Use LLM to classify the relationship between two similar konsep.
 
-    Returns a tuple of (rel_type, confidence) where rel_type is one of
-    isPrerequisiteOf, supports, analogousTo, or none, and confidence is in [0, 1].
-    Retries on 429 / 5xx / transient network errors with exponential backoff.
+    Returns ``(rel_type, confidence, description)`` where ``rel_type`` is one
+    of the labels in ``adapter.spec.classifier_vocab`` (Soros default: the
+    3-type pedagogical set; Yhoga: the 5-type LINTAS_BUKU_* set). ``description``
+    is the LLM's one-sentence rationale, used by the Yhoga LINTAS_BUKU pipeline
+    and empty for the Soros path. Retries on 429 / 5xx / transient network errors.
 
     Optional neighborhood args (bab, out_edges, shared_neighbors) inject the
     KONTEKS GRAF section so the LLM can use existing typed edges as evidence.
@@ -483,10 +645,11 @@ def classify_similar_pair(
     model = llm_model or DEFAULT_CHAT_MODEL
     llm = get_llm(model)
 
+    prompt, output_cls = _single_classifier_artifacts(adapter)
     program = LLMTextCompletionProgram.from_defaults(
         llm=llm,
-        output_cls=Classification,
-        prompt_template_str=_CLASSIFICATION_PROMPT,
+        output_cls=output_cls,
+        prompt_template_str=prompt,
     )
 
     neighborhood_block = _build_neighborhood_block(
@@ -497,9 +660,24 @@ def classify_similar_pair(
         bab_b=bab_b,
         out_edges_b=out_edges_b,
         shared_neighbors=shared_neighbors,
+        vocab_hint="lintas_buku" if _is_lintas_buku_vocab(adapter) else "soros",
     )
 
-    result: Classification = program(
+    if _is_lintas_buku_vocab(adapter):
+        result = program(
+            name_a=name_a,
+            grade_a=grade_a or "(tidak diketahui)",
+            desc_a=desc_a or name_a,
+            materi_pokok_a=materi_pokok_a or "(tidak ada)",
+            name_b=name_b,
+            grade_b=grade_b or "(tidak diketahui)",
+            desc_b=desc_b or name_b,
+            materi_pokok_b=materi_pokok_b or "(tidak ada)",
+            neighborhood_block=neighborhood_block,
+        )
+        return result.rel_type, float(result.confidence), result.description or ""
+
+    result = program(
         name_a=name_a,
         desc_a=desc_a or name_a,
         formula_a=_format_list(formula_a),
@@ -512,7 +690,7 @@ def classify_similar_pair(
         kondisi_b=_format_list(kondisi_b),
         neighborhood_block=neighborhood_block,
     )
-    return result.rel_type, float(result.confidence)
+    return result.rel_type, float(result.confidence), ""
 
 
 # ── Batched classification ─────────────────────────────────────────
@@ -554,9 +732,103 @@ class ClassificationItem(BaseModel):
 
 
 class ClassificationBatch(BaseModel):
-    """Structured output for a batch pair classification."""
+    """Structured output for a batch pair classification (Soros 3-type)."""
 
     items: list[ClassificationItem]
+
+
+# ── Yhoga LINTAS_BUKU batch classifier ──────────────────────────────────────
+
+_LINTAS_BUKU_BATCH_CLASSIFICATION_PROMPT = """\
+Anda adalah ahli kurikulum sains yang menganalisis keterkaitan **lintas-buku** antara konsep
+pada Mata Pelajaran berbeda (Biologi/Fisika/Kimia Kelas XII pada Kurikulum Merdeka).
+
+Untuk SETIAP pasangan konsep di bawah ini, klasifikasikan hubungan **lintas-buku** sebagai
+SALAH SATU dari:
+
+1. **LINTAS_BUKU_SAMA_DENGAN**: A dan B merujuk pada entitas yang sama meskipun di buku
+   berbeda. Simetris. Contoh: "Energi" (Fisika) ↔ "Energi" (Kimia).
+2. **LINTAS_BUKU_APLIKASI_DARI**: A adalah penerapan konsep B di disiplin lain. Asimetris.
+   Contoh: "Difusi" (Biologi) ← "Gerak Brown" (Fisika).
+3. **LINTAS_BUKU_PRASYARAT_UNTUK**: A pada satu MP adalah prasyarat memahami B pada MP lain.
+   Asimetris.
+4. **LINTAS_BUKU_MEMPERDALAM**: A memperdalam pemahaman B di buku lain. Asimetris.
+   Contoh: "Termodinamika" (Fisika) → "Reaksi Endoterm" (Kimia).
+5. **LINTAS_BUKU_BERKAITAN_DENGAN**: berkaitan umum lintas-buku, fallback. Simetris.
+6. **none**: kemiripan hanya permukaan; tidak terkait secara curricular, atau Mata Pelajaran
+   A == Mata Pelajaran B.
+
+ATURAN: Klasifikasikan sebagai salah satu dari 5 tipe LINTAS_BUKU_* HANYA jika Mata
+Pelajaran A ≠ Mata Pelajaran B. Jika sama, kembalikan "none".
+
+================ PASANGAN KONSEP ================
+{pairs_block}
+=================================================
+
+Kembalikan JSON dengan field "items": array berisi satu entri per pasangan, dimana setiap entri
+punya field:
+- "pair_index": int (sesuai index pasangan di atas, dimulai dari 0)
+- "rel_type": salah satu dari "LINTAS_BUKU_SAMA_DENGAN", "LINTAS_BUKU_APLIKASI_DARI",
+  "LINTAS_BUKU_PRASYARAT_UNTUK", "LINTAS_BUKU_MEMPERDALAM", "LINTAS_BUKU_BERKAITAN_DENGAN", "none"
+- "confidence": skor 0.0–1.0
+- "description": satu kalimat singkat (≤25 kata) menjelaskan alasan keterkaitan lintas-buku.
+  Wajib bahasa Indonesia. Kosongkan ("") jika rel_type = "none".
+
+WAJIB kembalikan SATU entri untuk SETIAP pasangan (total {n_pairs} entri).
+"""
+
+
+class LintasBukuClassificationItem(BaseModel):
+    """One pair's LINTAS_BUKU classification inside a batch response."""
+
+    pair_index: int = Field(ge=0)
+    rel_type: Literal[
+        "LINTAS_BUKU_SAMA_DENGAN",
+        "LINTAS_BUKU_APLIKASI_DARI",
+        "LINTAS_BUKU_PRASYARAT_UNTUK",
+        "LINTAS_BUKU_MEMPERDALAM",
+        "LINTAS_BUKU_BERKAITAN_DENGAN",
+        "none",
+    ]
+    confidence: float = Field(ge=0.0, le=1.0, default=0.5)
+    description: str = Field(default="")
+
+
+class LintasBukuClassificationBatch(BaseModel):
+    """Structured output for a Yhoga LINTAS_BUKU batch classification."""
+
+    items: list[LintasBukuClassificationItem]
+
+
+# ── Vocab-dispatched classifier artifacts ────────────────────────────────────
+
+
+def _is_lintas_buku_vocab(adapter: SchemaAdapter | None) -> bool:
+    """True if the adapter's classifier_vocab is the LINTAS_BUKU 5-type set."""
+    if adapter is None:
+        return False
+    vocab = getattr(adapter.spec, "classifier_vocab", ())
+    return bool(vocab) and vocab[0].startswith("LINTAS_BUKU_")
+
+
+def _single_classifier_artifacts(adapter: SchemaAdapter | None):
+    """Return (prompt_str, pydantic_output_cls) for the single-pair classifier.
+
+    Soros default unless adapter carries the LINTAS_BUKU vocab.
+    """
+    if _is_lintas_buku_vocab(adapter):
+        return _LINTAS_BUKU_CLASSIFICATION_PROMPT, LintasBukuClassification
+    return _CLASSIFICATION_PROMPT, Classification
+
+
+def _batch_classifier_artifacts(adapter: SchemaAdapter | None):
+    """Return (prompt_str, batch_pydantic_cls) for the batched classifier."""
+    if _is_lintas_buku_vocab(adapter):
+        return (
+            _LINTAS_BUKU_BATCH_CLASSIFICATION_PROMPT,
+            LintasBukuClassificationBatch,
+        )
+    return _BATCH_CLASSIFICATION_PROMPT, ClassificationBatch
 
 
 def _format_pair_block(
@@ -565,7 +837,7 @@ def _format_pair_block(
     info_b: dict,
     shared_neighbors: list[str] | None = None,
 ) -> str:
-    """Render one pair block for the batch prompt.
+    """Render one pair block for the Soros 3-type batch prompt.
 
     info_a/info_b may carry optional `bab` and `out_edges` keys; when present
     a KONTEKS GRAF subsection is appended to the pair block.
@@ -592,9 +864,49 @@ def _format_pair_block(
         bab_b=info_b.get("bab"),
         out_edges_b=info_b.get("out_edges"),
         shared_neighbors=shared_neighbors,
+        vocab_hint="soros",
     )
     if neighborhood:
         # Indent the block so it visually nests under the pair entry.
+        indented = "\n".join("  " + line for line in neighborhood.splitlines())
+        block += "\n" + indented
+    return block
+
+
+def _format_lintas_buku_pair_block(
+    index: int,
+    info_a: dict,
+    info_b: dict,
+    shared_neighbors: list[str] | None = None,
+) -> str:
+    """Render one pair block for the Yhoga LINTAS_BUKU batch prompt.
+
+    Uses Mata Pelajaran (grade) + Materi Pokok instead of Soros's
+    formula/variables/kondisi. Neighborhood block uses LINTAS_BUKU advice.
+    """
+    block = (
+        f"[{index}]\n"
+        f"  Konsep A: \"{info_a['name']}\"\n"
+        f"  Mata Pelajaran A: \"{info_a.get('grade') or '(tidak diketahui)'}\"\n"
+        f"  Deskripsi A: \"{info_a['description'] or info_a['name']}\"\n"
+        f"  Materi Pokok A: {info_a.get('materi_pokok_ref') or '(tidak ada)'}\n"
+        f"  Konsep B: \"{info_b['name']}\"\n"
+        f"  Mata Pelajaran B: \"{info_b.get('grade') or '(tidak diketahui)'}\"\n"
+        f"  Deskripsi B: \"{info_b['description'] or info_b['name']}\"\n"
+        f"  Materi Pokok B: {info_b.get('materi_pokok_ref') or '(tidak ada)'}"
+    )
+
+    neighborhood = _build_neighborhood_block(
+        name_a=info_a["name"],
+        bab_a=info_a.get("bab"),
+        out_edges_a=info_a.get("out_edges"),
+        name_b=info_b["name"],
+        bab_b=info_b.get("bab"),
+        out_edges_b=info_b.get("out_edges"),
+        shared_neighbors=shared_neighbors,
+        vocab_hint="lintas_buku",
+    )
+    if neighborhood:
         indented = "\n".join("  " + line for line in neighborhood.splitlines())
         block += "\n" + indented
     return block
@@ -605,13 +917,26 @@ def _classify_batch_raw(
     pair_infos: list[tuple[dict, dict]],
     llm_model: str,
     pair_neighborhoods: list[dict] | None = None,
-) -> list[ClassificationItem]:
-    """Classify a batch of pairs in one LLM call. Retries on transient errors."""
+    adapter: SchemaAdapter | None = None,
+):
+    """Classify a batch of pairs in one LLM call. Retries on transient errors.
+
+    Returns ``result.items`` from whichever batch output class the adapter's
+    vocab selects (``ClassificationBatch`` for Soros, ``LintasBukuClassificationBatch``
+    for Yhoga). Each item carries ``pair_index``, ``rel_type``, ``confidence``,
+    and (LINTAS_BUKU only) ``description``.
+    """
     llm = get_llm(llm_model)
+    prompt, batch_cls = _batch_classifier_artifacts(adapter)
     program = LLMTextCompletionProgram.from_defaults(
         llm=llm,
-        output_cls=ClassificationBatch,
-        prompt_template_str=_BATCH_CLASSIFICATION_PROMPT,
+        output_cls=batch_cls,
+        prompt_template_str=prompt,
+    )
+    block_formatter = (
+        _format_lintas_buku_pair_block
+        if _is_lintas_buku_vocab(adapter)
+        else _format_pair_block
     )
     blocks = []
     for i, (a, b) in enumerate(pair_infos):
@@ -619,9 +944,9 @@ def _classify_batch_raw(
             (pair_neighborhoods[i] or {}).get("shared_neighbors")
             if pair_neighborhoods else None
         )
-        blocks.append(_format_pair_block(i, a, b, shared_neighbors=shared))
+        blocks.append(block_formatter(i, a, b, shared_neighbors=shared))
     pairs_block = "\n\n".join(blocks)
-    result: ClassificationBatch = program(
+    result = program(
         pairs_block=pairs_block,
         n_pairs=len(pair_infos),
     )
@@ -632,45 +957,61 @@ def classify_pairs_batch(
     pair_infos: list[tuple[dict, dict]],
     llm_model: str | None = None,
     pair_neighborhoods: list[dict] | None = None,
-) -> list[tuple[str, float]]:
-    """Classify a batch of pairs and return aligned [(rel_type, confidence), ...].
+    adapter: SchemaAdapter | None = None,
+) -> list[tuple[str, float, str]]:
+    """Classify a batch of pairs and return aligned [(rel_type, confidence, description), ...].
 
     `pair_infos[i]` is `(info_a, info_b)` where each info has keys:
-    name, description, formula, variables, kondisi, and optionally
-    bab + out_edges (for the KONTEKS GRAF section).
+    name, description, plus schema-specific fields (Soros: formula/variables/kondisi;
+    Yhoga: grade/materi_pokok_ref), and optionally bab + out_edges (KONTEKS GRAF).
 
     `pair_neighborhoods[i]` is an optional dict with shared_neighbors per pair.
 
     The LLM returns items keyed by pair_index; we realign to the input order.
-    Missing indices fall back to ("none", 0.0).
+    Missing indices fall back to ("none", 0.0, ""). The third element is the
+    LLM's one-sentence rationale (LINTAS_BUKU only; "" for Soros).
     """
     if not pair_infos:
         return []
     model = llm_model or DEFAULT_CHAT_MODEL
-    items = _classify_batch_raw(pair_infos, model, pair_neighborhoods)
+    items = _classify_batch_raw(pair_infos, model, pair_neighborhoods, adapter=adapter)
 
-    by_index: dict[int, tuple[str, float]] = {
-        it.pair_index: (it.rel_type, float(it.confidence)) for it in items
+    by_index: dict[int, tuple[str, float, str]] = {
+        it.pair_index: (
+            it.rel_type,
+            float(it.confidence),
+            getattr(it, "description", "") or "",
+        )
+        for it in items
     }
-    out: list[tuple[str, float]] = []
+    out: list[tuple[str, float, str]] = []
     for i in range(len(pair_infos)):
-        out.append(by_index.get(i, ("none", 0.0)))
+        out.append(by_index.get(i, ("none", 0.0, "")))
     return out
 
 
 def _classification_cache_text(
-    source: str, target: str, fingerprint: str = ""
+    source: str,
+    target: str,
+    fingerprint: str = "",
+    schema_name: str = "",
 ) -> str:
     """Canonical cache key input — order-invariant so (A,B) and (B,A) share a key.
 
     When `fingerprint` is set (a hash of the neighborhood payload fed to the
     classifier), it is folded into the key so that re-runs after the graph
     gains new typed edges produce a cache miss and re-classify.
+
+    `schema_name` distinguishes Soros vs Yhoga classifications so the same
+    pair name running under different vocabularies does not collide.
     """
     a, b = sorted([source, target])
+    parts = [a, b]
+    if schema_name:
+        parts.append(f"schema:{schema_name}")
     if fingerprint:
-        return f"{a}||{b}||ctx:{fingerprint}"
-    return f"{a}||{b}"
+        parts.append(f"ctx:{fingerprint}")
+    return "||".join(parts)
 
 
 def classify_similar_pairs(
@@ -684,13 +1025,17 @@ def classify_similar_pairs(
 ) -> list[dict]:
     """Classify SIMILAR_TO pairs into typed relationships using LLM.
 
-    For each pair, looks up descriptions (and formula/variables/kondisi) from
-    Neo4j and calls the LLM to classify the relationship as isPrerequisiteOf,
-    supports, analogousTo, or none. Results include a confidence score in [0, 1].
+    For each pair, looks up descriptions and schema-specific fields (Soros:
+    formula/variables/kondisi; Yhoga: grade/materi_pokok_ref) from Neo4j and
+    calls the LLM to classify the relationship into the adapter's classifier
+    vocabulary (Soros 3-type: isPrerequisiteOf/supports/analogousTo/none;
+    Yhoga 5-type LINTAS_BUKU_*/none). Results include a confidence score in
+    [0, 1] and, for Yhoga, a one-sentence Indonesian rationale (description).
 
-    Classifications are cached on disk by (pair, llm_model, prompt_version) so
-    re-runs on the same pairs do not re-bill the LLM. Failures are NOT cached
-    and surfaced in the final progress message so the user can rerun to retry.
+    Classifications are cached on disk by (pair, schema, llm_model,
+    prompt_version) so re-runs on the same pairs do not re-bill the LLM.
+    Failures are NOT cached and surfaced in the final progress message so the
+    user can rerun to retry.
 
     Args:
         driver: Neo4j driver (for fetching descriptions)
@@ -702,8 +1047,11 @@ def classify_similar_pairs(
             (per-pair mode, preserves old behavior). Values >1 batch pairs into
             one LLM request — much fewer round-trips but slightly more fragile
             per call (if the batch errors, the whole batch retries as a unit).
+        adapter: SchemaAdapter selecting node labels, properties to read, and
+            classifier vocabulary. Defaults to SorosAdapter().
 
-    Returns list of dicts with source, target, similarity, rel_type, confidence.
+    Returns list of dicts with source, target, similarity, rel_type, confidence,
+    description (description is "" for Soros, one-sentence Indonesian text for Yhoga).
     """
     if adapter is None:
         adapter = SorosAdapter()
@@ -738,12 +1086,17 @@ def classify_similar_pairs(
     cache_hits = 0
     uncached_indices: list[int] = []
 
+    schema_name = getattr(adapter.spec, "name", "")
+
     for i, pair in enumerate(pairs):
         source, target = pair["source"], pair["target"]
         cached = None
         if use_cache:
             cache_text = _classification_cache_text(
-                source, target, fingerprint=pair_ctx[i]["fingerprint"]
+                source,
+                target,
+                fingerprint=pair_ctx[i]["fingerprint"],
+                schema_name=schema_name,
             )
             cached = cache_manager.get_classification(
                 cache_text, model, CLASSIFICATION_PROMPT_VERSION
@@ -753,6 +1106,7 @@ def classify_similar_pairs(
                 **pair,
                 "rel_type": cached.get("rel_type", "none"),
                 "confidence": float(cached.get("confidence", 0.0)),
+                "description": cached.get("description", ""),
             }
             cache_hits += 1
         else:
@@ -772,6 +1126,8 @@ def classify_similar_pairs(
             "formula": info.get("formula", []),
             "variables": info.get("variables", []),
             "kondisi": info.get("kondisi", []),
+            "grade": info.get("grade", ""),
+            "materi_pokok_ref": info.get("materi_pokok_ref", ""),
             "bab": ctx.get("bab"),
             "out_edges": ctx.get("out_edges", []),
         }
@@ -805,7 +1161,7 @@ def classify_similar_pairs(
         try:
             if batch_size == 1:
                 info_a, info_b = pair_infos[0]
-                rel_type, confidence = classify_similar_pair(
+                rel_type, confidence, description = classify_similar_pair(
                     name_a=info_a["name"],
                     desc_a=info_a["description"],
                     name_b=info_b["name"],
@@ -822,13 +1178,19 @@ def classify_similar_pairs(
                     bab_b=info_b.get("bab"),
                     out_edges_b=info_b.get("out_edges"),
                     shared_neighbors=batch_neighborhoods[0]["shared_neighbors"],
+                    grade_a=info_a.get("grade"),
+                    grade_b=info_b.get("grade"),
+                    materi_pokok_a=info_a.get("materi_pokok_ref"),
+                    materi_pokok_b=info_b.get("materi_pokok_ref"),
+                    adapter=adapter,
                 )
-                outcomes = [(rel_type, confidence)]
+                outcomes = [(rel_type, confidence, description)]
             else:
                 outcomes = classify_pairs_batch(
                     pair_infos,
                     llm_model=model,
                     pair_neighborhoods=batch_neighborhoods,
+                    adapter=adapter,
                 )
         except Exception as e:
             logger.warning(
@@ -841,28 +1203,41 @@ def classify_similar_pairs(
             # Don't poison the cache with failures — leave them uncached and
             # surfaced as failed so a rerun retries them.
             for j, pair in zip(batch_idx, batch_pairs):
-                results[j] = {**pair, "rel_type": "none", "confidence": 0.0}
+                results[j] = {
+                    **pair,
+                    "rel_type": "none",
+                    "confidence": 0.0,
+                    "description": "",
+                }
             failed_count += len(batch_idx)
             processed += len(batch_idx)
             continue
 
-        for j, pair, (rel_type, confidence) in zip(batch_idx, batch_pairs, outcomes):
+        for j, pair, (rel_type, confidence, description) in zip(
+            batch_idx, batch_pairs, outcomes
+        ):
             results[j] = {
                 **pair,
                 "rel_type": rel_type,
                 "confidence": confidence,
+                "description": description,
             }
             if use_cache:
                 cache_text = _classification_cache_text(
                     pair["source"],
                     pair["target"],
                     fingerprint=pair_ctx[j]["fingerprint"],
+                    schema_name=schema_name,
                 )
                 cache_manager.put_classification(
                     cache_text,
                     model,
                     CLASSIFICATION_PROMPT_VERSION,
-                    {"rel_type": rel_type, "confidence": confidence},
+                    {
+                        "rel_type": rel_type,
+                        "confidence": confidence,
+                        "description": description,
+                    },
                 )
 
         processed += len(batch_idx)
@@ -872,7 +1247,12 @@ def classify_similar_pairs(
     for i, r in enumerate(results):
         if r is None:
             final_results.append(
-                {**pairs[i], "rel_type": "none", "confidence": 0.0}
+                {
+                    **pairs[i],
+                    "rel_type": "none",
+                    "confidence": 0.0,
+                    "description": "",
+                }
             )
         else:
             final_results.append(r)
@@ -894,3 +1274,128 @@ def classify_similar_pairs(
     )
 
     return final_results
+
+
+# ── LINTAS_BUKU JSON staging dump ────────────────────────────────────────────
+
+
+def _yhoga_instance_counts(driver) -> dict:
+    """Snapshot node-label counts + total relationships for the dump header."""
+    counts: dict = {}
+    with driver.session() as session:
+        for r in session.run(
+            "MATCH (n) RETURN labels(n)[0] AS label, count(n) AS n"
+        ):
+            label = r["label"]
+            if label:
+                counts[label] = r["n"]
+        total = session.run(
+            "MATCH ()-[r]->() RETURN count(r) AS n"
+        ).single()
+        counts["total_relationships"] = total["n"] if total else 0
+    return counts
+
+
+def dump_lintas_buku_results(
+    results: list[dict],
+    output_path,
+    driver=None,
+    *,
+    version: str = "ann-classifier-v1",
+    source_state: str = "extraction-v2-reviewed",
+    method: str = "ann + classifier",
+    params: dict | None = None,
+    captured_from: str = "Yhoga Neo4j Aura Free instance",
+) -> int:
+    """Write a friend-llm-shaped JSON dump of classified LINTAS_BUKU_* edges.
+
+    Filters out ``rel_type == "none"`` results (they're not edges). Mirrors
+    the schema in ``experiments/knowledge_graph_states/completion-experiments/
+    friend-llm/lintas_buku_edges.json`` so the two completion experiments are
+    text-diffable.
+
+    Args:
+        results: Output of ``classify_similar_pairs`` (each dict carries
+            source, target, rel_type, confidence, description, plus optional
+            source_grade/target_grade from ``find_similar_pairs_ann``).
+        output_path: Filesystem path (str or Path) to write JSON to.
+        driver: Optional Neo4j driver for snapshotting instance counts at
+            capture time. When None, the field is omitted.
+        version: Methodology slug (default 'ann-classifier-v1').
+        source_state: Ingestion state this completion ran against.
+        method: Free-text method label.
+        params: Hyperparameter dict (embed_model, chat_model, threshold,
+            top_k, scope). Pass-through for audit.
+        captured_from: Free-text source label.
+
+    Returns the number of LINTAS_BUKU_* edges written.
+    """
+    from datetime import date
+    from pathlib import Path
+
+    out_path = Path(output_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    real_edges = [
+        r for r in results
+        if r.get("rel_type") and r["rel_type"] != "none"
+    ]
+
+    breakdown: dict[str, int] = {}
+    edges_json: list[dict] = []
+    for r in real_edges:
+        rel_type = r["rel_type"]
+        breakdown[rel_type] = breakdown.get(rel_type, 0) + 1
+        suffix = (
+            rel_type.removeprefix("LINTAS_BUKU_")
+            if rel_type.startswith("LINTAS_BUKU_")
+            else rel_type
+        )
+        edges_json.append(
+            {
+                "rel_type": rel_type,
+                "source_label": "Concept",
+                "source_name": r["source"],
+                "source_grade": r.get("source_grade", ""),
+                "target_label": "Concept",
+                "target_name": r["target"],
+                "target_grade": r.get("target_grade", ""),
+                "properties": {
+                    "description": r.get("description", ""),
+                    "relation_type": suffix,
+                    "confidence": float(r.get("confidence", 0.0)),
+                    "method": version,
+                },
+            }
+        )
+
+    doc: dict = {
+        "version": version,
+        "source_state": source_state,
+        "date_captured": date.today().isoformat(),
+        "captured_from": captured_from,
+        "method": method,
+        "params": params or {},
+        "edge_count": len(edges_json),
+        "edge_type_breakdown": dict(
+            sorted(breakdown.items(), key=lambda kv: -kv[1])
+        ),
+        "edges": edges_json,
+    }
+
+    if driver is not None:
+        try:
+            doc["instance_counts_at_capture"] = _yhoga_instance_counts(driver)
+        except Exception as e:
+            logger.warning("Could not snapshot instance counts: %s", e)
+
+    out_path.write_text(
+        json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    logger.info(
+        "Wrote %d LINTAS_BUKU_* edges across %d types to %s",
+        len(edges_json),
+        len(breakdown),
+        out_path,
+    )
+    return len(edges_json)

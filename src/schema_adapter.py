@@ -173,6 +173,22 @@ class SchemaAdapter(ABC):
         confidence: float | None,
     ) -> None: ...
 
+    # --- Pair filters ------------------------------------------------------
+
+    def get_pairs_with_existing_typed_edges(
+        self, driver, pairs: list[dict]
+    ) -> set[tuple[str, str]]:
+        """Return the subset of candidate pairs that already have a non-SIMILAR_TO
+        edge between source and target.
+
+        Pair key in the returned set is the sorted ``(name_a, name_b)`` tuple,
+        matching the dedup key used by ``find_similar_pairs_ann``. Default
+        implementation returns ``set()``; adapters that key Concepts by more
+        than name (e.g. Yhoga: name + grade) override this with a schema-aware
+        Cypher batch.
+        """
+        return set()
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Soros adapter — delegates to existing src.graph helpers
@@ -603,21 +619,122 @@ class YhogaAdapter(SchemaAdapter):
                 score=score,
             )
 
-    def save_typed_relationship(self, driver, source, target, rel_type, confidence):
-        valid = {"isPrerequisiteOf", "supports", "analogousTo"}
-        if rel_type not in valid:
-            raise ValueError(f"rel_type must be one of {valid}")
+    # Closed cross-book vocabulary per docs/yhoga-ontology.ttl:151-185.
+    LINTAS_BUKU_TYPES = frozenset(
+        {
+            "LINTAS_BUKU_SAMA_DENGAN",
+            "LINTAS_BUKU_APLIKASI_DARI",
+            "LINTAS_BUKU_PRASYARAT_UNTUK",
+            "LINTAS_BUKU_MEMPERDALAM",
+            "LINTAS_BUKU_BERKAITAN_DENGAN",
+        }
+    )
+
+    def save_typed_relationship(
+        self,
+        driver,
+        source,
+        target,
+        rel_type,
+        confidence,
+        description: str = "",
+        method: str = "ann-classifier-v1",
+        source_grade: str | None = None,
+        target_grade: str | None = None,
+    ):
+        """MERGE a LINTAS_BUKU_<type> edge between two Concepts on Yhoga.
+
+        Matches Concepts by ``(name, grade)`` when grades are provided; this is
+        important because Yhoga keys Concepts as ``(name, grade)`` and a name
+        can in principle appear under multiple grades. Falls back to name-only
+        match when grades are omitted.
+
+        Properties set on the edge:
+            description: 1-sentence LLM rationale (LINTAS_BUKU only)
+            confidence: float in [0, 1]
+            method: identifier of the completion run (default 'ann-classifier-v1')
+        """
+        if rel_type not in self.LINTAS_BUKU_TYPES:
+            raise ValueError(
+                f"rel_type must be one of {sorted(self.LINTAS_BUKU_TYPES)}; "
+                f"got {rel_type!r}"
+            )
+        if source_grade and target_grade:
+            match_clause = (
+                "MATCH (a:Concept {name: $src, grade: $src_grade}), "
+                "      (b:Concept {name: $tgt, grade: $tgt_grade}) "
+            )
+            params = {
+                "src": source,
+                "tgt": target,
+                "src_grade": source_grade,
+                "tgt_grade": target_grade,
+                "confidence": confidence,
+                "description": description,
+                "method": method,
+            }
+        else:
+            match_clause = (
+                "MATCH (a:Concept {name: $src}), (b:Concept {name: $tgt}) "
+            )
+            params = {
+                "src": source,
+                "tgt": target,
+                "confidence": confidence,
+                "description": description,
+                "method": method,
+            }
         with driver.session() as session:
             session.run(
                 f"""
-                MATCH (a:Concept {{name: $src}}), (b:Concept {{name: $tgt}})
+                {match_clause}
                 MERGE (a)-[r:{rel_type}]->(b)
-                SET r.confidence = $confidence
+                SET r.confidence = $confidence,
+                    r.description = $description,
+                    r.method = $method
                 """,
-                src=source,
-                tgt=target,
-                confidence=confidence,
+                **params,
             )
+
+    def get_pairs_with_existing_typed_edges(self, driver, pairs):
+        """Return sorted-tuple keys of pairs that already have any non-SIMILAR_TO
+        edge between source and target.
+
+        Matches Concepts by ``(name, grade)`` when grade info is present on the
+        pair dict (it should be — ``find_similar_pairs_ann`` attaches
+        ``source_grade``/``target_grade`` for Yhoga). Falls back to name-only
+        match when grade is missing.
+        """
+        if not pairs:
+            return set()
+        payload = [
+            {
+                "src": p["source"],
+                "src_grade": p.get("source_grade") or "",
+                "tgt": p["target"],
+                "tgt_grade": p.get("target_grade") or "",
+            }
+            for p in pairs
+        ]
+        with driver.session() as session:
+            result = session.run(
+                """
+                UNWIND $rows AS row
+                MATCH (a:Concept {name: row.src})
+                MATCH (b:Concept {name: row.tgt})
+                WHERE (row.src_grade = '' OR a.grade = row.src_grade)
+                  AND (row.tgt_grade = '' OR b.grade = row.tgt_grade)
+                OPTIONAL MATCH (a)-[r]-(b)
+                WHERE type(r) <> 'SIMILAR_TO'
+                WITH row, count(r) AS existing
+                WHERE existing > 0
+                RETURN row.src AS src, row.tgt AS tgt
+                """,
+                rows=payload,
+            )
+            return {
+                tuple(sorted([r["src"], r["tgt"]])) for r in result
+            }
 
     def get_documents(self, driver):
         # Yhoga's "document" analog is :Grade. Count Concepts reachable from each.
@@ -645,7 +762,9 @@ class YhogaAdapter(SchemaAdapter):
             result = session.run(
                 """
                 MATCH (a:Concept)-[r:SIMILAR_TO]->(b:Concept)
-                RETURN a.name AS source, b.name AS target, r.score AS score
+                RETURN a.name AS source, b.name AS target, r.score AS score,
+                       coalesce(a.grade, '') AS source_grade,
+                       coalesce(b.grade, '') AS target_grade
                 ORDER BY r.score DESC
                 """
             )
