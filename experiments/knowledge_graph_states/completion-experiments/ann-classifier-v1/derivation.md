@@ -114,7 +114,7 @@ will drop threshold + raise top_k to widen recall before classifier rejection.
 
 ### Iteration 2 — 2026-05-14 — `lintas_buku_edges.t075_k15.json`
 
-Status: **SIMILAR_TO candidates staged in Yhoga, classify pending.**
+Status: **staged (77 edges), not yet replayed to Yhoga.**
 
 **Params**:
 
@@ -160,7 +160,36 @@ iteration 1 domain-coverage weakness directly.
 86 new pairs require classifier. At batch_size=10, ≈9 LLM batches. Expected
 yield 50–80 LINTAS_BUKU_* edges (60–80% acceptance), rest classified as `"none"`.
 
-**Results**: TBD — fill after Classify & Stage to JSON completes.
+**Results** (verified from `lintas_buku_edges.t075_k15.json`):
+
+| Metric | Value |
+|---|---:|
+| Pairs classified | 101 |
+| `"none"` (classifier rejected) | 24 (23.8%) |
+| **Total LINTAS_BUKU_\* edges staged** | **77 (76.2% acceptance)** |
+| `LINTAS_BUKU_PRASYARAT_UNTUK` | 33 (42.9%) |
+| `LINTAS_BUKU_MEMPERDALAM` | 24 (31.2%) |
+| `LINTAS_BUKU_APLIKASI_DARI` | 10 (13.0%) |
+| `LINTAS_BUKU_BERKAITAN_DENGAN` | 9 (11.7%) |
+| `LINTAS_BUKU_SAMA_DENGAN` | 1 (1.3%) |
+| Unique Concepts touched | **69 / 342 = 20.2%** |
+| Open-vocab leaks | 0 (Pydantic-enforced) |
+| Confidence range | 0.20 – 1.00 (avg 0.85) |
+
+**Confidence distribution** — surfaces which classifications the model was least sure about:
+
+| Bucket | n | % |
+|---|---:|---:|
+| ≥ 0.95 | 19 | 24.7% |
+| 0.85 – 0.95 | 37 | 48.1% |
+| 0.70 – 0.85 | 14 | 18.2% |
+| 0.50 – 0.70 | 2 | 2.6% |
+| **< 0.50** | **5** | **6.5%** |
+
+72.8% of edges sit at ≥0.85. The 5 below-0.50 edges should be flagged as
+exploratory and spot-checked before any thesis citation that treats them as
+on-par with the high-confidence majority. Filtering at confidence ≥ 0.85 would
+yield 56 edges — a tighter set if precision-over-recall is the goal.
 
 ## Comparison to baselines (as of iteration 1)
 
@@ -269,7 +298,7 @@ python experiments/replay_completion.py experiments/knowledge_graph_states/compl
 
 ## Planned subsequent iterations
 
-- **Iteration 2 (in flight)**: t=0.75 / k=15. See iteration log above.
+- **Iteration 2 (complete, staged)**: t=0.75 / k=15 → 77 edges. See iteration log above.
 - **Iteration 2.5 (optional intermediate)**: t=0.80 / k=10. Only needed if the
   thesis wants a precision-recall curve. Free in LLM cost because iteration 1
   and iteration 2 classifications are cached.
