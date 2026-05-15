@@ -1,0 +1,30 @@
+# Pointer to the binary Neo4j .backup capturing ann-classifier-v1 post-replay state.
+# This file is in git; the .backup it references is in Drive.
+
+version: ann-classifier-v1
+drive_folder_url: TBD  # subfolder under the completion-experiments Drive folder
+drive_folder_id: TBD
+
+direct_file_id: TBD
+direct_file_name: TBD  # e.g. <uuid>-2026-MM-DDTHH-MM-SS-<uuid>.backup
+direct_file_url: TBD
+size_bytes: TBD
+taken_at: TBD                                                                     # from filename, Aura snapshot time
+uploaded_at: TBD                                                                  # Drive modifiedTime
+sha256: TBD
+
+instance: yhoga (Neo4j Aura Free)
+file_format: Neo4j Aura .backup (binary)
+
+notes: |
+  Snapshot taken AFTER experiments/replay_completion.py merged this experiment's
+  lintas_buku_edges.json into Yhoga Aura. Source state for the replay was
+  extraction-v2-reviewed.
+
+  Verified state at capture: 3 Grade / 17 Chapter / 81 Subtopic / 342 Concept /
+  418 ConceptTarget; total relationships = 1064 + (count of LINTAS_BUKU_* edges
+  added by this run, fill after run).
+
+  Use this .backup as the rollback point for this completion experiment.
+  Restoring it returns the live DB to byte-identical state with this folder's
+  lintas_buku_edges.json applied on top of extraction-v2-reviewed.
