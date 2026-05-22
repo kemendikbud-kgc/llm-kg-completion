@@ -21,6 +21,9 @@ nul
 .thesis-*.json
 .schema-batchupdate.json
 
+# Transient / regeneratable scratch from one-shot audits and gws docs dumps
+experiments/.cache/
+
 # Playwright MCP session artifacts
 .playwright-mcp/
 
