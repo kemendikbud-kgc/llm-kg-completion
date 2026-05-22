@@ -1,0 +1,228 @@
+{
+  "captured_from": "Yhoga Neo4j Aura Free instance",
+  "date_captured": "2026-05-14",
+  "edge_count": 13,
+  "edge_type_breakdown": {
+    "LINTAS_BUKU_APLIKASI_DARI": 4,
+    "LINTAS_BUKU_MEMPERDALAM": 5,
+    "LINTAS_BUKU_PRASYARAT_UNTUK": 3,
+    "LINTAS_BUKU_SAMA_DENGAN": 1
+  },
+  "edges": [
+    {
+      "properties": {
+        "confidence": 1.0,
+        "description": "Kedua konsep merujuk pada molekul DNA yang sama, meskipun dijelaskan dari perspektif kimia dan biologi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "SAMA_DENGAN"
+      },
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (Deoxyribonucleic Acid)"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Pemahaman DNA dari sudut pandang kimia memperdalam pengertian tentang komposisi dan sifat materi genetik secara biologis.",
+        "method": "ann-classifier-v1",
+        "relation_type": "MEMPERDALAM"
+      },
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Materi Genetik"
+    },
+    {
+      "properties": {
+        "confidence": 1.0,
+        "description": "Pemahaman tentang struktur kimia DNA adalah prasyarat untuk memahami gen sebagai segmen fungsional dari DNA.",
+        "method": "ann-classifier-v1",
+        "relation_type": "PRASYARAT_UNTUK"
+      },
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gen"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Konsep DNA dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai unit penyusun dasarnya.",
+        "method": "ann-classifier-v1",
+        "relation_type": "APLIKASI_DARI"
+      },
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_grade": "Biologi Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Deoxyribonucleic Acid)",
+      "target_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Pemahaman DNA dari sudut pandang kimia memperdalam pengertian tentang komposisi molekuler kromosom dalam biologi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "MEMPERDALAM"
+      },
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kromosom"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Konsep gen dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai unit penyusun urutan informasi genetik.",
+        "method": "ann-classifier-v1",
+        "relation_type": "APLIKASI_DARI"
+      },
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_grade": "Biologi Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Gen",
+      "target_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Konsep kode genetik dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai dasar pengkodean informasi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "APLIKASI_DARI"
+      },
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_grade": "Biologi Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Kode Genetik",
+      "target_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Pemahaman DNA dari sudut pandang kimia memperdalam pengertian tentang mekanisme replikasi DNA secara biologis.",
+        "method": "ann-classifier-v1",
+        "relation_type": "MEMPERDALAM"
+      },
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Replikasi DNA"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Pemahaman senyawa organik dari Kimia adalah dasar untuk memahami pembentukan senyawa tersebut dalam Teori Evolusi Kimia di Biologi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "PRASYARAT_UNTUK"
+      },
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Senyawa Organik",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Konsep asam amino dari Kimia merupakan dasar untuk memahami perannya sebagai produk awal dalam Teori Evolusi Kimia di Biologi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "PRASYARAT_UNTUK"
+      },
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia"
+    },
+    {
+      "properties": {
+        "confidence": 0.85,
+        "description": "Fotosintesis (Biologi) menjelaskan proses biologis yang menghasilkan glukosa, yang kemudian disimpan sebagai pati (Kimia), sehingga memperdalam pemahaman tentang asal pati.",
+        "method": "ann-classifier-v1",
+        "relation_type": "MEMPERDALAM"
+      },
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_grade": "Biologi Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "target_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pati"
+    },
+    {
+      "properties": {
+        "confidence": 0.95,
+        "description": "Fosforilasi Oksidatif (Biologi) adalah penerapan prinsip-prinsip reaksi oksidasi dan reduksi organik (Kimia) dalam konteks biologis untuk menghasilkan energi.",
+        "method": "ann-classifier-v1",
+        "relation_type": "APLIKASI_DARI"
+      },
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_grade": "Biologi Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "target_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi dan Reduksi Organik"
+    },
+    {
+      "properties": {
+        "confidence": 0.9,
+        "description": "Konsep protein (Kimia) memperdalam pemahaman tentang translasi (Biologi) dengan menjelaskan struktur dan fungsi produk akhir yang dihasilkan oleh proses tersebut.",
+        "method": "ann-classifier-v1",
+        "relation_type": "MEMPERDALAM"
+      },
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_grade": "Kimia Kelas XII",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "target_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi"
+    }
+  ],
+  "instance_counts_at_capture": {
+    "Chapter": 17,
+    "Concept": 342,
+    "ConceptTarget": 418,
+    "Grade": 3,
+    "Subtopic": 81,
+    "total_relationships": 1079
+  },
+  "method": "ann + classifier",
+  "params": {
+    "batch_size": 10,
+    "chat_model": "gemini/gemini-2.5-flash",
+    "embed_model": "gemini/gemini-embedding-001",
+    "scope": "all",
+    "selected_doc": null,
+    "threshold": 0.85,
+    "top_k": 5
+  },
+  "source_state": "extraction-v2-reviewed",
+  "version": "ann-classifier-v1"
+}

@@ -1,0 +1,1870 @@
+{
+  "chapters": [
+    {
+      "chapter": "LARUTAN DAN KOLOID",
+      "chapter_relations": [],
+      "chapter_summary": "Bab ini membahas konsep larutan dan koloid, yang merupakan campuran homogen dan heterogen. Materi meliputi sifat dan konsep asam basa berdasarkan teori Arrhenius, Brønsted-Lowry, dan Lewis, kekuatan serta pH asam basa, kesetimbangan dalam larutan seperti hidrolisis garam dan larutan penyangga, stoikiometri larutan, titrasi asam basa, serta kelarutan dan hasil kali kelarutan. Selain itu, dibahas pula sifat koligatif larutan (penurunan tekanan uap, penurunan titik beku, kenaikan titik didih, dan tekanan osmosis) dan karakteristik unik koloid, termasuk jenis, sifat (gerak Brown, efek Tyndall, adsorpsi, koagulasi, dialisis, elektroforesis), serta cara pembuatannya.",
+      "next": "ELEKTROKIMIA",
+      "previous": null,
+      "subchapters": [
+        "Sifat dan Konsep Asam Basa",
+        "Kekuatan dan pH Asam Basa",
+        "Kesetimbangan dalam Larutan",
+        "Sifat Koligatif Larutan",
+        "Koloid"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Konsep Arrhenius mendefinisikan asam sebagai zat yang menghasilkan ion H+ (atau H3O+) dalam air, dan basa sebagai zat yang menghasilkan ion OH- dalam air.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Asam Basa Arrhenius",
+              "name": "Asam Basa Arrhenius",
+              "relations": [
+                {
+                  "description": "Konsep asam basa Arrhenius tidak mencakup senyawa organik kompleks seperti asam amino yang memiliki gugus amina dan asam.",
+                  "target": "Asam amino",
+                  "type": "MEMPERDALAM"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Konsep Brønsted-Lowry mendefinisikan asam sebagai donor proton (H+) dan basa sebagai akseptor proton (H+), yang lebih luas dari konsep Arrhenius karena tidak terbatas pada pelarut air.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Asam Basa Brønsted-Lowry",
+              "name": "Asam Basa Brønsted-Lowry",
+              "relations": [
+                {
+                  "description": "Konsep donor/akseptor proton Brønsted-Lowry relevan untuk memahami interaksi dalam asam amino.",
+                  "target": "Asam amino",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Konsep Lewis mendefinisikan asam sebagai akseptor pasangan elektron bebas dan basa sebagai donor pasangan elektron bebas, yang mencakup reaksi tanpa transfer proton.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Asam-Basa Lewis",
+              "name": "Asam-Basa Lewis",
+              "relations": [
+                {
+                  "description": "Asam Lewis seringkali berperan sebagai agen pengoksidasi karena kemampuannya menerima elektron.",
+                  "target": "agen pengoksidasi",
+                  "type": "BERKAITAN_DENGAN"
+                },
+                {
+                  "description": "Basa Lewis seringkali berperan sebagai agen pereduksi karena kemampuannya mendonorkan elektron.",
+                  "target": "agen pereduksi",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "A. Sifat dan Konsep Asam Basa"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Kekuatan asam dan basa ditentukan oleh kemudahan ionisasi dalam larutan, yang dipengaruhi oleh faktor seperti kekuatan ikatan dan polaritas ikatan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Kekuatan asam dan basa",
+              "name": "Kekuatan asam dan basa",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "pH sangat krusial dalam metabolisme seluler dan aktivitas enzim biologis.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Enzim dan Metabolisme"
+                }
+              ],
+              "description": "pH mengukur tingkat keasaman atau kebasaan suatu larutan, dihitung dari negatif logaritma konsentrasi ion hidrogen (H+).",
+              "glossary_validated": true,
+              "materi_pokok_ref": "pH asam dan basa",
+              "name": "pH asam dan basa",
+              "relations": [
+                {
+                  "description": "pH yang tepat sangat penting untuk aktivitas optimal enzim dalam proses metabolisme.",
+                  "target": "Enzim dan Metabolisme",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Asam kuat dan basa kuat terionisasi sempurna, sehingga perhitungan pH dan pOH-nya relatif sederhana berdasarkan konsentrasi awal.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "pH Asam Kuat dan Basa Kuat",
+              "name": "pH Asam Kuat dan Basa Kuat",
+              "relations": []
+            }
+          ],
+          "name": "B. Kekuatan dan pH Asam Basa"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Asam lemah dan basa lemah hanya terionisasi sebagian dalam larutan, membentuk kesetimbangan yang ditandai dengan nilai Ka atau Kb.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Asam lemah dan basa lemah",
+              "name": "Asam lemah dan basa lemah",
+              "relations": [
+                {
+                  "description": "Asam amino dapat berperilaku sebagai asam lemah atau basa lemah tergantung kondisi pH.",
+                  "target": "asam amino",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Hidrolisis garam adalah reaksi ion garam dengan air yang menghasilkan asam atau basa, tergantung pada kekuatan asam dan basa pembentuknya.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Hidrolisis garam",
+              "name": "Hidrolisis garam",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Sistem penyangga biologis sangat penting untuk menjaga pH agar enzim dapat berfungsi optimal dalam metabolisme.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Enzim dan Metabolisme"
+                }
+              ],
+              "description": "Larutan penyangga dapat mempertahankan pH meskipun ditambahkan sedikit asam atau basa, terdiri dari asam lemah dengan basa konjugasinya atau basa lemah dengan asam konjugasinya.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Larutan Penyangga",
+              "name": "Larutan Penyangga",
+              "relations": [
+                {
+                  "description": "Kestabilan pH yang dijaga oleh larutan penyangga krusial untuk fungsi enzim dalam proses biologis.",
+                  "target": "Enzim dan Metabolisme",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Stoikiometri larutan melibatkan perhitungan berdasarkan konsep mol dalam reaksi yang terjadi di dalam larutan, seperti reaksi pengendapan, pembentukan gas, dan netralisasi.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Stoikiometri larutan",
+              "name": "Stoikiometri larutan",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Titrasi asam basa adalah metode untuk menentukan konsentrasi larutan asam atau basa dengan mereaksikannya dengan larutan yang konsentrasinya diketahui.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Titrasi Asam Basa",
+              "name": "Titrasi Asam Basa",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kelarutan (s) adalah jumlah maksimal zat terlarut dalam pelarut pada suhu tertentu, sementara hasil kali kelarutan (Ksp) adalah perkalian konsentrasi ion-ion dalam larutan jenuh senyawa yang sukar larut.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Kelarutan dan Hasil Kali Kelarutan",
+              "name": "Kelarutan dan Hasil Kali Kelarutan",
+              "relations": []
+            }
+          ],
+          "name": "C. Kesetimbangan dalam Larutan"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Penambahan zat terlarut non-volatil menurunkan tekanan uap pelarut, sesuai dengan Hukum Raoult.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Penurunan Tekanan Uap Larutan",
+              "name": "Penurunan Tekanan Uap Larutan (∆P)",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Titik beku larutan lebih rendah dari pelarut murninya karena kehadiran zat terlarut yang mengganggu proses pembentukan kristal.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Penurunan Titik Beku Larutan",
+              "name": "Penurunan Titik Beku Larutan (∆Tf)",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Titik didih larutan lebih tinggi dari pelarut murninya karena tekanan uap larutan lebih rendah, membutuhkan temperatur lebih tinggi untuk mendidih.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Kenaikan Titik Didih Larutan",
+              "name": "Kenaikan Titik Didih Larutan (∆Tb)",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Tekanan osmosis berperan dalam menjaga keseimbangan cairan sel dan transport air pada organisme hidup yang berkaitan dengan materi genetik.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Materi Genetik"
+                }
+              ],
+              "description": "Tekanan osmosis adalah tekanan yang diperlukan untuk menghentikan aliran pelarut melintasi membran semipermeabel dari larutan yang kurang pekat ke larutan yang lebih pekat.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Tekanan Osmosis Larutan",
+              "name": "Tekanan Osmosis Larutan (π)",
+              "relations": [
+                {
+                  "description": "Tekanan osmosis berperan dalam transpor nutrisi dan air yang esensial untuk ekspresi materi genetik dan fungsi sel.",
+                  "target": "Materi Genetik",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            }
+          ],
+          "name": "D. Sifat Koligatif Larutan"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Koloid diklasifikasikan berdasarkan wujud zat terdispersi dan medium pendispersi, serta interaksi antara keduanya (liofil/hidrofil dan liofob/hidrofob).",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Jenis-jenis koloid",
+              "name": "Jenis-jenis koloid",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Prinsip elektroforesis dalam koloid berkaitan dengan pergerakan partikel bermuatan dalam medan listrik, konsep dasar dalam listrik statis.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "LISTRIK STATIS"
+                },
+                {
+                  "explanation": "Prinsip elektroforesis dalam koloid berkaitan dengan pergerakan partikel bermuatan dalam medan listrik, konsep dasar dalam listrik arus searah.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "LISTRIK ARUS SEARAH"
+                }
+              ],
+              "description": "Koloid memiliki sifat khas seperti gerak Brown, efek Tyndall, adsorpsi, koagulasi, dialisis, dan elektroforesis yang membedakannya dari larutan sejati dan suspensi.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sifat-sifat koloid",
+              "name": "Sifat-sifat koloid",
+              "relations": [
+                {
+                  "description": "Sifat elektroforesis pada koloid memanfaatkan prinsip pergerakan muatan dalam medan listrik.",
+                  "target": "LISTRIK STATIS",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Sifat elektroforesis pada koloid memanfaatkan prinsip pergerakan muatan dalam medan listrik.",
+                  "target": "LISTRIK ARUS SEARAH",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Koloid dapat dibuat melalui metode dispersi (memperkecil partikel besar) dan metode kondensasi (menggumpalkan partikel larutan).",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Cara pembuatan koloid",
+              "name": "Cara pembuatan koloid",
+              "relations": []
+            }
+          ],
+          "name": "E. Koloid"
+        }
+      ]
+    },
+    {
+      "chapter": "ELEKTROKIMIA",
+      "chapter_relations": [
+        {
+          "concept_links": [
+            {
+              "explanation": "Konsep elektrolit dalam bab ini bergantung pada pemahaman tentang sifat larutan yang dapat menghantarkan listrik.",
+              "source_concept": "Elektrolit",
+              "target_concept": "Larutan Elektrolit"
+            }
+          ],
+          "description": "Konsep elektrolit dan kemampuan zat terlarut menghantarkan listrik yang dibahas dalam bab Elektrokimia memiliki dasar dari pemahaman mengenai larutan.",
+          "target_chapter": "LARUTAN DAN KOLOID",
+          "type": "PRASYARAT"
+        },
+        {
+          "concept_links": [],
+          "description": "Meskipun tidak secara langsung, pemahaman tentang reaksi kimia seperti redoks dan konsep dasar kimia dalam bab ini menjadi fondasi untuk memahami reaksi yang terjadi pada senyawa karbon.",
+          "target_chapter": "GUGUS FUNGSI DALAM SENYAWA KARBON",
+          "type": "MEMPERSIAPKAN"
+        }
+      ],
+      "chapter_summary": "Bab ini membahas tentang elektrokimia, cabang ilmu kimia yang mempelajari perpindahan elektron dalam media penghantar listrik. Materi mencakup identifikasi reaksi redoks, perbedaan elektrolit kuat, lemah, dan nonelektrolit, serta perancangan dan pemahaman prinsip kerja sel volta dan sel elektrolisis. Konsep potensial elektrode standar digunakan untuk memprediksi reaktivitas logam dan spontanitas reaksi, dengan aplikasi luas dalam industri seperti pelapisan logam dan baterai.",
+      "next": "GUGUS FUNGSI DALAM SENYAWA KARBON",
+      "previous": "LARUTAN DAN KOLOID",
+      "subchapters": [
+        "Elektrolit",
+        "Reaksi redoks",
+        "Sel elektrokimia",
+        "Potensial elektrode standar",
+        "Aplikasi elektrokimia"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Elektrolit adalah zat yang mengandung ion-ion bebas, sehingga dapat menghantarkan listrik saat dilarutkan dalam air atau dilelehkan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": null,
+              "name": "Definisi Elektrolit",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Suatu zat disebut elektrolit kuat apabila dapat terurai sempurna menjadi ion-ionnya saat dilarutkan dalam air, menghasilkan larutan dengan konsentrasi ion yang tinggi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Elektrolit Kuat",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Pada elektrolit lemah, tidak semua zat terdisosiasi menjadi ion-ion saat dilarutkan dalam air, menghasilkan konsentrasi ion yang rendah karena derajat ionisasinya kecil.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Elektrolit Lemah",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Non-elektrolit adalah senyawa kimia yang tidak menghantarkan listrik dalam kondisi lelehan maupun terlarut dalam air, karena tidak menghasilkan ion-ion bebas saat dilarutkan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Non-elektrolit",
+              "relations": []
+            }
+          ],
+          "name": "A. Elektrolit"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bilangan oksidasi adalah muatan sebenarnya atau hipotetis yang digunakan untuk menandai tingkat oksidasi suatu atom dalam senyawa atau ion.",
+              "glossary_validated": true,
+              "materi_pokok_ref": null,
+              "name": "Bilangan Oksidasi",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Oksidasi adalah reaksi hilangnya elektron dari suatu molekul, atom, atau ion, yang ditandai dengan kenaikan bilangan oksidasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Oksidasi",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reduksi adalah reaksi pengambilan elektron oleh suatu molekul, atom, atau ion, yang ditandai dengan penurunan bilangan oksidasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Reduksi",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reaksi redoks adalah reaksi kimia yang melibatkan pertukaran elektron antara spesi yang bereaksi dan ditandai dengan perubahan bilangan oksidasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Reaksi Redoks",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Agen pengoksidasi adalah reaktan yang menerima elektron dan mengalami reduksi dalam reaksi redoks.",
+              "glossary_validated": true,
+              "materi_pokok_ref": null,
+              "name": "Agen Pengoksidasi",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Agen pereduksi adalah reaktan yang melepaskan elektron dan mengalami oksidasi dalam reaksi redoks.",
+              "glossary_validated": true,
+              "materi_pokok_ref": null,
+              "name": "Agen Pereduksi",
+              "relations": []
+            }
+          ],
+          "name": "B. Reaksi redoks"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Sel volta adalah sel elektrokimia yang memanfaatkan reaksi kimia spontan untuk menghasilkan energi listrik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Sel Volta",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Sel elektrolisis adalah sel elektrokimia yang menggunakan energi listrik dari sumber eksternal untuk menjalankan reaksi kimia yang tidak spontan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Sel Elektrolisis",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Arus listrik dalam fisika merupakan aliran muatan yang terjadi pada konduktor, yang secara konseptual berhubungan dengan pergerakan elektron pada elektrode dalam sel elektrokimia.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "Arus Listrik"
+                }
+              ],
+              "description": "Elektrode adalah konduktor listrik tempat terjadinya reaksi oksidasi (anode) atau reduksi (katode) dalam sel elektrokimia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Elektrode",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Anode adalah elektrode tempat terjadinya reaksi oksidasi dalam sel elektrokimia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Anode",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Katode adalah elektrode tempat terjadinya reaksi reduksi dalam sel elektrokimia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Katode",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Jembatan garam adalah komponen dalam sel volta yang berfungsi menghubungkan larutan elektrolit di kedua setengah sel untuk menetralkan muatan dan memungkinkan aliran ion.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Jembatan Garam",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Notasi sel standar adalah cara singkat untuk merepresentasikan sel elektrokimia, menuliskan anode di sebelah kiri dan katode di sebelah kanan, dipisahkan oleh jembatan garam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Notasi Sel Standar",
+              "relations": []
+            }
+          ],
+          "name": "C. Sel elektrokimia"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Potensial elektrode adalah perbedaan potensial listrik antara elektrode dan elektrolit dalam setengah sel elektrokimia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Potensial Elektrode",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Potensial elektrode standar adalah potensial elektrode yang diukur pada kondisi standar (1 atm, 298 K, 1 M) dan digunakan sebagai acuan relatif.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Potensial Elektrode Standar",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Elektrode hidrogen standar adalah elektrode acuan dengan potensial nol, digunakan untuk menentukan potensial elektrode standar logam lain.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Elektrode Hidrogen Standar",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep GGL sel dalam elektrokimia berkaitan erat dengan konsep GGL dalam fisika yang mengacu pada perbedaan potensial listrik yang mendorong aliran muatan.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "Arus Listrik"
+                }
+              ],
+              "description": "Gaya Gerak Listrik (GGL) sel adalah potensial sel total yang diukur dalam volt, yang dapat dihitung dari perbedaan potensial elektrode standar anode dan katode.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Gaya Gerak Listrik (GGL) Sel",
+              "relations": []
+            }
+          ],
+          "name": "D. Potensial elektrode standar"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: arus, listrik.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "LISTRIK ARUS SEARAH"
+                },
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: arus, listrik.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "Arus Listrik"
+                }
+              ],
+              "description": "Pelapisan logam adalah proses penggunaan arus listrik untuk melapisi objek konduktif dengan lapisan tipis logam untuk meningkatkan sifat seperti ketahanan korosi dan estetika.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Pelapisan Logam (Electroplating)",
+              "relations": []
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Meskipun berbeda mekanisme, baik kapasitor maupun baterai merupakan komponen penyimpan energi listrik, sehingga ada relevansi konseptual dalam aplikasi teknologi energi.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "Rangkaian Kapasitor"
+                }
+              ],
+              "description": "Baterai litium-ion adalah jenis baterai isi ulang yang memanfaatkan reaksi redoks antara litium oksida dan karbon litium untuk menghasilkan energi listrik, umum digunakan pada perangkat elektronik dan mobil listrik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Baterai Litium-ion",
+              "relations": []
+            },
+            {
+              "cross_book_links": [],
+              "description": "Mobil listrik menggunakan sel elektrokimia (baterai) yang mengkonversi energi kimia menjadi energi listrik, menawarkan efisiensi energi tinggi dan ramah lingkungan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": null,
+              "name": "Mobil Listrik",
+              "relations": []
+            }
+          ],
+          "name": "E. Aplikasi elektrokimia"
+        }
+      ]
+    },
+    {
+      "chapter": "GUGUS FUNGSI DALAM SENYAWA KARBON",
+      "chapter_relations": [
+        {
+          "concept_links": [
+            {
+              "explanation": "Prinsip reaksi redoks yang dipelajari dalam elektrokimia sangat relevan untuk memahami reaksi oksidasi dan reduksi gugus fungsi dalam senyawa organik.",
+              "source_concept": "Reaksi Reduksi/Oksidasi",
+              "target_concept": "Redoks"
+            }
+          ],
+          "description": "Pemahaman tentang konsep redoks dalam elektrokimia menjadi dasar untuk memahami reaksi redoks pada gugus fungsi dalam senyawa organik.",
+          "target_chapter": "ELEKTROKIMIA",
+          "type": "PRASYARAT"
+        },
+        {
+          "concept_links": [
+            {
+              "explanation": "Gugus fungsi berperan dalam reaksi polimerisasi yang membentuk makromolekul organik.",
+              "source_concept": "Gugus Fungsi",
+              "target_concept": "Makromolekul Organik"
+            },
+            {
+              "explanation": "Reaksi adisi adalah salah satu mekanisme pembentukan polimer dalam makromolekul organik.",
+              "source_concept": "Reaksi Adisi",
+              "target_concept": "Makromolekul Organik"
+            },
+            {
+              "explanation": "Poliester merupakan salah satu jenis makromolekul organik yang terbentuk melalui reaksi esterifikasi.",
+              "source_concept": "Reaksi Esterifikasi",
+              "target_concept": "Makromolekul Organik"
+            }
+          ],
+          "description": "Konsep gugus fungsi dan reaksi-reaksinya adalah dasar untuk memahami pembentukan dan sifat-sifat makromolekul organik seperti polimer.",
+          "target_chapter": "MAKROMOLEKUL ORGANIK",
+          "type": "MEMPERSIAPKAN"
+        }
+      ],
+      "chapter_summary": "Bab ini membahas gugus fungsi dalam senyawa karbon, menjelaskan bahwa senyawa organik tersusun atas rantai karbon dan dapat mengandung atom lain. Gugus fungsi berperan sebagai pusat aktif yang menentukan sifat fisika dan kimia senyawa organik. Bab ini juga mencakup tata nama senyawa organik berdasarkan aturan IUPAC, serta reaksi-reaksi spesifik pada gugus fungsi seperti substitusi, eliminasi, adisi, oksidasi, reduksi, esterifikasi, dan saponifikasi. Selain itu, dibahas pula beberapa senyawa organik penting beserta manfaatnya dalam berbagai bidang industri dan kehidupan sehari-hari.",
+      "next": "MAKROMOLEKUL ORGANIK",
+      "previous": "ELEKTROKIMIA",
+      "subchapters": [
+        "Senyawa Organik Tersusun atas Rantai Karbon",
+        "Gugus Fungsi sebagai Pusat Aktif pada Senyawa Organik",
+        "Tata Nama Senyawa Organik",
+        "Reaksi-Reaksi Spesifik pada Gugus Fungsi",
+        "Beberapa Senyawa Organik Penting dan Manfaatnya"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Senyawa organik adalah senyawa yang umumnya berasal dari makhluk hidup dan tersusun atas rantai karbon, seringkali mengikat atom hidrogen dan unsur lain seperti oksigen, nitrogen, belerang, dan halogen.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Senyawa Organik",
+              "name": "Senyawa Organik",
+              "relations": [
+                {
+                  "description": "Senyawa organik paling sederhana adalah hidrokarbon yang hanya tersusun dari karbon dan hidrogen.",
+                  "target": "Hidrokarbon",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Hidrokarbon adalah senyawa organik paling sederhana yang hanya tersusun atas atom hidrogen dan karbon, sering ditemukan sebagai komponen minyak bumi.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Hidrokarbon",
+              "name": "Hidrokarbon",
+              "relations": [
+                {
+                  "description": "Hidrokarbon merupakan senyawa organik yang paling sederhana.",
+                  "target": "Senyawa Organik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "A. Senyawa Organik Tersusun atas Rantai Karbon"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Gugus fungsi adalah atom atau sekelompok atom dalam molekul organik yang mempengaruhi sifat fisika dan kimia senyawa tersebut serta menentukan kereaktifannya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gugus Fungsi",
+              "name": "Gugus Fungsi",
+              "relations": [
+                {
+                  "description": "Gugus fungsi dapat meningkatkan titik didih senyawa organik melalui interaksi antarmolekul yang lebih kuat.",
+                  "target": "Sifat Fisika Senyawa Organik",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Keberadaan gugus fungsi yang berbeda menentukan kereaktifan senyawa organik terhadap pereaksi tertentu.",
+                  "target": "Sifat Kimia Senyawa Organik",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Titik didih senyawa organik dipengaruhi oleh gugus fungsi yang ada, di mana keberadaan gugus fungsi yang mampu membentuk ikatan hidrogen atau interaksi dipol-dipol yang kuat dapat meningkatkan titik didih dibandingkan alkana yang bersesuaian.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Titik Didih Senyawa Organik",
+              "name": "Titik Didih Senyawa Organik",
+              "relations": [
+                {
+                  "description": "Titik didih senyawa organik sangat dipengaruhi oleh jenis dan keberadaan gugus fungsi.",
+                  "target": "Gugus Fungsi",
+                  "type": "BERGANTUNG_PADA"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Isomer adalah senyawa yang memiliki rumus molekul sama tetapi berbeda cara pengaturan atom-atomnya, yang menyebabkan perbedaan kereaktifan senyawa tersebut.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Isomer",
+              "name": "Isomer",
+              "relations": [
+                {
+                  "description": "Perbedaan struktur isomer menentukan kereaktifan senyawa organik dalam reaksi kimia.",
+                  "target": "Kereaktifan Senyawa Organik",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Alkena adalah gugus fungsi yang mengandung ikatan rangkap karbon-karbon (C=C).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Alkena",
+              "name": "Alkena",
+              "relations": [
+                {
+                  "description": "Alkena adalah salah satu jenis gugus fungsi yang umum ditemukan.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Alkuna adalah gugus fungsi yang mengandung ikatan rangkap tiga karbon-karbon (C≡C).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Alkuna",
+              "name": "Alkuna",
+              "relations": [
+                {
+                  "description": "Alkuna merupakan gugus fungsi yang mengandung ikatan rangkap tiga.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Alkil halida adalah senyawa organik yang mengandung atom halogen (F, Cl, Br, I) yang terikat pada atom karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Alkil Halida",
+              "name": "Alkil Halida",
+              "relations": [
+                {
+                  "description": "Alkil halida merupakan salah satu gugus fungsi yang mengandung halogen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Alkohol, seperti etanol, dapat diproduksi melalui proses fermentasi yang merupakan bagian dari metabolisme mikroorganisme.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Metabolisme"
+                }
+              ],
+              "description": "Alkohol adalah gugus fungsi yang mengandung gugus hidroksil (-OH) yang terikat pada atom karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Alkohol",
+              "name": "Alkohol",
+              "relations": [
+                {
+                  "description": "Alkohol merupakan gugus fungsi yang umum ditemukan.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Eter adalah gugus fungsi yang mengandung atom oksigen yang mengikat dua gugus alkil (-O-).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Eter",
+              "name": "Eter",
+              "relations": [
+                {
+                  "description": "Eter merupakan salah satu gugus fungsi yang mengandung oksigen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Aldehida adalah gugus fungsi yang memiliki gugus karbonil (-CHO) pada ujung rantai karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aldehida",
+              "name": "Aldehida",
+              "relations": [
+                {
+                  "description": "Aldehida adalah salah satu gugus fungsi yang mengandung oksigen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Keton adalah gugus fungsi yang memiliki gugus karbonil (-C=O-) di tengah rantai karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Keton",
+              "name": "Keton",
+              "relations": [
+                {
+                  "description": "Keton merupakan gugus fungsi yang mengandung oksigen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Asam karboksilat adalah gugus fungsi yang memiliki gugus karboksil (-COOH) pada molekulnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Asam Karboksilat",
+              "name": "Asam Karboksilat",
+              "relations": [
+                {
+                  "description": "Asam karboksilat adalah salah satu gugus fungsi yang mengandung oksigen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Ester adalah gugus fungsi yang terbentuk dari reaksi asam karboksilat dengan alkohol, memiliki gugus -COO-.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Ester",
+              "name": "Ester",
+              "relations": [
+                {
+                  "description": "Ester merupakan salah satu gugus fungsi yang mengandung oksigen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Amina adalah salah satu komponen penting dalam asam amino, blok pembangun protein.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Asam amino"
+                }
+              ],
+              "description": "Amina adalah gugus fungsi yang mengandung gugus amino (-NH2) yang terikat pada atom karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Amina",
+              "name": "Amina",
+              "relations": [
+                {
+                  "description": "Amina adalah gugus fungsi yang mengandung nitrogen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Amida adalah gugus fungsi yang memiliki gugus amida (-CO-NH2) pada molekulnya.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Amida",
+              "name": "Amida",
+              "relations": [
+                {
+                  "description": "Amida merupakan gugus fungsi yang mengandung nitrogen.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Tiol adalah gugus fungsi yang mengandung gugus tiol (-SH) yang terikat pada atom karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Tiol",
+              "name": "Tiol",
+              "relations": [
+                {
+                  "description": "Tiol adalah gugus fungsi yang mengandung belerang.",
+                  "target": "Gugus Fungsi",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "B. Gugus Fungsi sebagai Pusat Aktif pada Senyawa Organik"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Tata nama IUPAC (International Union of Pure and Applied Chemistry) adalah sistem penamaan senyawa organik yang standar untuk menghindari ambiguitas, memperhitungkan gugus fungsi dan rantai utama.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Tata Nama IUPAC",
+              "name": "Tata Nama IUPAC",
+              "relations": [
+                {
+                  "description": "Aturan IUPAC menetapkan cara pemberian nama yang sistematis pada senyawa organik.",
+                  "target": "Penamaan Senyawa Organik",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Prioritas gugus fungsi menentukan gugus mana yang akan menjadi rantai utama dan mana yang akan bertindak sebagai cabang dalam penamaan senyawa organik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Prioritas Gugus Fungsi",
+              "name": "Prioritas Gugus Fungsi",
+              "relations": [
+                {
+                  "description": "Urutan prioritas gugus fungsi sangat penting dalam menentukan nama akhir senyawa organik.",
+                  "target": "Tata Nama Senyawa Organik",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            }
+          ],
+          "name": "C. Tata Nama Senyawa Organik"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Reaksi substitusi adalah reaksi di mana satu gugus dalam molekul digantikan oleh gugus lain, umum terjadi pada alkil halida dan alkohol.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Substitusi",
+              "name": "Reaksi Substitusi",
+              "relations": [
+                {
+                  "description": "Alkil halida dapat mengalami reaksi substitusi untuk menghasilkan berbagai senyawa lain.",
+                  "target": "Alkil Halida",
+                  "type": "BERKAITAN_DENGAN"
+                },
+                {
+                  "description": "Alkohol juga dapat mengalami reaksi substitusi, misalnya menjadi alkil halida.",
+                  "target": "Alkohol",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reaksi eliminasi adalah reaksi di mana terjadi pelepasan atom atau gugus atom dari molekul, seringkali menghasilkan pembentukan ikatan rangkap.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Eliminasi",
+              "name": "Reaksi Eliminasi",
+              "relations": [
+                {
+                  "description": "Reaksi eliminasi seringkali menghasilkan pembentukan ikatan rangkap baru dalam molekul.",
+                  "target": "Pembentukan Ikatan Rangkap",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reaksi adisi adalah reaksi di mana atom atau gugus atom ditambahkan ke dalam molekul, biasanya terjadi pada senyawa yang memiliki ikatan rangkap seperti alkena dan alkuna.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Adisi",
+              "name": "Reaksi Adisi",
+              "relations": [
+                {
+                  "description": "Reaksi adisi mengubah ikatan rangkap menjadi ikatan tunggal dengan penambahan atom atau gugus atom.",
+                  "target": "Ikatan Rangkap",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reaksi oksidasi adalah reaksi di mana suatu gugus fungsi diubah menjadi gugus fungsi lain dengan tingkat oksidasi lebih tinggi, misalnya oksidasi alkohol menjadi aldehida atau asam karboksilat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Oksidasi",
+              "name": "Reaksi Oksidasi",
+              "relations": [
+                {
+                  "description": "Oksidasi alkohol primer menghasilkan aldehida, dan oksidasi tuntas menghasilkan asam karboksilat.",
+                  "target": "Alkohol",
+                  "type": "BERKAITAN_DENGAN"
+                },
+                {
+                  "description": "Aldehida dapat dioksidasi lebih lanjut menjadi asam karboksilat.",
+                  "target": "Aldehida",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Reaksi reduksi adalah reaksi kebalikan dari oksidasi, di mana suatu gugus fungsi diubah menjadi gugus fungsi lain dengan tingkat oksidasi lebih rendah, misalnya reduksi aldehida atau keton menjadi alkohol.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Reaksi Reduksi",
+              "name": "Reaksi Reduksi",
+              "relations": [
+                {
+                  "description": "Reduksi aldehida menghasilkan alkohol primer.",
+                  "target": "Aldehida",
+                  "type": "BERKAITAN_DENGAN"
+                },
+                {
+                  "description": "Reduksi keton menghasilkan alkohol sekunder.",
+                  "target": "Keton",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Esterifikasi adalah reaksi pembentukan ester melalui reaksi antara asam karboksilat dengan alkohol dengan katalis asam.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Esterifikasi",
+              "name": "Esterifikasi",
+              "relations": [
+                {
+                  "description": "Reaksi esterifikasi menghasilkan senyawa ester.",
+                  "target": "Ester",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Transesterifikasi adalah reaksi di mana gugus alkoksi dalam ester digantikan oleh gugus alkoksi dari alkohol lain.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Transesterifikasi",
+              "name": "Transesterifikasi",
+              "relations": [
+                {
+                  "description": "Reaksi transesterifikasi mengubah satu jenis ester menjadi ester lain.",
+                  "target": "Ester",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Saponifikasi, atau penyabunan, adalah reaksi hidrolisis ester (terutama trigliserida) dengan basa kuat menghasilkan garam asam karboksilat (sabun) dan gliserol.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Saponifikasi",
+              "name": "Saponifikasi",
+              "relations": [
+                {
+                  "description": "Reaksi saponifikasi menghasilkan sabun.",
+                  "target": "Sabun",
+                  "type": "MENYEBABKAN"
+                },
+                {
+                  "description": "Reaksi saponifikasi juga menghasilkan gliserol sebagai produk samping.",
+                  "target": "Gliserol",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            }
+          ],
+          "name": "D. Reaksi-Reaksi Spesifik pada Gugus Fungsi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Metanol adalah alkohol sederhana yang digunakan sebagai pelarut industri, namun bersifat toksik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Metanol",
+              "name": "Metanol",
+              "relations": [
+                {
+                  "description": "Metanol merupakan salah satu jenis alkohol.",
+                  "target": "Alkohol",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Etanol diproduksi melalui proses fermentasi karbohidrat, yang merupakan proses metabolisme oleh mikroorganisme.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Metabolisme"
+                }
+              ],
+              "description": "Etanol adalah alkohol yang dihasilkan dari fermentasi, digunakan sebagai pelarut dan aditif bahan bakar.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Etanol",
+              "name": "Etanol",
+              "relations": [
+                {
+                  "description": "Etanol adalah contoh penting dari gugus fungsi alkohol.",
+                  "target": "Alkohol",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Fenol adalah alkohol aromatik yang digunakan sebagai bahan baku dalam produksi plastik, deterjen, obat, kosmetik, serta sebagai antiseptik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Fenol",
+              "name": "Fenol",
+              "relations": [
+                {
+                  "description": "Fenol merupakan contoh alkohol aromatik.",
+                  "target": "Alkohol",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Gliserol adalah produk samping produksi sabun yang digunakan sebagai pelembab dalam kosmetik, plasticizer, antibeku, dan pelumas.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gliserol",
+              "name": "Gliserol",
+              "relations": [
+                {
+                  "description": "Gliserol adalah produk samping dari reaksi saponifikasi.",
+                  "target": "Saponifikasi",
+                  "type": "PRODUK_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Formaldehida adalah aldehida yang digunakan sebagai desinfektan, antiseptik, dan bahan baku pembuatan tinta, resin, dan plastik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Formaldehida",
+              "name": "Formaldehida",
+              "relations": [
+                {
+                  "description": "Formaldehida adalah salah satu aldehida sederhana yang penting.",
+                  "target": "Aldehida",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Aseton adalah keton sederhana yang banyak digunakan sebagai pelarut dalam pembuatan tinta, cat, dan zat warna.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aseton",
+              "name": "Aseton",
+              "relations": [
+                {
+                  "description": "Aseton adalah keton yang paling sederhana dan umum.",
+                  "target": "Keton",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Asam asetat adalah asam karboksilat yang banyak digunakan sebagai penyedap makanan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Asam Asetat",
+              "name": "Asam Asetat",
+              "relations": [
+                {
+                  "description": "Asam asetat adalah contoh penting dari asam karboksilat.",
+                  "target": "Asam Karboksilat",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Asam sitrat adalah asam karboksilat yang umum digunakan sebagai penyedap makanan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Asam Sitrat",
+              "name": "Asam Sitrat",
+              "relations": [
+                {
+                  "description": "Asam sitrat adalah salah satu asam karboksilat yang sering ditemui.",
+                  "target": "Asam Karboksilat",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Ester digunakan sebagai aditif makanan untuk memberikan aroma buah-buahan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Ester",
+              "name": "Ester (dalam makanan)",
+              "relations": [
+                {
+                  "description": "Ester banyak dimanfaatkan sebagai penambah aroma makanan.",
+                  "target": "Ester",
+                  "type": "APLIKASI_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "E. Beberapa Senyawa Organik Penting dan Manfaatnya"
+        }
+      ]
+    },
+    {
+      "chapter": "MAKROMOLEKUL ORGANIK",
+      "chapter_relations": [
+        {
+          "concept_links": [
+            {
+              "explanation": "Gugus fungsi seperti hidroksil dan karboksil berperan penting dalam reaksi polimerisasi kondensasi.",
+              "source_concept": "Reaksi Polimerisasi",
+              "target_concept": "Gugus Fungsi Hidroksil, Gugus Fungsi Karboksil"
+            },
+            {
+              "explanation": "Monomer untuk polimerisasi adisi biasanya merupakan senyawa organik tak jenuh yang memiliki ikatan rangkap.",
+              "source_concept": "Polimerisasi Adisi",
+              "target_concept": "Senyawa Organik Tak Jenuh"
+            }
+          ],
+          "description": "Pemahaman tentang gugus fungsi dalam senyawa karbon sangat penting untuk memahami pembentukan dan reaksi polimer.",
+          "target_chapter": "GUGUS FUNGSI DALAM SENYAWA KARBON",
+          "type": "PRASYARAT"
+        }
+      ],
+      "chapter_summary": "Bab Makromolekul Organik membahas tentang molekul organik berukuran sangat besar yang disebut polimer. Bab ini menguraikan pengertian, struktur, dan jenis-jenis polimer, serta reaksi polimerisasi adisi dan kondensasi. Selain itu, dibahas pula hubungan antara struktur dan sifat polimer, berbagai jenis plastik, polimer alam, serta biopolimer organik seperti karbohidrat, protein, dan asam nukleat.",
+      "next": null,
+      "previous": "GUGUS FUNGSI DALAM SENYAWA KARBON",
+      "subchapters": [
+        "Pengertian dan Struktur Polimer",
+        "Reaksi Polimerisasi",
+        "Jenis-jenis Polimer",
+        "Hubungan Struktur dan Sifat Polimer",
+        "Plastik",
+        "Polimer Alam",
+        "Biopolimer Organik"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Polimer adalah molekul besar yang tersusun dari unit-unit berulang yang disebut monomer, yang dihubungkan oleh ikatan kovalen.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Polimer",
+              "name": "Polimer",
+              "relations": [
+                {
+                  "description": "Polimer adalah salah satu jenis makromolekul organik.",
+                  "target": "Makromolekul Organik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Monomer adalah molekul kecil yang dapat bergabung membentuk rantai polimer.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Monomer",
+              "name": "Monomer",
+              "relations": [
+                {
+                  "description": "Monomer adalah unit penyusun polimer.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Unit ulang adalah struktur monomer yang berulang dalam rantai polimer.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Unit Ulang",
+              "name": "Unit Ulang",
+              "relations": [
+                {
+                  "description": "Unit ulang merupakan representasi struktur monomer dalam polimer.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Penamaan polimer dapat mengikuti aturan IUPAC, penamaan trivial, atau nama dagang, yang biasanya diawali dengan prefiks 'poli' diikuti nama monomernya.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Tata Nama Polimer",
+              "name": "Penamaan Polimer",
+              "relations": [
+                {
+                  "description": "Cara penamaan mengidentifikasi polimer berdasarkan monomernya.",
+                  "target": "Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            }
+          ],
+          "name": "A. Pengertian dan Struktur Polimer"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Reaksi polimerisasi adisi melibatkan penambahan monomer pada rantai polimer tanpa menghasilkan produk samping.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Polimerisasi Adisi",
+              "name": "Polimerisasi Adisi",
+              "relations": [
+                {
+                  "description": "Polimerisasi adisi membentuk rantai polimer.",
+                  "target": "Polimer",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimerisasi kondensasi melibatkan reaksi antar monomer yang melepaskan molekul sederhana seperti air.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Polimerisasi Kondensasi",
+              "name": "Polimerisasi Kondensasi",
+              "relations": [
+                {
+                  "description": "Polimerisasi kondensasi membentuk rantai polimer.",
+                  "target": "Polimer",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Tahapan reaksi polimerisasi adisi meliputi inisiasi (pembentukan spesi aktif), propagasi (perpanjangan rantai), dan terminasi (penghentian rantai).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Tahapan Reaksi Polimerisasi Adisi",
+              "name": "Inisiasi, Propagasi, Terminasi",
+              "relations": [
+                {
+                  "description": "Tahapan ini menjelaskan mekanisme pembentukan polimer melalui polimerisasi adisi.",
+                  "target": "Polimerisasi Adisi",
+                  "type": "MEMUNGKINKAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Poliester terbentuk melalui reaksi polimerisasi kondensasi antara gugus alkohol dan asam karboksilat, menghasilkan ikatan ester.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Pembentukan Poliester",
+              "name": "Pembentukan Poliester",
+              "relations": [
+                {
+                  "description": "Reaksi kondensasi membentuk poliester.",
+                  "target": "Poliester",
+                  "type": "MENYEBABKAN"
+                }
+              ]
+            }
+          ],
+          "name": "B. Reaksi Polimerisasi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Polimer organik tersusun atas monomer-monomer yang memiliki kerangka utama ikatan karbon-karbon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Organik",
+              "name": "Polimer Organik",
+              "relations": [
+                {
+                  "description": "Polimer organik adalah salah satu klasifikasi utama polimer.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer anorganik memiliki rantai utama yang terdiri dari ikatan atom selain karbon, seperti silikon.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Anorganik",
+              "name": "Polimer Anorganik",
+              "relations": [
+                {
+                  "description": "Polimer anorganik adalah klasifikasi polimer berdasarkan komposisi atom.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Karbohidrat adalah salah satu contoh polimer alam yang juga dipelajari dalam biologi.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Karbohidrat"
+                },
+                {
+                  "explanation": "Protein adalah salah satu contoh polimer alam yang juga dipelajari dalam biologi.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Protein"
+                }
+              ],
+              "description": "Polimer alam adalah polimer yang tersedia di alam, seperti selulosa, pati, sutera, dan karbohidrat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Alam",
+              "name": "Polimer Alam",
+              "relations": [
+                {
+                  "description": "Polimer alam adalah klasifikasi polimer berdasarkan sumbernya.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer sintetik adalah polimer yang dibuat oleh manusia melalui proses sintesis kimia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Sintetik",
+              "name": "Polimer Sintetik",
+              "relations": [
+                {
+                  "description": "Polimer sintetik adalah klasifikasi polimer berdasarkan sumbernya.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer semi-sintetik adalah polimer hasil modifikasi dari polimer alam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Semi-sintetik",
+              "name": "Polimer Semi-sintetik",
+              "relations": [
+                {
+                  "description": "Polimer semi-sintetik adalah klasifikasi polimer berdasarkan sumbernya.",
+                  "target": "Polimer",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "C. Jenis-jenis Polimer"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Polimer dengan struktur rantai lurus yang tidak bercabang, cenderung lebih rapat dan kuat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Struktur Polimer Linier",
+              "name": "Struktur Polimer Linier",
+              "relations": [
+                {
+                  "description": "Struktur linier mempengaruhi kekuatan dan kerapatan polimer.",
+                  "target": "Sifat Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer dengan struktur rantai yang memiliki cabang, cenderung kurang rapat dan kuat dibandingkan polimer linier.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Struktur Polimer Bercabang",
+              "name": "Struktur Polimer Bercabang",
+              "relations": [
+                {
+                  "description": "Struktur bercabang mempengaruhi kekuatan dan kerapatan polimer.",
+                  "target": "Sifat Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer dengan ikatan kovalen antar rantai polimer, menghasilkan material yang lebih keras dan kaku.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Struktur Polimer Berikatan Silang",
+              "name": "Struktur Polimer Berikatan Silang",
+              "relations": [
+                {
+                  "description": "Ikatan silang mempengaruhi kekerasan dan kekakuan polimer.",
+                  "target": "Sifat Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep gaya antar molekul dalam kimia polimer memiliki analogi dengan gaya-gaya yang bekerja pada level molekuler dalam fisika.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "gaya fluks"
+                }
+              ],
+              "description": "Gaya tarik-menarik antar rantai polimer sangat penting dalam menentukan kekuatan, titik leleh, dan sifat fisik polimer.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Gaya Antar Molekul",
+              "name": "Gaya Antar Molekul pada Polimer",
+              "relations": [
+                {
+                  "description": "Kekuatan gaya antar molekul menentukan kekuatan fisik polimer.",
+                  "target": "Sifat Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer yang melunak saat dipanaskan dan dapat dibentuk ulang, memiliki gaya antarmolekul yang lemah.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Termoplastik",
+              "name": "Polimer Termoplastik",
+              "relations": [
+                {
+                  "description": "Sifat termoplastik berkaitan dengan respon polimer terhadap pemanasan.",
+                  "target": "Sifat Pemanasan Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Polimer yang kuat dan tidak dapat dilelehkan atau dibentuk ulang setelah dipanaskan, memiliki ikatan kovalen antar rantai yang kuat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Polimer Termoset",
+              "name": "Polimer Termoset",
+              "relations": [
+                {
+                  "description": "Sifat termoset berkaitan dengan respon polimer terhadap pemanasan.",
+                  "target": "Sifat Pemanasan Polimer",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            }
+          ],
+          "name": "D. Hubungan Struktur dan Sifat Polimer"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Plastik adalah polimer sintetik atau semi-sintetik yang dapat dibentuk dan dicetak ulang, seringkali mengandung aditif untuk meningkatkan performanya.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Plastik",
+              "name": "Plastik",
+              "relations": [
+                {
+                  "description": "Plastik umumnya merupakan polimer sintetik atau semi-sintetik.",
+                  "target": "Polimer Organik Sintetik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Zat tambahan yang ditambahkan pada plastik untuk meningkatkan karakteristiknya, seperti plasticizer.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Aditif Plastik",
+              "name": "Aditif Plastik",
+              "relations": [
+                {
+                  "description": "Aditif memodifikasi sifat dan performa plastik.",
+                  "target": "Plastik",
+                  "type": "MEMPENGARUHI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Proses penguraian plastik yang dapat terjadi secara biologis (biodegradable) atau oleh cahaya (photodegradable).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Degradasi Plastik",
+              "name": "Degradasi Plastik",
+              "relations": [
+                {
+                  "description": "Degradasi plastik berkaitan dengan upaya penanggulangan masalah limbah plastik.",
+                  "target": "Masalah Lingkungan",
+                  "type": "BERKAITAN_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Plastik yang dapat terurai secara biologis oleh mikroorganisme.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Biodegradable Plastic",
+              "name": "Biodegradable Plastic",
+              "relations": [
+                {
+                  "description": "Plastik biodegradable adalah solusi untuk mengurangi penumpukan limbah plastik.",
+                  "target": "Masalah Limbah Plastik",
+                  "type": "SOLUSI_UNTUK"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Plastik yang terurai ketika terpapar cahaya dengan panjang gelombang tertentu.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Photodegradable Plastic",
+              "name": "Photodegradable Plastic",
+              "relations": [
+                {
+                  "description": "Plastik photodegradable adalah solusi untuk mengurangi penumpukan limbah plastik.",
+                  "target": "Masalah Limbah Plastik",
+                  "type": "SOLUSI_UNTUK"
+                }
+              ]
+            }
+          ],
+          "name": "E. Plastik"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Selulosa adalah jenis karbohidrat kompleks yang merupakan polimer alam.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Karbohidrat"
+                }
+              ],
+              "description": "Selulosa adalah polimer alam yang melimpah, menjadi penyusun utama kayu, kertas, dan katun.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Selulosa",
+              "name": "Selulosa",
+              "relations": [
+                {
+                  "description": "Selulosa adalah salah satu contoh polimer alam.",
+                  "target": "Polimer Alam",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Enzim adalah protein, yang merupakan salah satu jenis biopolimer penting.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Enzim"
+                },
+                {
+                  "explanation": "Materi genetik seperti DNA adalah biopolimer yang berperan dalam pewarisan sifat.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Materi Genetik"
+                }
+              ],
+              "description": "Biopolimer adalah polimer yang memiliki fungsi biologis dan ditemukan pada sistem makhluk hidup.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Biopolimer",
+              "name": "Biopolimer",
+              "relations": [
+                {
+                  "description": "Biopolimer adalah sub-kategori dari polimer alam.",
+                  "target": "Polimer Alam",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "F. Polimer Alam"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep karbohidrat dalam kimia dan biologi sangat berkaitan erat.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Karbohidrat (sakarida)"
+                }
+              ],
+              "description": "Karbohidrat adalah biopolimer yang tersusun atas unsur karbon, hidrogen, dan oksigen, serta mengandung gugus aldehida atau keton.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Karbohidrat",
+              "name": "Karbohidrat",
+              "relations": [
+                {
+                  "description": "Karbohidrat adalah salah satu jenis biopolimer organik.",
+                  "target": "Biopolimer Organik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Monosakarida adalah molekul karbohidrat paling sederhana, seperti glukosa dan fruktosa.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Monosakarida",
+              "name": "Monosakarida",
+              "relations": [
+                {
+                  "description": "Monosakarida adalah unit penyusun karbohidrat yang lebih kompleks.",
+                  "target": "Karbohidrat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Disakarida adalah biopolimer yang tersusun atas dua unit sakarida, seperti sukrosa.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Disakarida",
+              "name": "Disakarida",
+              "relations": [
+                {
+                  "description": "Disakarida adalah salah satu jenis karbohidrat.",
+                  "target": "Karbohidrat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Pati adalah karbohidrat kompleks yang digunakan tanaman untuk menyimpan energi.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pati",
+              "name": "Pati",
+              "relations": [
+                {
+                  "description": "Pati merupakan salah satu bentuk karbohidrat kompleks.",
+                  "target": "Karbohidrat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Selulosa adalah polimer glukosa yang berfungsi sebagai material struktural pada dinding sel tanaman.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Selulosa",
+              "name": "Selulosa",
+              "relations": [
+                {
+                  "description": "Selulosa merupakan salah satu jenis karbohidrat.",
+                  "target": "Karbohidrat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Asam amino adalah blok bangunan dasar untuk sintesis protein.",
+                  "relation_type": "PRASYARAT_UNTUK",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Sintesis Protein"
+                }
+              ],
+              "description": "Asam amino adalah monomer penyusun protein, yang mengandung gugus amina dan asam karboksilat.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Asam Amino",
+              "name": "Asam Amino",
+              "relations": [
+                {
+                  "description": "Asam amino adalah monomer penyusun protein.",
+                  "target": "Protein",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Banyak enzim adalah protein.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Enzim"
+                },
+                {
+                  "explanation": "Protein adalah hasil dari proses sintesis protein.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Sintesis Protein"
+                }
+              ],
+              "description": "Protein adalah polimer alam yang tersusun atas monomer asam amino dan memiliki berbagai fungsi biologis penting.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Protein",
+              "name": "Protein",
+              "relations": [
+                {
+                  "description": "Protein adalah salah satu jenis biopolimer organik.",
+                  "target": "Biopolimer Organik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Asam nukleat, seperti DNA, adalah materi genetik.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Materi Genetik"
+                },
+                {
+                  "explanation": "DNA adalah salah satu jenis asam nukleat.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "DNA (asam 2-deoksiribonukleat)"
+                }
+              ],
+              "description": "Asam nukleat adalah polimer yang terdiri dari monomer nukleotida, yang membawa informasi genetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Asam Nukleat",
+              "name": "Asam Nukleat",
+              "relations": [
+                {
+                  "description": "Asam nukleat adalah salah satu jenis biopolimer organik.",
+                  "target": "Biopolimer Organik",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "DNA adalah komponen utama dari materi genetik.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Materi Genetik"
+                },
+                {
+                  "explanation": "DNA menyediakan cetak biru untuk sintesis protein.",
+                  "relation_type": "MEMPENGARUHI",
+                  "target_book": "Biologi Kelas XII",
+                  "target_concept": "Sintesis Protein"
+                }
+              ],
+              "description": "DNA adalah polimer asam nukleat yang menyimpan kode genetik untuk menyusun protein.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "DNA",
+              "name": "DNA (asam 2-deoksiribonukleat)",
+              "relations": [
+                {
+                  "description": "DNA adalah salah satu jenis asam nukleat.",
+                  "target": "Asam Nukleat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Nukleotida adalah monomer penyusun polimer DNA dan RNA, terdiri dari gula, fosfat, dan basa nitrogen.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Nukleotida",
+              "name": "Nukleotida",
+              "relations": [
+                {
+                  "description": "Nukleotida adalah unit berulang dalam asam nukleat.",
+                  "target": "Asam Nukleat",
+                  "type": "BAGIAN_DARI"
+                }
+              ]
+            }
+          ],
+          "name": "G. Biopolimer Organik"
+        }
+      ]
+    }
+  ],
+  "grade": "Kimia Kelas XII"
+}

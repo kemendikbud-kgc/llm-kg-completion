@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two ways to find a curriculum bridge — pitch slide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4EEE2;
+    --bg-warm:#EBE3D2;
+    --ink:#1A1410;
+    --ink-soft:#3A312A;
+    --mute:#7A6B5E;
+    --rule:rgba(26,20,16,0.18);
+    --rule-heavy:rgba(26,20,16,0.4);
+    --ann:#B8492C;
+    --book:#1F5560;
+    --grain:rgba(26,20,16,0.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#E8DFCD;
+    color:var(--ink);
+    font-family:"Source Serif 4",ui-serif,Georgia,serif;
+    font-feature-settings:"liga","kern","onum";
+    -webkit-font-smoothing:antialiased;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    overflow:hidden;
+  }
+  .display{font-family:"Instrument Serif",ui-serif,Georgia,serif;font-weight:400;letter-spacing:-0.012em}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  /* ─── slide canvas: 16:9, fits viewport ─────────────────── */
+  .slide{
+    aspect-ratio:16/9;
+    width:min(100vw - 48px, calc((100vh - 48px) * 16 / 9));
+    background:var(--bg);
+    color:var(--ink);
+    display:grid;
+    grid-template-rows:auto 1fr auto auto auto;
+    position:relative;
+    box-shadow:
+      0 1px 0 rgba(26,20,16,0.06),
+      0 30px 80px -20px rgba(26,20,16,0.35),
+      0 8px 24px -8px rgba(26,20,16,0.25);
+    border:1px solid var(--rule-heavy);
+    overflow:hidden;
+    /* font sizes scale with the slide width so the layout stays stable */
+    font-size:calc(min(100vw - 48px, (100vh - 48px) * 16 / 9) * 0.011);
+  }
+  .slide::before{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(var(--grain) 1px,transparent 1px);
+    background-size:3px 3px;
+    pointer-events:none;mix-blend-mode:multiply;
+  }
+  .slide::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(ellipse 80% 60% at 90% 10%, rgba(184,73,44,0.05), transparent 60%),
+               radial-gradient(ellipse 70% 50% at 5% 85%, rgba(31,85,96,0.04), transparent 60%);
+    pointer-events:none;
+  }
+
+  /* ─── masthead ──────────────────────────────────────────── */
+  .mast{
+    border-bottom:1px solid var(--rule-heavy);
+    padding:1.2em 2em;
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.78em;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--ink-soft);
+    position:relative;z-index:2;
+  }
+  .mast .dot{display:inline-block;width:0.55em;height:0.55em;border-radius:50%;background:var(--ann);margin-right:0.6em;transform:translateY(0.1em)}
+
+  /* ─── hero ──────────────────────────────────────────────── */
+  .hero{
+    padding:1.6em 2em 1.2em;
+    display:grid;grid-template-columns:1.45fr 1fr;
+    gap:2em;align-items:center;
+    position:relative;z-index:2;
+  }
+  .kicker{
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.78em;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--ann);margin-bottom:0.9em;
+    display:flex;align-items:center;gap:0.9em;
+  }
+  .kicker::after{content:"";flex:1;height:1px;background:var(--rule);max-width:8em}
+  .h1{
+    font-family:"Instrument Serif",serif;
+    font-size:4.3em;line-height:0.94;letter-spacing:-0.02em;
+    margin-bottom:0.5em;
+  }
+  .h1 em{color:var(--ann);font-style:italic}
+  .h1 .crossed{color:var(--book);font-style:italic}
+  .lede{
+    font-size:1.1em;line-height:1.45;color:var(--ink-soft);font-style:italic;
+    max-width:36em;
+  }
+  .lede b{color:var(--ink);font-style:normal;font-weight:500}
+
+  /* ─── hero stat ─────────────────────────────────────────── */
+  .stat-wrap{
+    display:flex;flex-direction:column;align-items:flex-end;
+    position:relative;padding-right:1em;
+  }
+  .stat-rule{
+    position:absolute;top:0;left:-2em;bottom:0;width:1px;background:var(--rule);
+  }
+  .stat-num{
+    font-family:"Instrument Serif",serif;
+    font-size:13.5em;line-height:0.82;color:var(--ann);
+    letter-spacing:-0.04em;display:flex;align-items:flex-start;
+  }
+  .stat-num .of{
+    font-size:0.32em;color:var(--ink-soft);font-style:italic;
+    letter-spacing:0;margin-top:0.3em;margin-left:-0.2em;
+  }
+  .stat-num .of b{color:var(--ann);font-style:normal;font-family:"Instrument Serif",serif}
+  .stat-cap{
+    margin-top:0.5em;font-family:"JetBrains Mono",monospace;
+    font-size:0.85em;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:right;
+  }
+  .stat-cap b{color:var(--ann)}
+
+  /* ─── bars row ──────────────────────────────────────────── */
+  .bars{
+    padding:0 2em 1.2em;
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:2.5em;align-items:start;
+    position:relative;z-index:2;
+  }
+  .bars::before{
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:var(--rule);transform:translateX(-50%);
+  }
+  .method{position:relative}
+  .method .codename{
+    font-family:"JetBrains Mono",monospace;font-size:0.78em;
+    letter-spacing:0.14em;text-transform:uppercase;
+    margin-bottom:0.4em;display:flex;align-items:baseline;justify-content:space-between;
+  }
+  .method.notebook .codename{color:var(--book)}
+  .method.ann .codename{color:var(--ann)}
+  .method .codename b{font-weight:500}
+  .method .name{
+    font-family:"Instrument Serif",serif;font-size:1.85em;line-height:1.1;
+    margin-bottom:0.5em;
+  }
+  .method.notebook .name{color:var(--book)}
+  .method.ann .name{color:var(--ann)}
+  .method .name em{font-style:italic}
+  .bar-track{
+    display:flex;height:1.9em;border:1px solid var(--rule-heavy);background:var(--bg-warm);
+    overflow:hidden;position:relative;margin-top:0.4em;
+  }
+  .bar-seg{
+    height:100%;display:flex;align-items:center;padding:0 0.55em;
+    font-family:"JetBrains Mono",monospace;font-size:0.6em;color:#fff;font-weight:500;
+    white-space:nowrap;overflow:hidden;letter-spacing:0.04em;
+    border-right:1px solid rgba(255,255,255,0.22);
+    transform-origin:left;
+    animation:barfill 1.3s cubic-bezier(.16,1,.3,1) both;
+  }
+  .bar-seg:last-child{border-right:none}
+  .bar-seg .pct{opacity:0.7;margin-left:0.3em}
+  .bar-seg.s0{background:var(--ann)}
+  .bar-seg.s1{background:#D86848}
+  .bar-seg.s2{background:#E08866}
+  .bar-seg.s3{background:#C8C2B8;color:var(--ink)}
+  .bar-seg.s4{background:#7A6B5E}
+  .bar-seg.b0{background:var(--book)}
+  .bar-seg.b1{background:#3A7780}
+  .bar-seg.b2{background:#5B98A0}
+  .bar-seg.b3{background:#85B1B7}
+  .bar-seg.b4{background:#C8C2B8;color:var(--ink)}
+  .bar-seg.leak{background:repeating-linear-gradient(45deg,var(--book),var(--book) 4px,#173f47 4px,#173f47 8px);color:#fff}
+  .bar-foot{
+    display:flex;justify-content:space-between;margin-top:0.45em;
+    font-family:"JetBrains Mono",monospace;font-size:0.65em;
+    color:var(--mute);letter-spacing:0.08em;text-transform:uppercase;
+  }
+  .bar-foot b{color:var(--ink);font-weight:500}
+
+  /* ─── samples row ───────────────────────────────────────── */
+  .samples{
+    padding:0 2em 0.8em;
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:2.5em;
+    position:relative;z-index:2;
+  }
+  .samples::before{
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:var(--rule);transform:translateX(-50%);
+  }
+  .sample{
+    border-top:1px dashed var(--rule);
+    padding-top:0.7em;
+    position:relative;
+  }
+  .sample .reltype{
+    font-family:"JetBrains Mono",monospace;font-size:0.62em;letter-spacing:0.1em;
+    text-transform:uppercase;margin-bottom:0.5em;
+    display:flex;align-items:center;gap:0.6em;
+  }
+  .sample.ann .reltype{color:var(--ann)}
+  .sample.notebook .reltype{color:var(--book)}
+  .sample .flag{
+    font-family:"JetBrains Mono",monospace;font-size:0.85em;
+    background:var(--book);color:#fff;padding:0.15em 0.5em;letter-spacing:0.05em;
+  }
+  .sample .pair{
+    font-family:"Instrument Serif",serif;font-size:1.25em;line-height:1.2;
+    margin-bottom:0.45em;
+  }
+  .sample .pair .arrow{color:var(--mute);margin:0 0.4em;font-style:italic}
+  .sample .pair small{
+    font-family:"JetBrains Mono",monospace;font-size:0.4em;
+    color:var(--mute);letter-spacing:0.08em;text-transform:uppercase;
+    display:inline-block;vertical-align:0.55em;margin-left:0.25em;
+  }
+  .sample .why{
+    font-style:italic;color:var(--ink-soft);font-size:0.85em;line-height:1.45;
+  }
+  .sample .why::before{content:""""";font-family:"Instrument Serif",serif;font-style:italic;color:var(--mute);margin-right:0.15em;font-size:1.4em;line-height:0;position:relative;top:0.25em}
+  .sample .conf{
+    position:absolute;top:0.7em;right:0;
+    font-family:"JetBrains Mono",monospace;font-size:0.65em;color:var(--ann);
+    letter-spacing:0.06em;
+  }
+  .sample.notebook .conf{display:none}
+  .sample .conf b{font-weight:500}
+
+  /* ─── verdict ───────────────────────────────────────────── */
+  .verdict{
+    border-top:1px solid var(--rule-heavy);
+    padding:1em 2em;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--bg-warm);
+    position:relative;z-index:2;
+    gap:1.5em;
+  }
+  .verdict-text{
+    font-family:"Instrument Serif",serif;font-size:1.5em;line-height:1.2;
+    max-width:50em;
+  }
+  .verdict-text em{color:var(--ann);font-style:italic}
+  .verdict-text strong{color:var(--book);font-weight:400;font-style:italic}
+  .verdict-meta{
+    font-family:"JetBrains Mono",monospace;font-size:0.7em;
+    letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--mute);text-align:right;flex-shrink:0;
+  }
+  .verdict-meta b{color:var(--ink);font-weight:500}
+
+  /* ─── motion ────────────────────────────────────────────── */
+  @keyframes barfill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .hero, .bars, .samples, .verdict{animation:rise .6s ease-out both}
+  .hero{animation-delay:.05s}
+  .bars{animation-delay:.15s}
+  .samples{animation-delay:.25s}
+  .verdict{animation-delay:.35s}
+  .bars .method.ann .bar-seg{animation-delay:.4s}
+  .bars .method.notebook .bar-seg{animation-delay:.55s}
+
+  @media print{
+    body{background:#fff;padding:0}
+    .slide{box-shadow:none;border:none}
+  }
+</style>
+</head>
+<body>
+
+<article class="slide">
+
+  <!-- masthead -->
+  <header class="mast">
+    <div><span class="dot"></span>Thesis methodology note  ·  2026-05-14</div>
+    <div>Kelas XII Curriculum KG  ·  ann-classifier-v1  vs  friend-llm</div>
+  </header>
+
+  <!-- hero -->
+  <section class="hero">
+    <div>
+      <div class="kicker">Cross-disciplinary completion · LINTAS_BUKU_*</div>
+      <h1 class="h1 display">
+        Two ways to find a <em>curriculum bridge.</em>
+        <br>
+        They found <span class="crossed">almost nothing in common.</span>
+      </h1>
+      <p class="lede">
+        Two methodologies. Same baseline: <b>extraction-v2-reviewed</b> on the Yhoga knowledge
+        graph — <b>342 Concepts</b> across Biologi, Fisika, and Kimia Kelas XII. Both produced
+        <b>LINTAS_BUKU_*</b> edges. Both used the same target vocabulary. Then we compared what
+        each method actually surfaced.
+      </p>
+    </div>
+
+    <div class="stat-wrap">
+      <div class="stat-rule"></div>
+      <div class="stat-num display">
+        2<span class="of"><i>/77</i></span>
+      </div>
+      <div class="stat-cap">
+        <b>2.6%</b> overlap · 168 edges total · 166 disjoint
+      </div>
+    </div>
+  </section>
+
+  <!-- distribution bars -->
+  <section class="bars">
+
+    <div class="method notebook">
+      <div class="codename"><b>METHOD A</b> &nbsp; friend-llm · metadata + LLM emission</div>
+      <h3 class="name display">Glossary, ToC labels, <em>fallback overlap.</em></h3>
+      <div class="bar-track">
+        <div class="bar-seg b0" style="width:54.9%">BERKAITAN_DENGAN<span class="pct">54.9%</span></div>
+        <div class="bar-seg b1" style="width:14.3%">APLIKASI_DARI<span class="pct">14.3</span></div>
+        <div class="bar-seg b2" style="width:14.3%">MEMPERDALAM<span class="pct">14.3</span></div>
+        <div class="bar-seg b3" style="width:5.5%">SAMA</div>
+        <div class="bar-seg b4" style="width:3.3%">PRA</div>
+        <div class="bar-seg leak" style="width:7.7%" title="out-of-vocabulary leaks">leak ×7</div>
+      </div>
+      <div class="bar-foot">
+        <span><b>91</b> edges  ·  22.1% concept coverage</span>
+        <span>13.2% token-overlap fallback  ·  7.7% vocab leak  ·  no confidence</span>
+      </div>
+    </div>
+
+    <div class="method ann">
+      <div class="codename"><b>METHOD B</b> &nbsp; ann-classifier-v1 · embeddings + classifier</div>
+      <h3 class="name display">3072-dim cosine, <em>closed-vocab Pydantic.</em></h3>
+      <div class="bar-track">
+        <div class="bar-seg s0" style="width:42.9%">PRASYARAT_UNTUK<span class="pct">42.9%</span></div>
+        <div class="bar-seg s1" style="width:31.2%">MEMPERDALAM<span class="pct">31.2</span></div>
+        <div class="bar-seg s2" style="width:13.0%">APLIKASI_DARI<span class="pct">13.0</span></div>
+        <div class="bar-seg s3" style="width:11.7%">BERKAITAN<span class="pct">11.7</span></div>
+        <div class="bar-seg s4" style="width:1.3%">S</div>
+      </div>
+      <div class="bar-foot">
+        <span><b>77</b> edges  ·  20.2% concept coverage (69/342)</span>
+        <span>0 fallback  ·  0 vocab leak  ·  conf 0.20–1.00 (avg 0.85), cache-versioned</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- one sample per method -->
+  <section class="samples">
+
+    <div class="sample notebook">
+      <div class="reltype">METHOD A · what fallback feels like <span class="flag">token-overlap</span></div>
+      <div class="pair display">
+        Nukleotida <small>Kimia XII</small>
+        <span class="arrow">↔</span>
+        Subbab A. Sifat dan Konsep Asam Basa <small>Kimia XII</small>
+      </div>
+      <div class="why">Shared tokens: <i>asam, basa.</i> But the asam in nucleic <i>acid</i> is different from acid-base chemistry — a polysemy trap. The target isn't even a Concept; it's a subchapter header that leaked into the candidate pool.</div>
+    </div>
+
+    <div class="sample ann">
+      <div class="reltype">METHOD B · what closed-vocab classification finds</div>
+      <div class="conf">conf <b>0.95</b></div>
+      <div class="pair display">
+        Fosforilasi Oksidatif <small>Biologi XII</small>
+        <span class="arrow">→</span>
+        Oksidasi & Reduksi Organik <small>Kimia XII</small>
+      </div>
+      <div class="why">Fosforilasi Oksidatif (Biologi) adalah penerapan prinsip-prinsip reaksi oksidasi dan reduksi organik (Kimia) dalam konteks biologis untuk menghasilkan energi.</div>
+    </div>
+
+  </section>
+
+  <!-- verdict -->
+  <footer class="verdict">
+    <div class="verdict-text display">
+      Not <em>competitors.</em> <strong>Complements.</strong>
+      &nbsp;Method A catches surface-form bridges. Method B catches semantic bridges. Together they cover what neither finds alone.
+    </div>
+    <div class="verdict-meta">
+      <div><b>extraction-v2-reviewed</b></div>
+      <div>iter 2 · t=0.75 · k=15</div>
+    </div>
+  </footer>
+
+</article>
+
+</body>
+</html>

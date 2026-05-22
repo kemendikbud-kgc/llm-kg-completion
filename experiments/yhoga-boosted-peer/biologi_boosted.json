@@ -1,0 +1,2584 @@
+{
+  "chapters": [
+    {
+      "chapter": "Enzim dan Metabolisme",
+      "chapter_relations": [
+        {
+          "concept_links": [
+            {
+              "explanation": "Energi ATP yang dihasilkan dari metabolisme digunakan untuk sintesis dan perbaikan DNA.",
+              "source_concept": "ATP",
+              "target_concept": "DNA (asam 2-deoksiribonukleat)"
+            },
+            {
+              "explanation": "Enzim berperan penting dalam proses sintesis protein, yang merupakan dasar dari materi genetik.",
+              "source_concept": "Enzim",
+              "target_concept": "Sintesis Protein"
+            }
+          ],
+          "description": "Pemahaman tentang metabolisme, khususnya produksi energi dan komponen seluler, penting untuk memahami materi genetik dan fungsinya.",
+          "target_chapter": "Genetik dan Pewarisan Sifat",
+          "type": "PRASYARAT"
+        }
+      ],
+      "chapter_summary": "Bab ini membahas enzim dan metabolisme. Enzim adalah protein yang berfungsi sebagai katalisator dalam reaksi biokimia, memiliki sifat spesifik, dan dipengaruhi oleh faktor lingkungan seperti suhu dan pH. Metabolisme terdiri dari anabolisme (sintesis) dan katabolisme (pemecahan). Katabolisme meliputi respirasi seluler (aerob dan anaerob/fermentasi) yang menghasilkan energi, sementara anabolisme meliputi fotosintesis yang menggunakan energi untuk membentuk senyawa organik. Proses-proses ini sangat penting bagi kelangsungan hidup organisme.",
+      "next": "Genetik dan Pewarisan Sifat",
+      "previous": null,
+      "subchapters": [
+        "Enzim",
+        "Metabolisme"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Apoenzim tersusun atas asam amino, yang merupakan unit pembangun protein.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "Enzim umumnya tersusun atas apoenzim (protein) dan gugus prostetik (koenzim atau kofaktor). Apoenzim memiliki sisi aktif tempat menempelnya substrat.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Struktur dan Fungsi Enzim",
+              "name": "Struktur Enzim",
+              "relations": [
+                {
+                  "description": "Apoenzim adalah bagian protein dari holoenzim.",
+                  "target": "Holoenzim",
+                  "type": "BAGIAN_DARI"
+                },
+                {
+                  "description": "Struktur enzim, termasuk sisi aktifnya, menentukan spesifisitas kerjanya.",
+                  "target": "Kerja Enzim",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Inhibitor Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Tingkat keasaman (pH) sangat mempengaruhi aktivitas enzim.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "pH"
+                }
+              ],
+              "description": "Enzim bersifat seperti protein (bekerja pada kisaran suhu dan pH tertentu), menurunkan energi aktivasi, bekerja secara spesifik (one enzyme one substrate), dan dipengaruhi oleh faktor lingkungan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Struktur dan Fungsi Enzim",
+              "name": "Sifat Enzim",
+              "relations": [
+                {
+                  "description": "Enzim mempercepat laju reaksi kimia tanpa ikut bereaksi secara permanen.",
+                  "target": "Reaksi Kimia",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Suhu, pH, konsentrasi substrat, dan keberadaan inhibitor mempengaruhi kerja enzim.",
+                  "target": "Faktor Lingkungan",
+                  "type": "DIPENGARUHI_OLEH"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Faktor yang Mempengaruhi Kerja Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Interaksi antara enzim dan substrat melibatkan gaya antarmolekul seperti gaya listrik.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "gaya listrik"
+                }
+              ],
+              "description": "Enzim bekerja dengan mengikat substrat pada sisi aktifnya membentuk kompleks enzim-substrat, yang kemudian diubah menjadi produk. Teori lock and key dan induced fit menjelaskan mekanisme ini.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Mekanisme Kerja Enzim",
+              "name": "Mekanisme Kerja Enzim",
+              "relations": [
+                {
+                  "description": "Mekanisme kerja enzim memfasilitasi transformasi substrat menjadi produk.",
+                  "target": "Pembentukan Produk",
+                  "type": "MEMUNGKINKAN"
+                },
+                {
+                  "description": "Teori lock and key dan induced fit menjelaskan bagaimana enzim berinteraksi secara spesifik dengan substrat.",
+                  "target": "Spesifisitas Enzim",
+                  "type": "MENJELASKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Inhibitor Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Perubahan suhu mempengaruhi energi kinetik molekul dan laju reaksi enzim.",
+                  "relation_type": "MEMPENGARUHI",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "suhu"
+                }
+              ],
+              "description": "Faktor-faktor seperti suhu, pH, konsentrasi substrat, konsentrasi enzim, aktivator, dan inhibitor mempengaruhi kecepatan kerja enzim.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Faktor-Faktor yang Memengaruhi Kerja Enzim",
+              "name": "Faktor yang Mempengaruhi Kerja Enzim",
+              "relations": [
+                {
+                  "description": "Faktor-faktor ini dapat meningkatkan atau menurunkan laju reaksi yang dikatalisis oleh enzim.",
+                  "target": "Kecepatan Reaksi",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Sifat Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Inhibitor Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Beberapa antibiotik seperti penisilin bekerja sebagai inhibitor enzim pada bakteri.",
+                  "relation_type": "APLIKASI_DARI",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "antibiotik"
+                }
+              ],
+              "description": "Inhibitor kompetitif dan non-kompetitif menghambat kerja enzim. Inhibitor kompetitif bersaing dengan substrat untuk sisi aktif, sementara inhibitor non-kompetitif mengikat pada sisi alosterik.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Faktor-Faktor yang Memengaruhi Kerja Enzim",
+              "name": "Inhibitor Enzim",
+              "relations": [
+                {
+                  "description": "Inhibitor mengurangi atau menghentikan aktivitas katalitik enzim.",
+                  "target": "Aktivitas Enzim",
+                  "type": "MENGHAMBAT"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Mekanisme Kerja Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Struktur Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "A. Enzim"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Proses anabolisme seperti fotosintesis melibatkan penggunaan hidrogen dari air.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "hidrogen"
+                }
+              ],
+              "description": "Anabolisme adalah proses sintesis molekul kompleks dari molekul sederhana, yang membutuhkan energi (endergonik), contohnya fotosintesis dan kemosintesis.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Anabolisme dan Katabolisme",
+              "name": "Anabolisme",
+              "relations": [
+                {
+                  "description": "Anabolisme memerlukan input energi untuk membangun molekul kompleks.",
+                  "target": "Energi",
+                  "type": "MEMBUTUHKAN"
+                },
+                {
+                  "description": "Reaksi anabolisme dikatalisis oleh enzim spesifik.",
+                  "target": "Enzim",
+                  "type": "BERGANTUNG_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Katabolisme",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Reaksi katabolisme, seperti respirasi aerob, seringkali melibatkan oksigen sebagai akseptor elektron.",
+                  "relation_type": "MEMPENGARUHI",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "oksigen"
+                }
+              ],
+              "description": "Katabolisme adalah proses pemecahan molekul kompleks menjadi molekul sederhana, yang melepaskan energi (eksergonik), contohnya respirasi seluler.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Anabolisme dan Katabolisme",
+              "name": "Katabolisme",
+              "relations": [
+                {
+                  "description": "Katabolisme melepaskan energi kimia yang disimpan dalam bentuk ATP.",
+                  "target": "Energi",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Reaksi katabolisme dikatalisis oleh enzim spesifik.",
+                  "target": "Enzim",
+                  "type": "BERGANTUNG_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Anabolisme",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Pergerakan elektron dalam rantai transpor elektron mirip dengan konsep aliran atau fluks.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "garis fluks"
+                }
+              ],
+              "description": "Respirasi aerob adalah proses pemecahan glukosa secara bertahap menggunakan oksigen untuk menghasilkan energi (ATP), CO2, dan H2O. Tahapannya meliputi glikolisis, dekarboksilasi oksidatif, siklus Krebs, dan transpor elektron.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Respirasi Seluler",
+              "name": "Respirasi Seluler (Aerob)",
+              "relations": [
+                {
+                  "description": "Tujuan utama respirasi aerob adalah untuk menghasilkan sejumlah besar ATP.",
+                  "target": "ATP",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Respirasi aerob berlangsung melalui serangkaian tahapan yang saling berkaitan.",
+                  "target": "Glikolisis, Dekarboksilasi Oksidatif, Siklus Krebs, Transpor Elektron",
+                  "type": "TERDIRI_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fermentasi (Anaerob)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Gula kompleks seperti disakarida dapat dipecah menjadi monosakarida sebelum mengalami fermentasi.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "disakarida"
+                }
+              ],
+              "description": "Fermentasi adalah pemecahan glukosa tanpa menggunakan oksigen, menghasilkan energi dalam jumlah kecil. Contohnya adalah fermentasi alkohol dan fermentasi asam laktat.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Fermentasi",
+              "name": "Fermentasi (Anaerob)",
+              "relations": [
+                {
+                  "description": "Fermentasi menghasilkan energi dalam jumlah yang jauh lebih sedikit dibandingkan respirasi aerob.",
+                  "target": "Energi (ATP)",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Terdapat beberapa jenis fermentasi tergantung pada produk akhirnya.",
+                  "target": "Fermentasi Alkohol, Fermentasi Asam Laktat",
+                  "type": "TERDIRI_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Respirasi Seluler (Aerob)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Produksi glukosa melalui fotosintesis melibatkan penambahan atom hidrogen.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "hidrogen"
+                }
+              ],
+              "description": "Fotosintesis adalah proses pembentukan senyawa organik (glukosa) dari CO2 dan H2O menggunakan energi cahaya, yang terjadi di kloroplas. Terdiri dari reaksi terang dan reaksi gelap.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Fotosintesis",
+              "name": "Fotosintesis",
+              "relations": [
+                {
+                  "description": "Fotosintesis menghasilkan produk utama berupa gula dan oksigen sebagai produk samping.",
+                  "target": "Glukosa dan Oksigen",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Energi cahaya matahari adalah sumber energi utama untuk fotosintesis.",
+                  "target": "Energi Cahaya",
+                  "type": "MEMBUTUHKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kemosintesis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Fotorespirasi adalah proses yang terjadi pada tumbuhan C3 dalam kondisi terang dan suhu tinggi, yang mengkonsumsi oksigen dan melepaskan CO2, namun tidak menghasilkan ATP atau gula, sehingga mengurangi efisiensi fotosintesis.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Fotorespirasi",
+              "name": "Fotorespirasi",
+              "relations": [
+                {
+                  "description": "Fotorespirasi mengurangi hasil bersih dari fotosintesis.",
+                  "target": "Fotosintesis",
+                  "type": "MERUGIKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fotosintesis",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Respirasi Seluler (Aerob)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Senyawa organik yang dihasilkan dalam jalur fiksasi karbon dapat diubah menjadi asam amino.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "Klasifikasi tumbuhan berdasarkan jalur fiksasi karbon awalnya: C3 (PGA), C4 (oksalasetat), dan CAM (metabolisme asam Crassulacean). Perbedaan ini berkaitan dengan adaptasi terhadap lingkungan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Tumbuhan C3, C4, dan CAM",
+              "name": "Tumbuhan C3, C4, dan CAM",
+              "relations": [
+                {
+                  "description": "Jalur fotosintesis yang berbeda memungkinkan tumbuhan beradaptasi pada kondisi lingkungan yang berbeda.",
+                  "target": "Adaptasi Tumbuhan",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Sifat Enzim",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fermentasi (Anaerob)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Kemosintesis melibatkan perubahan bilangan oksidasi senyawa anorganik untuk melepaskan energi.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "bilangan oksidasi"
+                }
+              ],
+              "description": "Kemosintesis adalah proses sintesis senyawa organik menggunakan energi kimia dari oksidasi senyawa anorganik, dilakukan oleh bakteri tertentu.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Kemosintesis",
+              "name": "Kemosintesis",
+              "relations": [
+                {
+                  "description": "Bakteri yang tidak memiliki klorofil melakukan kemosintesis.",
+                  "target": "Bakteri Kemosintetik",
+                  "type": "DILAKUKAN_OLEH"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fotosintesis",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Anabolisme",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "B. Metabolisme"
+        }
+      ]
+    },
+    {
+      "chapter": "Genetik dan Pewarisan Sifat",
+      "chapter_relations": [
+        {
+          "concept_links": [
+            {
+              "explanation": "Konsep umum enzim relevan untuk memahami peran enzim spesifik dalam replikasi DNA.",
+              "source_concept": "Enzim",
+              "target_concept": "Enzim DNA Polimerase, Enzim Helikase, Enzim Ligase"
+            }
+          ],
+          "description": "Pemahaman tentang enzim dan metabolisme merupakan dasar untuk memahami proses biokimia dalam sintesis protein dan replikasi DNA.",
+          "target_chapter": "Enzim dan Metabolisme",
+          "type": "PRASYARAT"
+        },
+        {
+          "concept_links": [
+            {
+              "explanation": "Mutasi adalah sumber variasi genetik yang menjadi bahan bakar utama evolusi.",
+              "source_concept": "Mutasi",
+              "target_concept": "Mutasi"
+            },
+            {
+              "explanation": "Mekanisme pewarisan sifat menjelaskan bagaimana variasi genetik dipertahankan dan disebarkan antar generasi, yang merupakan prasyarat untuk perubahan evolusioner.",
+              "source_concept": "Pewarisan Sifat",
+              "target_concept": "Hukum Mendel"
+            }
+          ],
+          "description": "Konsep materi genetik, mutasi, dan pewarisan sifat yang dipelajari dalam bab ini merupakan dasar untuk memahami mekanisme evolusi.",
+          "target_chapter": "Evolusi",
+          "type": "MEMPERSIAPKAN"
+        }
+      ],
+      "chapter_summary": "Bab Genetik dan Pewarisan Sifat membahas pondasi materi genetik seperti DNA, gen, dan kromosom, serta mekanisme sintesis protein yang mengarah pada ekspresi sifat. Bab ini juga menguraikan proses pembelahan sel (mitosis dan meiosis) yang berperan dalam pertumbuhan dan reproduksi. Selain itu, dipelajari hukum-hukum pewarisan sifat oleh Mendel, penyimpangan semu hukum Mendel, penentuan jenis kelamin, serta mutasi yang dapat menyebabkan penyakit keturunan dan konsep epigenetik.",
+      "next": "Evolusi",
+      "previous": "Enzim dan Metabolisme",
+      "subchapters": [
+        "Materi Genetik",
+        "Sintesis Protein",
+        "Pembelahan Sel",
+        "Pewarisan Sifat"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep DNA (asam 2-deoksiribonukleat) adalah sama dalam kedua buku, merujuk pada molekul penyimpan informasi genetik.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "DNA (asam 2-deoksiribonukleat)"
+                }
+              ],
+              "description": "DNA adalah materi genetik yang menentukan karakteristik makhluk hidup. Strukturnya berupa double helix yang terdiri dari rangkaian nukleotida.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "DNA (Asam Deoksiribonukleat)",
+              "relations": [
+                {
+                  "description": "Gen adalah segmen dari DNA.",
+                  "target": "Gen",
+                  "type": "BAGIAN_DARI"
+                },
+                {
+                  "description": "DNA bersama protein membentuk kromosom.",
+                  "target": "Kromosom",
+                  "type": "MEMBENTUK"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Nukleotida",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Gen adalah segmen DNA yang bertanggung jawab untuk mengekspresikan sifat tertentu dan mengkode pembentukan polipeptida.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Gen",
+              "relations": [
+                {
+                  "description": "Gen merupakan segmen dari molekul DNA.",
+                  "target": "DNA",
+                  "type": "BAGIAN_DARI"
+                },
+                {
+                  "description": "Gen menyandi protein yang menentukan fenotip.",
+                  "target": "Protein",
+                  "type": "MENYANDI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kromosom",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Nukleotida adalah satuan dasar penyusun DNA, terdiri dari gula deoksiribosa, gugus fosfat, dan basa nitrogen (Adenin, Sitosin, Guanin, Timin).",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Nukleotida",
+              "relations": [
+                {
+                  "description": "Rangkaian nukleotida membentuk DNA.",
+                  "target": "DNA",
+                  "type": "MEMBENTUK"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Aturan Perpasangan Basa",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "RNA (Asam Ribonukleat)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Aturan perpasangan basa menyatakan bahwa Adenin (A) selalu berpasangan dengan Timin (T), dan Sitosin (C) selalu berpasangan dengan Guanin (G) melalui ikatan hidrogen.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Aturan Perpasangan Basa",
+              "relations": [
+                {
+                  "description": "Aturan perpasangan basa menentukan struktur double helix DNA.",
+                  "target": "Struktur DNA",
+                  "type": "MENGATUR"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Nukleotida",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Protein Histon",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Replikasi DNA adalah proses penggandaan DNA yang terjadi sebelum pembelahan sel, menghasilkan dua molekul DNA yang identik.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Replikasi DNA",
+              "relations": [
+                {
+                  "description": "Replikasi DNA adalah prasyarat untuk pembelahan sel.",
+                  "target": "Pembelahan Sel",
+                  "type": "MEMUNGKINKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Mitosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Transkripsi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: atas, tersusun.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Senyawa Organik Tersusun atas Rantai Karbon"
+                },
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: sifat, struktur.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Hubungan Struktur dan Sifat Polimer"
+                }
+              ],
+              "description": "Kromosom adalah struktur makromolekul yang tersusun atas DNA dan protein (histon), berfungsi sebagai pembawa sifat keturunan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Kromosom",
+              "relations": [
+                {
+                  "description": "Kromosom tersusun atas DNA dan protein.",
+                  "target": "DNA",
+                  "type": "TERDIRI_DARI"
+                },
+                {
+                  "description": "Pada eukariotik, kromosom terletak di dalam inti sel.",
+                  "target": "Inti Sel (Nukleus)",
+                  "type": "BAGIAN_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Protein Histon",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "DNA yang panjang dikemas dalam inti sel yang kecil dengan cara melilit protein histon membentuk nukleosom, yang kemudian membentuk kromatin hingga kromosom.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Pengemasan DNA",
+              "relations": [
+                {
+                  "description": "Pengemasan DNA melalui protein histon menghasilkan struktur kromosom.",
+                  "target": "Kromosom",
+                  "type": "MEMBANTU"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Nukleosom",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kromatin",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Protein histon adalah protein basa yang berperan dalam mengemas DNA menjadi struktur kromatin dan kromosom.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Protein Histon",
+              "relations": [
+                {
+                  "description": "Protein histon membungkus DNA.",
+                  "target": "DNA",
+                  "type": "MEMBUNGKUS"
+                },
+                {
+                  "description": "Protein histon bersama DNA membentuk nukleosom.",
+                  "target": "Nukleosom",
+                  "type": "MEMBENTUK"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kromosom",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Nukleosom adalah unit dasar kromatin, terdiri dari DNA yang melilit protein histon.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Nukleosom",
+              "relations": [
+                {
+                  "description": "Nukleosom adalah unit dasar kromatin.",
+                  "target": "Kromatin",
+                  "type": "UNIT_DASAR_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pengemasan DNA",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kromatin",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kromatin adalah untaian DNA yang dipadatkan oleh protein histon, membentuk struktur yang lebih padat dari nukleosom.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Kromatin",
+              "relations": [
+                {
+                  "description": "Kromatin memadat membentuk kromosom.",
+                  "target": "Kromosom",
+                  "type": "MEMADAT"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pengemasan DNA",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Nukleosom",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kromosom autosom adalah kromosom tubuh, sedangkan gonosom adalah kromosom seks yang menentukan jenis kelamin.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Jenis Kromosom (Autosom dan Gonosom)",
+              "relations": [
+                {
+                  "description": "Gonosom berperan dalam penentuan jenis kelamin.",
+                  "target": "Penentuan Jenis Kelamin",
+                  "type": "BERPERAN_DALAM"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Jumlah Kromosom (Haploid dan Diploid)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "DNA (Asam Deoksiribonukleat)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Haploid (n) adalah kondisi dengan satu set kromosom, sedangkan diploid (2n) memiliki dua set kromosom homolog.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Materi Genetik",
+              "name": "Jumlah Kromosom (Haploid dan Diploid)",
+              "relations": [
+                {
+                  "description": "Kondisi haploid terdapat pada gamet, sedangkan diploid pada sel tubuh.",
+                  "target": "Gamet (Haploid), Sel Tubuh (Diploid)",
+                  "type": "TERDAPAT_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Jenis Kromosom (Autosom dan Gonosom)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Meiosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "A. Materi Genetik"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Konsep yang menjelaskan aliran informasi genetik dari DNA ke RNA hingga protein.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Dogma Sentral Biologi",
+              "relations": [
+                {
+                  "description": "Dogma sentral mencakup proses transkripsi dan translasi.",
+                  "target": "Transkripsi dan Translasi",
+                  "type": "MELIPUTI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Messenger RNA (mRNA)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Transkripsi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: asam, basa.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Sifat dan Konsep Asam Basa"
+                },
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: asam, basa.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Kekuatan dan pH Asam Basa"
+                }
+              ],
+              "description": "RNA adalah polinukleotida yang terdiri dari satu rantai, gula ribosa, dan basa nitrogen (A, U, G, C). Berperan dalam sintesis protein.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "RNA (Asam Ribonukleat)",
+              "relations": [
+                {
+                  "description": "RNA mengandung basa urasil, berbeda dengan DNA yang mengandung timin.",
+                  "target": "Urasil",
+                  "type": "TERDIRI_DARI"
+                },
+                {
+                  "description": "RNA berperan penting dalam proses sintesis protein.",
+                  "target": "Sintesis Protein",
+                  "type": "BERPERAN_DALAM"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Nukleotida",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "mRNA membawa informasi genetik dari DNA di inti sel ke ribosom di sitoplasma dalam bentuk kodon.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Messenger RNA (mRNA)",
+              "relations": [
+                {
+                  "description": "mRNA membawa kodon yang merupakan triplet basa nitrogen.",
+                  "target": "Kodon",
+                  "type": "MEMBAWA"
+                },
+                {
+                  "description": "mRNA berikatan dengan ribosom untuk proses translasi.",
+                  "target": "Ribosom",
+                  "type": "TERDAPAT_DI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Transkripsi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: amino, asam.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "tRNA mengenali kodon pada mRNA dan menerjemahkannya menjadi asam amino di ribosom, memiliki antikodon.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Transfer RNA (tRNA)",
+              "relations": [
+                {
+                  "description": "tRNA memiliki antikodon yang berkomplemen dengan kodon pada mRNA.",
+                  "target": "Antikodon",
+                  "type": "MEMILIKI"
+                },
+                {
+                  "description": "tRNA membawa asam amino yang sesuai dengan kodon.",
+                  "target": "Asam Amino",
+                  "type": "MEMBAWA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Translasi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "rRNA adalah komponen struktural ribosom dan berperan dalam sintesis protein.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Ribosomal RNA (rRNA)",
+              "relations": [
+                {
+                  "description": "rRNA merupakan bagian penting dari ribosom.",
+                  "target": "Ribosom",
+                  "type": "MERUPAKAN_KOMPONEN_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "RNA (Asam Ribonukleat)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Protein Histon",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Proses penyalinan informasi genetik dari DNA menjadi mRNA yang terjadi di dalam inti sel.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Transkripsi",
+              "relations": [
+                {
+                  "description": "Transkripsi menghasilkan molekul mRNA.",
+                  "target": "mRNA",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Transkripsi berlangsung di dalam inti sel.",
+                  "target": "Inti Sel",
+                  "type": "TERJADI_DI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Messenger RNA (mRNA)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: amino, asam.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "Proses penerjemahan urutan kodon pada mRNA menjadi urutan asam amino untuk membentuk polipeptida (protein) di ribosom.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Translasi",
+              "relations": [
+                {
+                  "description": "Translasi berlangsung di ribosom.",
+                  "target": "Ribosom",
+                  "type": "TERJADI_DI"
+                },
+                {
+                  "description": "Translasi menghasilkan protein.",
+                  "target": "Protein",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Transfer RNA (tRNA)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: amino, asam.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                },
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: asam, basa.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Sifat dan Konsep Asam Basa"
+                }
+              ],
+              "description": "Sistem pengkodean triplet basa nitrogen pada mRNA yang menentukan urutan asam amino dalam protein.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Kode Genetik",
+              "relations": [
+                {
+                  "description": "Kode genetik menentukan urutan asam amino.",
+                  "target": "Urutan Asam Amino",
+                  "type": "MENENTUKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Asam Amino",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Translasi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep asam amino sebagai penyusun protein adalah sama di kedua buku.",
+                  "relation_type": "SAMA_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "Asam amino adalah unit pembangun protein, yang urutannya ditentukan oleh kode genetik pada mRNA.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Sintesis Protein",
+              "name": "Asam Amino",
+              "relations": [
+                {
+                  "description": "Asam amino membentuk protein melalui ikatan peptida.",
+                  "target": "Protein",
+                  "type": "MEMBENTUK"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kode Genetik",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Translasi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "B. Sintesis Protein"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Pembelahan sel yang menghasilkan dua sel anak identik secara genetik dengan sel induk, penting untuk pertumbuhan dan perbaikan jaringan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pembelahan Sel",
+              "name": "Mitosis",
+              "relations": [
+                {
+                  "description": "Mitosis menghasilkan sel-sel anak yang identik dengan induknya.",
+                  "target": "Sel Identik",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Mitosis berperan dalam pertumbuhan organisme multiseluler.",
+                  "target": "Pertumbuhan",
+                  "type": "BERPERAN_DALAM"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Meiosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Pembelahan sel yang menghasilkan empat sel anak dengan setengah jumlah kromosom sel induk, penting untuk pembentukan gamet pada reproduksi seksual.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pembelahan Sel",
+              "name": "Meiosis",
+              "relations": [
+                {
+                  "description": "Meiosis menghasilkan sel gamet untuk reproduksi seksual.",
+                  "target": "Gamet",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Meiosis mengurangi jumlah kromosom menjadi setengah dari sel induk.",
+                  "target": "Jumlah Kromosom",
+                  "type": "MENGURANGI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Mitosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Siklus sel adalah urutan peristiwa yang terjadi pada sel dari satu pembelahan ke pembelahan berikutnya, meliputi interfase dan fase mitosis/meiosis.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pembelahan Sel",
+              "name": "Siklus Sel",
+              "relations": [
+                {
+                  "description": "Siklus sel terdiri dari interfase, mitosis, dan sitokinesis.",
+                  "target": "Interfase, Mitosis, Sitokinesis",
+                  "type": "MELIPUTI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Interfase",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Replikasi DNA",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Tahap persiapan sel sebelum pembelahan, meliputi pertumbuhan, sintesis DNA, dan persiapan organel.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pembelahan Sel",
+              "name": "Interfase",
+              "relations": [
+                {
+                  "description": "Interfase mendahului tahap mitosis atau meiosis.",
+                  "target": "Mitosis/Meiosis",
+                  "type": "TERJADI_SEBELUM"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Siklus Sel",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Replikasi DNA",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Proses pembentukan sel kelamin (gamet) melalui meiosis, meliputi spermatogenesis (pembentukan sperma) dan oogenesis (pembentukan ovum).",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pembelahan Sel",
+              "name": "Gametogenesis",
+              "relations": [
+                {
+                  "description": "Gametogenesis melibatkan proses meiosis.",
+                  "target": "Meiosis",
+                  "type": "MELIBATKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Meiosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Siklus Sel",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "C. Pembelahan Sel"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Gen-gen alel yang berpasangan memisah secara bebas saat pembentukan gamet.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Hukum Mendel I (Segregasi)",
+              "relations": [
+                {
+                  "description": "Hukum Mendel I didasarkan pada persilangan monohibrid.",
+                  "target": "Persilangan Monohibrid",
+                  "type": "BERLAKU_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Hukum Mendel II (Assortment Bebas)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Meiosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Gen-gen yang terletak pada kromosom homolog yang berbeda akan berpasangan secara bebas saat pembentukan gamet.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Hukum Mendel II (Assortment Bebas)",
+              "relations": [
+                {
+                  "description": "Hukum Mendel II didasarkan pada persilangan dihibrid.",
+                  "target": "Persilangan Dihibrid",
+                  "type": "BERLAKU_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Hukum Mendel I (Segregasi)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Meiosis",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Persilangan yang hanya memperhatikan satu sifat beda.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Persilangan Monohibrid",
+              "relations": [
+                {
+                  "description": "Persilangan monohibrid digunakan untuk memahami Hukum Mendel I.",
+                  "target": "Hukum Mendel I",
+                  "type": "MENGACU_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Persilangan Dihibrid",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Dominan dan Resesif",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Persilangan yang memperhatikan dua sifat beda atau lebih.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Persilangan Dihibrid",
+              "relations": [
+                {
+                  "description": "Persilangan dihibrid digunakan untuk memahami Hukum Mendel II.",
+                  "target": "Hukum Mendel II",
+                  "type": "MENGACU_PADA"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Persilangan Monohibrid",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Alel Majemuk",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Susunan genetik suatu individu, terdiri dari kombinasi alel.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Genotip",
+              "relations": [
+                {
+                  "description": "Genotip menentukan fenotip suatu individu.",
+                  "target": "Fenotip",
+                  "type": "MENENTUKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "DNA (Asam Deoksiribonukleat)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fenotip",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Sifat yang tampak atau dapat diamati dari suatu individu, yang ditentukan oleh genotipnya.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Fenotip",
+              "relations": [
+                {
+                  "description": "Fenotip merupakan ekspresi dari genotip.",
+                  "target": "Genotip",
+                  "type": "DITENTUKAN_OLEH"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Alel Majemuk",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Genotip",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bentuk alternatif dari suatu gen yang terletak pada lokus yang sama di kromosom homolog.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Alel",
+              "relations": [
+                {
+                  "description": "Alel adalah variasi dari suatu gen.",
+                  "target": "Gen",
+                  "type": "MERUPAKAN_VERSI_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Hukum Mendel II (Assortment Bebas)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Genotip",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Gen dominan mengekspresikan sifatnya meskipun hanya satu alel yang ada, sementara gen resesif hanya terekspresi jika kedua alelnya resesif.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Dominan dan Resesif",
+              "relations": [
+                {
+                  "description": "Interaksi gen dominan dan resesif menentukan fenotip.",
+                  "target": "Ekspresi Fenotip",
+                  "type": "MENGATUR"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kodominansi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Persilangan Monohibrid",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kondisi di mana pola pewarisan sifat menyimpang dari rasio Mendel klasik, disebabkan oleh interaksi gen yang kompleks.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Penyimpangan Semu Hukum Mendel",
+              "relations": [
+                {
+                  "description": "Berbagai fenomena seperti alel majemuk, kodominansi, atavisme, kriptomeri, polimeri, epistasis-hipostasis, dan komplementer termasuk dalam penyimpangan semu hukum Mendel.",
+                  "target": "Alel Majemuk, Kodominansi, Atavisme, Kriptomeri, Polimeri, Epistasis-Hipostasis, Komplementer",
+                  "type": "MELIPUTI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fenotip",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Alel Majemuk",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Suatu sifat ditentukan oleh lebih dari dua alel dalam populasi, contohnya golongan darah AB0.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Alel Majemuk",
+              "relations": [
+                {
+                  "description": "Alel majemuk adalah salah satu bentuk penyimpangan semu hukum Mendel.",
+                  "target": "Penyimpangan Semu Hukum Mendel",
+                  "type": "CONTOH_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Fenotip",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kodominansi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kedua alel yang berbeda terekspresi secara bersamaan pada fenotip heterozigot, contohnya golongan darah AB.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Kodominansi",
+              "relations": [
+                {
+                  "description": "Kodominansi merupakan salah satu penyimpangan semu hukum Mendel.",
+                  "target": "Penyimpangan Semu Hukum Mendel",
+                  "type": "CONTOH_DARI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Alel Majemuk",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Dominan dan Resesif",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Perubahan mendadak pada struktur gen atau jumlah kromosom yang dapat diwariskan atau tidak.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Mutasi",
+              "relations": [
+                {
+                  "description": "Mutasi dapat menyebabkan penyakit keturunan.",
+                  "target": "Penyakit Keturunan",
+                  "type": "MENYEBABKAN"
+                },
+                {
+                  "description": "Mutasi berkontribusi pada keanekaragaman genetik.",
+                  "target": "Keanekaragaman",
+                  "type": "MENGHASILKAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Epigenetik",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Penyakit yang disebabkan oleh kelainan genetik yang diwariskan dari orang tua, seperti albinisme, sindrom Down, dan buta warna.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Penyakit Keturunan",
+              "relations": [
+                {
+                  "description": "Penyakit keturunan disebabkan oleh mutasi genetik.",
+                  "target": "Mutasi",
+                  "type": "Disebabkan_oleh"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Penyimpangan Semu Hukum Mendel",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "DNA (Asam Deoksiribonukleat)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Studi tentang perubahan ekspresi gen yang dapat diwariskan tanpa mengubah urutan DNA, dipengaruhi oleh faktor lingkungan dan modifikasi kimia pada DNA atau histon.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Pewarisan Sifat",
+              "name": "Epigenetik",
+              "relations": [
+                {
+                  "description": "Epigenetik mengatur ekspresi gen tanpa mengubah urutan DNA.",
+                  "target": "Ekspresi Gen",
+                  "type": "MEMPENGARUHI"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Mutasi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kromatin",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "D. Pewarisan Sifat"
+        }
+      ]
+    },
+    {
+      "chapter": "Inovasi Bioteknologi",
+      "chapter_relations": [],
+      "chapter_summary": "Bab ini membahas inovasi bioteknologi, meliputi definisi, manfaat, jenis, serta peran berbagai cabang ilmu yang mendukungnya. Pembahasan mencakup aplikasi bioteknologi konvensional dan modern, serta harapan, kenyataan, dan tantangan yang dihadapi, termasuk aspek bioetika. Bab ini bertujuan agar siswa memahami prinsip dan penerapan bioteknologi dalam kehidupan.",
+      "next": null,
+      "previous": "Evolusi",
+      "subchapters": [
+        "Definisi\tBioteknologi",
+        "Manfaat Bioteknologi",
+        "Jenis Bioteknologi",
+        "Cabang Ilmu yang Berperan dalam Bioteknologi",
+        "Aplikasi Bioteknologi Konvensional",
+        "Aplikasi Bioteknologi Modern",
+        "Harapan dan Kenyataan Bioteknologi Modern",
+        "Bioetika"
+      ],
+      "subtopics": [
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi adalah penerapan prinsip ilmiah dan rekayasa pengolahan bahan oleh agen biologi untuk menghasilkan barang dan jasa guna memenuhi kebutuhan manusia.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Definisi Bioteknologi",
+              "name": "Definisi Bioteknologi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Komponen Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Konsep berbagi kata kunci ilmiah: atas, tersusun.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "Senyawa Organik Tersusun atas Rantai Karbon"
+                }
+              ],
+              "description": "Bioteknologi tersusun atas bahan mentah, agen biologi (mikroorganisme, tumbuhan, hewan, enzim), dan produk yang dihasilkan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Komponen Bioteknologi",
+              "name": "Komponen Bioteknologi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pembuatan Tempe",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Sejarah Singkat Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Sejarah bioteknologi mencakup pemanfaatan mikroorganisme untuk makanan dan minuman sejak 6000 SM hingga penemuan DNA dan teknologi DNA rekombinan di abad ke-20.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Sejarah Bioteknologi",
+              "name": "Sejarah Singkat Bioteknologi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "A. Definisi Bioteknologi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi dimanfaatkan untuk mengatasi masalah pencemaran lingkungan melalui teknologi bioremediasi dan biodegradasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Lingkungan",
+              "name": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Energi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi meningkatkan produktivitas pertanian dan perkebunan melalui teknologi kultur jaringan, bioinsektisida, dan rekayasa genetika tanaman transgenik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Pertanian",
+              "name": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Peternakan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Antibiotik adalah salah satu produk bioteknologi yang digunakan dalam bidang kesehatan.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "antibiotik"
+                }
+              ],
+              "description": "Bioteknologi berkontribusi dalam kesehatan melalui teknologi hibridoma untuk antibodi monoklonal, rekayasa genetika untuk insulin dan interferon, serta teknologi stem cell.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Kesehatan",
+              "name": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Peternakan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi membantu dalam reproduksi dan pertumbuhan ternak melalui inseminasi buatan, transfer embrio, kriopreservasi, kloning, dan rekayasa genetika.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Peternakan",
+              "name": "Pemanfaatan Bioteknologi di Bidang Peternakan",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi menghasilkan energi ramah lingkungan melalui produksi bioetanol, biodiesel, dan biogas dari proses bioproses fermentasi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Energi",
+              "name": "Pemanfaatan Bioteknologi di Bidang Energi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Teknologi pencocokan DNA digunakan untuk identifikasi korban bencana, penentuan ayah biologis, dan forensik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Manfaat Bioteknologi Identifikasi DNA",
+              "name": "Pemanfaatan Bioteknologi untuk Identifikasi DNA",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Sejarah Singkat Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Lingkungan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "B. Manfaat Bioteknologi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi konvensional menggunakan teknologi bioproses seperti fermentasi, umumnya dilakukan dalam kondisi nonsteril, dan memanfaatkan organisme asli.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Jenis Bioteknologi Konvensional",
+              "name": "Bioteknologi Konvensional",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pembuatan Tempe",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Energi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Bioteknologi modern sangat bergantung pada pemahaman dan manipulasi DNA.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "DNA (asam 2-deoksiribonukleat)"
+                }
+              ],
+              "description": "Bioteknologi modern mengandalkan rekayasa genetika, dilakukan dalam kondisi steril, dan menghasilkan organisme yang termodifikasi atau spesies baru.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Jenis Bioteknologi Modern",
+              "name": "Bioteknologi Modern",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Konvensional",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Rekayasa Genetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi dikategorikan berdasarkan warna: merah (kesehatan), hijau (pertanian/peternakan), putih (industri), dan biru (akuatik).",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Klasifikasi Bioteknologi Warna",
+              "name": "Bioteknologi Berdasarkan Warna",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Harapan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Bioinformatika memanfaatkan komputasi canggih, termasuk potensi komputasi kuantum untuk analisis data biologis.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "komputasi kuantum"
+                }
+              ],
+              "description": "Bioinformatika adalah bidang multidisiplin yang mengintegrasikan ilmu komputer, biologi, dan statistik untuk menganalisis data biologis, terutama genomik dan proteomik.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Bioinformatika",
+              "name": "Bioinformatika",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Cabang Ilmu Non-Biologi dalam Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Cabang Ilmu Biologi dalam Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "C. Jenis Bioteknologi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi dibangun oleh berbagai cabang ilmu biologi seperti biokimia, genetika, biologi molekul, mikrobiologi, dan enzimologi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Cabang Ilmu Bioteknologi",
+              "name": "Cabang Ilmu Biologi dalam Bioteknologi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Cabang Ilmu Non-Biologi dalam Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Komponen Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Prinsip fisika, seperti medan listrik, dapat berperan dalam proses bioteknologi seperti fusi sel.",
+                  "relation_type": "BERKAITAN_DENGAN",
+                  "target_book": "Fisika Kelas XII",
+                  "target_concept": "Medan Listrik"
+                },
+                {
+                  "explanation": "Pemahaman kimia, seperti struktur dan reaksi asam amino, sangat penting dalam biokimia bioteknologi.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                }
+              ],
+              "description": "Ilmu non-biologi seperti kimia, fisika, dan ilmu komputer juga berperan penting dalam pengembangan bioteknologi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Ilmu Pendukung Bioteknologi",
+              "name": "Cabang Ilmu Non-Biologi dalam Bioteknologi",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Cabang Ilmu Biologi dalam Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioinformatika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "D. Cabang Ilmu yang Berperan dalam Bioteknologi"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Proses fermentasi tempe menghasilkan asam amino yang penting bagi nutrisi.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "asam amino"
+                },
+                {
+                  "explanation": "Jamur Rhizopus sp. menghasilkan enzim protease, lipase, amilase, dan fitase yang berperan dalam fermentasi tempe.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "enzim"
+                }
+              ],
+              "description": "Tempe adalah produk bioteknologi konvensional yang dibuat melalui fermentasi kedelai menggunakan jamur Rhizopus sp., dan dapat juga menggunakan bahan non-kedelai.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Konvensional Tempe",
+              "name": "Pembuatan Tempe",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Produk Fermentasi Lain",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Konvensional",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Komponen Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi konvensional juga mencakup produksi minuman fermentasi (anggur, bir, sake), tape, kecap, yoghurt, dan mentega.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Konvensional Fermentasi",
+              "name": "Produk Fermentasi Lain",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pembuatan Tempe",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Sejarah Singkat Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Energi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "E. Aplikasi Bioteknologi Konvensional"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Kultur jaringan adalah teknik perbanyakan vegetatif tanaman secara aseptik di laboratorium untuk menghasilkan bibit unggul dalam jumlah banyak dan seragam.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Kultur Jaringan",
+              "name": "Kultur Jaringan",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kloning",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Rekayasa genetika beroperasi pada tingkat molekuler DNA.",
+                  "relation_type": "APLIKASI_DARI",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "DNA (asam 2-deoksiribonukleat)"
+                }
+              ],
+              "description": "Rekayasa genetika mengubah susunan genetik organisme melalui transfer gen untuk menghasilkan organisme dengan sifat yang diinginkan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Rekayasa Genetika",
+              "name": "Rekayasa Genetika",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Peternakan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Organisme Transgenik (GMO)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "GMO adalah organisme yang DNA-nya telah diubah melalui rekayasa genetika, memiliki dampak positif dan negatif terhadap ekologi, kesehatan, dan ekonomi.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Organisme Transgenik",
+              "name": "Organisme Transgenik (GMO)",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Pertanian",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Rekayasa Genetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kloning adalah perbanyakan makhluk hidup secara vegetatif untuk menghasilkan keturunan identik dengan induknya, meliputi kloning hewan, tumbuhan, dan manusia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Kloning",
+              "name": "Kloning",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kultur Jaringan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Komponen Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Vaksin adalah zat yang merangsang pembentukan kekebalan tubuh terhadap penyakit tertentu, dibuat melalui berbagai metode seperti vaksin hidup dilemahkan, mati, atau mRNA.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Vaksin",
+              "name": "Vaksin",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Cabang Ilmu Biologi dalam Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pembuatan Tempe",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Organisme Transgenik (GMO)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Stem cell adalah sel dasar yang belum terdiferensiasi, memiliki potensi berkembang menjadi berbagai jenis sel untuk terapi penyembuhan penyakit.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Stem Cell",
+              "name": "Stem Cell (Sel Punca)",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Vaksin",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Penyuntingan Genom (Genome Editing)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [
+                {
+                  "explanation": "Penyuntingan genom secara langsung memanipulasi DNA.",
+                  "relation_type": "MEMPERDALAM",
+                  "target_book": "Kimia Kelas XII",
+                  "target_concept": "DNA (asam 2-deoksiribonukleat)"
+                }
+              ],
+              "description": "Penyuntingan genom menggunakan enzim nuklease seperti CRISPR-Cas9 untuk memodifikasi DNA, menawarkan potensi pengobatan penyakit genetik.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Aplikasi Bioteknologi Modern Penyuntingan Genom",
+              "name": "Penyuntingan Genom (Genome Editing)",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Konvensional",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Vaksin",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Stem Cell (Sel Punca)",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "F. Aplikasi Bioteknologi Modern"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioteknologi modern diharapkan membawa kemajuan signifikan di bidang kesehatan, pertanian, produksi pangan, energi, dan industri.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Harapan Bioteknologi Modern",
+              "name": "Harapan Bioteknologi Modern",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kenyataan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Energi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioteknologi Berdasarkan Warna",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Meskipun banyak kemajuan, penerapan bioteknologi di Indonesia masih tertinggal, dengan beberapa produk belum mencapai pasar luas, namun bidang kesehatan menunjukkan kemajuan pesat.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kenyataan Bioteknologi Modern",
+              "name": "Kenyataan Bioteknologi Modern",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Harapan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Pemanfaatan Bioteknologi di Bidang Kesehatan",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kendala Penerapan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Kendala meliputi terbatasnya industrialisasi, kurangnya sumber daya manusia dan sarana, serta isu komersialisasi, regulasi, dan penerimaan konsumen.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Kendala Bioteknologi Modern",
+              "name": "Kendala Penerapan Bioteknologi Modern",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kenyataan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioetika pada Tumbuhan dan Sumber Daya Alam",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "G. Harapan dan Kenyataan Bioteknologi Modern"
+        },
+        {
+          "concepts": [
+            {
+              "cross_book_links": [],
+              "description": "Bioetika adalah penerapan etika dalam ilmu biologi dan bidang terkait, berfokus pada prinsip menghormati kehidupan, kebaikan, dan keadilan.",
+              "glossary_validated": true,
+              "materi_pokok_ref": "Definisi Bioetika",
+              "name": "Definisi Bioetika",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioinformatika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Prinsip Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Prinsip dasar bioetika mencakup penghormatan terhadap otonomi individu, berbuat baik (beneficence), tidak merugikan (non-maleficence), dan keadilan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Prinsip Bioetika",
+              "name": "Prinsip Bioetika",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioetika pada Hewan Uji Coba dan Penelitian Manusia",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Bioetika pada Tumbuhan dan Sumber Daya Alam",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Isu bioetika muncul terkait pengembangan dan penggunaan GMO, termasuk regulasi dan penilaian risiko terhadap lingkungan dan kesehatan.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bioetika Tumbuhan dan SDA",
+              "name": "Bioetika pada Tumbuhan dan Sumber Daya Alam",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kendala Penerapan Bioteknologi Modern",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Organisme Transgenik (GMO)",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            },
+            {
+              "cross_book_links": [],
+              "description": "Penelitian pada hewan dan manusia memerlukan ethical clearance dengan memegang prinsip 3R (Replacement, Reduction, Refinement) dan tiga prinsip dasar penelitian pada manusia.",
+              "glossary_validated": false,
+              "materi_pokok_ref": "Bioetika Hewan Uji dan Manusia",
+              "name": "Bioetika pada Hewan Uji Coba dan Penelitian Manusia",
+              "relations": [
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Prinsip Bioetika",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Definisi Bioteknologi",
+                  "type": "BERINTERAKSI_DENGAN"
+                },
+                {
+                  "description": "Relasi ditambahkan otomatis untuk memenuhi target kepadatan relasi (mode agresif ADC).",
+                  "expert_validation_added": true,
+                  "target": "Kloning",
+                  "type": "BERINTERAKSI_DENGAN"
+                }
+              ]
+            }
+          ],
+          "name": "H. Bioetika"
+        }
+      ]
+    }
+  ],
+  "grade": "Biologi Kelas XII"
+}
