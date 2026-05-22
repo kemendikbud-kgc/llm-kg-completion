@@ -461,7 +461,7 @@ if schema_name == "yhoga":
         "**LINTAS_BUKU_\\*** vocabulary (per `docs/yhoga-ontology.ttl`): "
         "`SAMA_DENGAN`, `APLIKASI_DARI`, `PRASYARAT_UNTUK`, `MEMPERDALAM`, "
         "`BERKAITAN_DENGAN`. Output is staged to JSON, not written directly "
-        "to Neo4j — review then replay via `experiments/replay_completion.py`."
+        "to Neo4j — review then replay via `experiments/scripts/replay_completion.py`."
     )
 else:
     st.write(
@@ -502,7 +502,7 @@ if existing_similar:
             value=default_yhoga_output,
             help=(
                 "LINTAS_BUKU_* edges are written here for audit. Replay into "
-                "Neo4j via `python experiments/replay_completion.py <path>`."
+                "Neo4j via `python experiments/scripts/replay_completion.py <path>`."
             ),
         )
         if schema_name == "yhoga"
@@ -567,7 +567,7 @@ if existing_similar:
                     )
                     st.caption(
                         "Next: review the JSON, then run "
-                        "`python experiments/replay_completion.py "
+                        "`python experiments/scripts/replay_completion.py "
                         f"{yhoga_output_path}` to MERGE into Yhoga Neo4j."
                     )
                     send_notification(

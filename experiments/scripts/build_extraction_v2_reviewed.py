@@ -23,7 +23,7 @@ Reviewer-proposed missing triples are appended under each chapter as a synthetic
 subtopic "Expert Proposed Triples" so they're visually grouped and obvious.
 
 Read-only on inputs, no DB access. USAGE:
-    python experiments/build_extraction_v2_reviewed.py
+    python experiments/scripts/build_extraction_v2_reviewed.py
 """
 
 from __future__ import annotations
@@ -50,7 +50,7 @@ def find_latest_snapshot() -> Path:
 def load_resolved_feedback(snap: Path) -> dict:
     p = snap / "resolved" / "feedback_resolved.json"
     if not p.exists():
-        sys.exit(f"Missing {p}. Run experiments/resolve_expert_feedback.py first.")
+        sys.exit(f"Missing {p}. Run experiments/scripts/resolve_expert_feedback.py first.")
     return json.loads(p.read_text(encoding="utf-8"))
 
 

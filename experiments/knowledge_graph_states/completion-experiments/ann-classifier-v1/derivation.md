@@ -37,7 +37,7 @@ Two-step pipeline implemented in `src/completion.py`:
    - Output is staged to `lintas_buku_edges.json` (this folder) in the
      friend-llm dump format.
 
-3. **Replay**: `python experiments/replay_completion.py lintas_buku_edges.json`
+3. **Replay**: `python experiments/scripts/replay_completion.py lintas_buku_edges.json`
    MERGEs each edge into Yhoga keyed by `(Concept.name, Concept.grade)`.
 
 ## Known methodology bias
@@ -291,7 +291,7 @@ streamlit run app.py
 #    cp lintas_buku_edges.tNNN_kMM.json lintas_buku_edges.json
 
 # 4. Replay into Yhoga
-python experiments/replay_completion.py experiments/knowledge_graph_states/completion-experiments/ann-classifier-v1/lintas_buku_edges.json
+python experiments/scripts/replay_completion.py experiments/knowledge_graph_states/completion-experiments/ann-classifier-v1/lintas_buku_edges.json
 
 # 5. Snapshot Yhoga (manual: Aura → Take backup → record in snapshot.backup.ref)
 ```

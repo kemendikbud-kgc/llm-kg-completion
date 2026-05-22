@@ -7,7 +7,7 @@ Loads JSON files exported from the KG Review App and computes:
   - Cohen's kappa for any pair of reviewers covering the same subject+chapter
 
 Usage:
-  uv run python experiments/expert_review_analysis.py [input_dir]
+  uv run python experiments/scripts/expert_review_analysis.py [input_dir]
 
 If input_dir is omitted, defaults to the Downloads folder where the export lives.
 """

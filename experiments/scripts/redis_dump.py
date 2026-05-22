@@ -5,7 +5,7 @@ ratings/comments/missingTriples payload, writing them under
 `data/expert_feedback/redis_snapshot_<date>/` so the rest of the analysis can be
 done offline without re-hitting Redis.
 
-USAGE: uv run --with redis --with certifi python experiments/redis_dump.py
+USAGE: uv run --with redis --with certifi python experiments/scripts/redis_dump.py
 """
 
 from __future__ import annotations

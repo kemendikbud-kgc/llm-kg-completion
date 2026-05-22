@@ -1,7 +1,7 @@
 """Dump every LINTAS_BUKU_* edge from the Yhoga Aura instance to JSON.
 
 Usage:
-    python experiments/dump_lintas_buku.py [output_path]
+    python experiments/scripts/dump_lintas_buku.py [output_path]
 
 Default output: experiments/knowledge_graph_states/completion-experiments/friend-llm/lintas_buku_edges.json
 

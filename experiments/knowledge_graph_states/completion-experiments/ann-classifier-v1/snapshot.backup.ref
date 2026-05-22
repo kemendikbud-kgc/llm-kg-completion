@@ -17,7 +17,7 @@ instance: yhoga (Neo4j Aura Free)
 file_format: Neo4j Aura .backup (binary)
 
 notes: |
-  Snapshot taken AFTER experiments/replay_completion.py merged this experiment's
+  Snapshot taken AFTER experiments/scripts/replay_completion.py merged this experiment's
   lintas_buku_edges.json into Yhoga Aura. Source state for the replay was
   extraction-v2-reviewed.
 

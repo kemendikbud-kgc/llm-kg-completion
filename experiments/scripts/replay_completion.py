@@ -1,12 +1,12 @@
 """Replay a staged LINTAS_BUKU_* completion JSON into the Yhoga Aura instance.
 
 Reads the friend-llm-shaped JSON produced by Step 5 of pages/5_Completion.py
-(or experiments/dump_lintas_buku.py) and MERGEs each edge into Yhoga, keyed by
+(or experiments/scripts/dump_lintas_buku.py) and MERGEs each edge into Yhoga, keyed by
 (Concept.name, Concept.grade). Idempotent: re-running on the same JSON
 produces no schema or count change beyond what's already there.
 
 Usage:
-    python experiments/replay_completion.py [path/to/lintas_buku_edges.json] [--dry-run]
+    python experiments/scripts/replay_completion.py [path/to/lintas_buku_edges.json] [--dry-run]
 
 If no path is given, defaults to:
     experiments/knowledge_graph_states/completion-experiments/ann-classifier-v1/lintas_buku_edges.json

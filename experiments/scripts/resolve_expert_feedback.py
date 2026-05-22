@@ -14,7 +14,7 @@ Writes:
 
 Read-only: hits no DB, only files in this snapshot directory.
 
-USAGE: python experiments/resolve_expert_feedback.py [snapshot_dir]
+USAGE: python experiments/scripts/resolve_expert_feedback.py [snapshot_dir]
 """
 
 from __future__ import annotations

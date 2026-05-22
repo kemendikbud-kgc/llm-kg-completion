@@ -16,12 +16,12 @@ completion experiments (yours, your friend's, future teammates') should run agai
 1. Start from `extraction-v1/{Biologi,Fisika,Kimia} Kelas XII.json` — canonical
    per-Bab extraction from Yhoga's pipeline.
 2. Pull `kg:courses` + every substantive reviewer's progress from Upstash via
-   `experiments/redis_dump.py` → save to `data/expert_feedback/redis_snapshot_<date>/`.
+   `experiments/scripts/redis_dump.py` → save to `data/expert_feedback/redis_snapshot_<date>/`.
 3. Resolve each reviewer's numeric triple index back to a concrete triple via
-   `experiments/resolve_expert_feedback.py` (the extraction-v1 JSONs and
+   `experiments/scripts/resolve_expert_feedback.py` (the extraction-v1 JSONs and
    `kg:courses` have identical triple counts and order, so the index mapping is
    canonical).
-4. Apply feedback per `experiments/build_extraction_v2_reviewed.py`:
+4. Apply feedback per `experiments/scripts/build_extraction_v2_reviewed.py`:
    - `consensus = correct` → keep, annotate with `expert_review`
    - `consensus = partial` → keep, annotate with `expert_review.status = 'partial'`
    - `consensus = missing` (kurang konteks) → keep, annotate with `status = 'missing'`
@@ -139,7 +139,7 @@ MERGE (st)-[:HAS_CONCEPT]->(c)
 //  description + expert_review + provenance onto the rel)
 ```
 
-A reference ingest script will live at `experiments/ingest_extraction_v2_reviewed.py`
+A reference ingest script will live at `experiments/scripts/ingest_extraction_v2_reviewed.py`
 (TBD when we're ready to write to a Neo4j target).
 
 ## Reproducibility
@@ -148,7 +148,7 @@ Re-running `build_extraction_v2_reviewed.py` with the same `feedback_snapshot`
 produces byte-identical output. To pull fresh expert feedback and rebuild:
 
 ```bash
-uv run --with redis --with certifi python experiments/redis_dump.py
-python experiments/resolve_expert_feedback.py
-python experiments/build_extraction_v2_reviewed.py
+uv run --with redis --with certifi python experiments/scripts/redis_dump.py
+python experiments/scripts/resolve_expert_feedback.py
+python experiments/scripts/build_extraction_v2_reviewed.py
 ```
