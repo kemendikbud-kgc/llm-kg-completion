@@ -28,6 +28,7 @@ from abc import ABC, abstractmethod
 
 from neo4j import GraphDatabase
 
+from src.connection import Neo4jConnection, resolve_connection
 from src.schema_spec import SchemaSpec, SOROS_SCHEMA, YHOGA_SCHEMA
 
 logger = logging.getLogger(__name__)
@@ -39,22 +40,59 @@ logger = logging.getLogger(__name__)
 
 
 class SchemaAdapter(ABC):
-    """Schema-specific operations consumed by `src.completion`."""
+    """Schema-specific operations consumed by `src.completion`.
+
+    Schema (ontology shape) and Neo4j connection (which DB instance) are
+    independently configurable. A subclass instance can be constructed with an
+    explicit ``connection`` to run e.g. the Yhoga ontology against the project's
+    own Neo4j upstream, or vice versa. With no explicit connection, the adapter
+    falls back to the ``NEO4J_TARGET`` env var if set, and otherwise to the
+    spec's own env-var names — the legacy "yhoga schema implies yhoga DB"
+    behavior, kept for backward compatibility.
+    """
 
     spec: SchemaSpec
+    connection: Neo4jConnection | None
+
+    def __init__(self, connection: Neo4jConnection | None = None) -> None:
+        # Explicit > NEO4J_TARGET env > spec defaults (None means "fall back").
+        self.connection = resolve_connection(connection)
 
     # --- Connection ---------------------------------------------------------
 
     def get_driver(self):
+        """Return a Neo4j driver bound to the active connection.
+
+        If an explicit ``Neo4jConnection`` was passed in (or NEO4J_TARGET is
+        set), that wins. Otherwise we resolve from the spec's env-var names —
+        preserving prior single-DB-per-schema behavior.
+        """
+        if self.connection is not None:
+            return GraphDatabase.driver(
+                self.connection.uri,
+                auth=(self.connection.user, self.connection.password),
+            )
         uri = os.getenv(self.spec.neo4j_uri_env)
         user = os.getenv(self.spec.neo4j_user_env, "neo4j")
         pwd = os.getenv(self.spec.neo4j_password_env)
         if not uri or not pwd:
             raise ValueError(
                 f"{self.spec.neo4j_uri_env} and {self.spec.neo4j_password_env} "
-                f"must be set for schema '{self.spec.name}'"
+                f"must be set for schema '{self.spec.name}' (or set NEO4J_TARGET / "
+                f"pass an explicit Neo4jConnection)"
             )
         return GraphDatabase.driver(uri, auth=(user, pwd))
+
+    def connection_label(self) -> str:
+        """Short label describing which DB this adapter is currently targeting."""
+        if self.connection is not None:
+            return self.connection.label
+        # Reverse-lookup from env-var name for the spec default.
+        if self.spec.neo4j_uri_env == "NEO4J_URI":
+            return "default"
+        if self.spec.neo4j_uri_env == "NEO4J_URI_YHOGA":
+            return "yhoga"
+        return self.spec.neo4j_uri_env
 
     # --- Embedding text -----------------------------------------------------
 
@@ -782,11 +820,35 @@ _REGISTRY: dict[str, type[SchemaAdapter]] = {
 }
 
 
-def get_adapter(name: str = "soros") -> SchemaAdapter:
-    """Return the adapter for `name` (currently 'soros' or 'yhoga')."""
+def get_adapter(
+    name: str = "soros",
+    connection: Neo4jConnection | None = None,
+) -> SchemaAdapter:
+    """Return the adapter for `name` (currently 'soros' or 'yhoga').
+
+    Args:
+        name: Schema name — 'soros' or 'yhoga'. Picks ontology shape, label
+            set, vocab.
+        connection: Optional explicit Neo4j connection. If None, the adapter
+            consults NEO4J_TARGET, then falls back to the spec's env-var names.
+            Pass `Neo4jConnection.default()` or `Neo4jConnection.yhoga()` to
+            force a specific upstream.
+
+    Examples:
+        # Default behavior — yhoga schema on yhoga DB (legacy)
+        adapter = get_adapter("yhoga")
+
+        # Yhoga ontology on the project's own NEO4J_URI
+        from src.connection import Neo4jConnection
+        adapter = get_adapter("yhoga", connection=Neo4jConnection.default())
+
+        # Or via env var (one-line app-wide override)
+        # $ export NEO4J_TARGET=default
+        adapter = get_adapter("yhoga")  # picks up default DB despite yhoga schema
+    """
     cls = _REGISTRY.get(name)
     if cls is None:
         raise ValueError(
             f"Unknown schema '{name}'. Known: {sorted(_REGISTRY)}"
         )
-    return cls()
+    return cls(connection=connection)

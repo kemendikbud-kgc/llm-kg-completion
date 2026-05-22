@@ -20,6 +20,7 @@ from src.config import (
     DEFAULT_CHAT_MODEL,
     DEFAULT_EMBEDDING_MODEL,
 )
+from src.connection import CONNECTION_TARGETS, Neo4jConnection
 from src.graph import get_embedding_dimensions
 from src.notify import send_notification
 from src.schema_adapter import get_adapter
@@ -37,29 +38,57 @@ st.write(
 if "log_handler" in st.session_state:
     st.session_state["log_handler"].clear()
 
-# --- Sidebar: Schema + Model Selection ---
+# --- Sidebar: Schema + Connection + Model Selection ---
 with st.sidebar:
     st.header("Database Schema")
     schema_name = st.selectbox(
-        "Schema",
+        "Schema (ontology)",
         options=["soros", "yhoga"],
         index=0,
         help=(
-            "soros: Konsep/SubKonsep ontology (default project DB).\n"
-            "yhoga: Concept/Subtopic/Chapter/Grade ontology (separate Aura instance)."
+            "soros: Konsep/SubKonsep ontology.\n"
+            "yhoga: Concept/Subtopic/Chapter/Grade ontology.\n\n"
+            "Schema is independent of which Neo4j DB you target — pick the connection below."
         ),
     )
-    adapter = get_adapter(schema_name)
+
+    # Connection target — independent of schema. "auto" preserves legacy
+    # behavior (soros→default DB, yhoga→yhoga DB). Override to run e.g. the
+    # yhoga ontology against the project's own upstream.
+    target_options = ["auto"] + list(CONNECTION_TARGETS.keys())
+    connection_target = st.selectbox(
+        "Neo4j target",
+        options=target_options,
+        index=0,
+        help=(
+            "auto: use the schema's default DB (legacy soros→NEO4J_URI, yhoga→NEO4J_URI_YHOGA).\n"
+            "default: force NEO4J_URI (your own Neo4j upstream).\n"
+            "yhoga: force NEO4J_URI_YHOGA (peer-owned Yhoga Aura)."
+        ),
+    )
+
+    explicit_conn: Neo4jConnection | None = None
+    if connection_target != "auto":
+        try:
+            explicit_conn = Neo4jConnection.by_name(connection_target)
+        except ValueError as e:
+            st.error(str(e))
+            st.stop()
+
+    adapter = get_adapter(schema_name, connection=explicit_conn)
     spec = adapter.spec
+    active_label = adapter.connection_label()
     st.caption(
         f"Labels: `{', '.join(spec.node_labels)}` · "
         f"Index: `{', '.join(spec.index_names.values())}` · "
-        f"Env: `{spec.neo4j_uri_env}`"
+        f"DB: `{active_label}`"
     )
 
-    # If the user switches schema we want to drop stale cross-schema state
+    # If the user switches schema OR connection we want to drop stale state
     # (similar pairs found on the previous DB are not valid on the new one).
-    if st.session_state.get("active_schema") != schema_name:
+    session_key = (schema_name, active_label)
+    if st.session_state.get("active_schema_db") != session_key:
+        st.session_state["active_schema_db"] = session_key
         st.session_state["active_schema"] = schema_name
         st.session_state["found_pairs"] = None
         st.session_state.pop("pairs_scope", None)
@@ -94,9 +123,14 @@ except Exception as e:
     connection_error = str(e)
 
 if connection_error:
+    db_hint = (
+        f"connection target `{adapter.connection.label}` "
+        f"(uri `{adapter.connection.uri[:30]}…`)"
+        if adapter.connection is not None
+        else f"env vars `{spec.neo4j_uri_env}` / `{spec.neo4j_password_env}`"
+    )
     st.error(
-        f"Could not connect to the **{schema_name}** schema "
-        f"(`{spec.neo4j_uri_env}` / `{spec.neo4j_password_env}`):\n\n{connection_error}"
+        f"Could not connect with **{schema_name}** schema on {db_hint}:\n\n{connection_error}"
     )
     st.stop()
 
