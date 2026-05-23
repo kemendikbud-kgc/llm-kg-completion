@@ -273,16 +273,19 @@ doc_term = "Grade" if schema_name == "yhoga" else "Document"
 with col_scope1:
     scope_mode = st.radio(
         "Analysis scope",
-        options=["all", "single", "cross"],
+        options=["all", "single", "cross", "cross_all"],
         format_func=lambda x: {
             "all": f"All {doc_term}s",
             "single": f"Single {doc_term}",
             "cross": f"Cross-{doc_term} (selected + related)",
+            "cross_all": f"All Cross-{doc_term} (full sweep, no selection)",
         }[x],
         help=(
-            f"All: Compare all concepts across all {doc_term.lower()}s\n"
-            f"Single: Compare concepts within one {doc_term.lower()} only\n"
-            f"Cross: Compare concepts from selected {doc_term.lower()} with all others"
+            f"All: Compare all concepts across all {doc_term.lower()}s (intra + cross).\n"
+            f"Single: Compare concepts within one {doc_term.lower()} only.\n"
+            f"Cross: One {doc_term.lower()} queries; partners can come from any other (1 anchor).\n"
+            f"All Cross: every {doc_term.lower()} queries; only cross-{doc_term.lower()} pairs kept "
+            f"(matches ann-v1 Iter 2 canonical run)."
         ),
     )
 
@@ -297,6 +300,8 @@ with col_scope2:
             )
         else:
             st.warning(f"No {doc_term.lower()}s found in the knowledge graph.")
+    elif scope_mode == "cross_all":
+        st.caption(f"No {doc_term.lower()} selection — every concept is a query.")
 
 # Show scope info
 if scope_mode == "all":
@@ -306,6 +311,12 @@ elif scope_mode == "single" and selected_doc:
 elif scope_mode == "cross" and selected_doc:
     st.info(
         f"Will find similarities between **{selected_doc}** and all other {doc_term.lower()}s"
+    )
+elif scope_mode == "cross_all":
+    st.info(
+        f"Will find all cross-{doc_term.lower()} similarities across "
+        f"{len(doc_names)} {doc_term.lower()}(s) (every concept queries the index, "
+        f"only cross-{doc_term.lower()} pairs kept)."
     )
 
 st.divider()
@@ -345,8 +356,13 @@ with col_find:
 
             try:
                 driver = adapter.get_driver()
-                include_cross = scope_mode == "cross"
-                doc_filter = None if scope_mode == "all" else selected_doc
+                # `include_cross` controls whether nodes from OTHER docs are
+                # fetched as eligible partners. True for cross (single-anchor)
+                # and cross_all (every concept queries) — both want full graph.
+                include_cross = scope_mode in ("cross", "cross_all")
+                # `doc_filter` restricts the QUERY set. None means "every node
+                # in the graph queries the index".
+                doc_filter = None if scope_mode in ("all", "cross_all") else selected_doc
 
                 nodes = adapter.get_nodes_for_completion(
                     driver,
@@ -383,11 +399,12 @@ with col_find:
                         {n["name"] for n in nodes} if scope_mode == "single" else None
                     )
 
-                    # Yhoga + cross scope = LINTAS_BUKU completion (cross-grade only).
+                    # Yhoga + (cross | cross_all) scope = LINTAS_BUKU completion.
                     # The TTL ontology defines LINTAS_BUKU_* strictly across different
                     # grades, so enforce that as a hard filter at pair generation.
                     cross_grade_only = (
-                        schema_name == "yhoga" and scope_mode == "cross"
+                        schema_name == "yhoga"
+                        and scope_mode in ("cross", "cross_all")
                     )
                     # Skip pairs already typed-connected (rule iii): if A and B
                     # already share a non-SIMILAR_TO edge, don't rediscover them.
