@@ -1,11 +1,11 @@
-"""Ingest extraction-v2-reviewed JSONs into the live Yhoga Neo4j Aura.
+"""Ingest extraction-v2-reviewed JSONs into a Neo4j Aura instance.
 
 DESTRUCTIVE: wipes the target DB before writing.
 
 Reads:
   - experiments/knowledge_graph_states/extraction-v2-reviewed/{Biologi,Fisika,Kimia} Kelas XII.json
 
-Writes (to NEO4J_*_YHOGA target):
+Writes (Yhoga schema, regardless of target DB):
   - 3 Grade
   - 17 Chapter (+ summary)
   - ~77 Subtopic + the "Expert Proposed Triples" synthetic subtopic(s)
@@ -21,11 +21,19 @@ both flat scalar properties (status / consensus / n_reviewers) and a
 JSON-string property (`expert_review_json`) for full audit.
 
 USAGE:
-    python experiments/ingest_extraction_v2_reviewed.py
+    # Default target = yhoga (NEO4J_URI_YHOGA) — preserves legacy behavior
+    python experiments/scripts/ingest_extraction_v2_reviewed.py
+
+    # Target the default project Neo4j (NEO4J_URI) — needs src.connection
+    python experiments/scripts/ingest_extraction_v2_reviewed.py --target default
+
+    # Preview only — no writes
+    python experiments/scripts/ingest_extraction_v2_reviewed.py --target default --dry-run
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -36,7 +44,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = REPO / "experiments" / "knowledge_graph_states" / "extraction-v2-reviewed"
 
 GRADE_FILES = ("Biologi Kelas XII.json", "Fisika Kelas XII.json", "Kimia Kelas XII.json")
@@ -54,14 +62,21 @@ def normalize_rel_type(t: str) -> str:
     return t
 
 
-def get_driver():
+def get_driver(target: str = "yhoga"):
+    """Resolve a driver via src.connection.Neo4jConnection (target='default' or 'yhoga')."""
     load_dotenv()
-    uri = os.getenv("NEO4J_URI_YHOGA")
-    user = os.getenv("NEO4J_USERNAME_YHOGA", "neo4j")
-    pwd = os.getenv("NEO4J_PASSWORD_YHOGA")
-    if not uri or not pwd:
-        sys.exit("NEO4J_URI_YHOGA and NEO4J_PASSWORD_YHOGA must be set in .env")
-    return GraphDatabase.driver(uri, auth=(user, pwd))
+    # Make `src` importable when running this script directly
+    repo_root = str(REPO)
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+    from src.connection import Neo4jConnection
+
+    try:
+        conn = Neo4jConnection.by_name(target)
+    except ValueError as e:
+        sys.exit(str(e))
+    print(f"-> Connecting to target='{target}' uri={conn.uri[:40]}...")
+    return GraphDatabase.driver(conn.uri, auth=(conn.user, conn.password))
 
 
 def count_state(session) -> dict:
@@ -261,7 +276,22 @@ def ingest_concept_relations(
 
 
 def main() -> int:
-    driver = get_driver()
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument(
+        "--target",
+        default="yhoga",
+        choices=["default", "yhoga", "soros"],
+        help="Which Neo4j to write to. 'default'/'soros' = NEO4J_URI, "
+             "'yhoga' = NEO4J_URI_YHOGA. Default: yhoga (legacy).",
+    )
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Connect, print BEFORE state, then exit without wiping or writing.",
+    )
+    args = ap.parse_args()
+
+    driver = get_driver(args.target)
     grades = load_grades()
     known_concepts = collect_known_concepts(grades)
 
@@ -274,6 +304,11 @@ def main() -> int:
         before = count_state(session)
         print(f"  Nodes: {before['nodes']}")
         print(f"  Total relationships: {before['total_rels']}")
+
+        if args.dry_run:
+            print("\n--dry-run set, exiting without writes.")
+            driver.close()
+            return 0
 
         print("\n=== WIPING (destructive) ===")
         wipe(session)
