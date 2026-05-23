@@ -191,6 +191,73 @@ exploratory and spot-checked before any thesis citation that treats them as
 on-par with the high-confidence majority. Filtering at confidence ≥ 0.85 would
 yield 56 edges — a tighter set if precision-over-recall is the goal.
 
+### Iteration 3 — 2026-05-23 — `lintas_buku_edges.t080_k10.json`
+
+Status: **staged (44 edges).** Run against the **soros DB** (NEO4J_URI / 5bdd4856…)
+rather than Yhoga upstream — first end-to-end test of the schema↔connection
+decoupling (commit `c3a577c`). Same source data (extraction-v2-reviewed seeded
+identically into soros), so all embedding/classifier cache keys remain valid.
+
+**Params**: `threshold=0.80, top_k=10, scope=cross_all, batch_size=10`,
+embed=`gemini/gemini-embedding-001`, chat=`gemini/gemini-2.5-flash`.
+
+**Results**:
+
+| Metric | Value |
+|---|---:|
+| Cross-grade pairs surfaced | 52 |
+| Cache hits at classify | 36 / 52 (69%) |
+| `none` (classifier rejected) | 8 (15.4%) |
+| **Total LINTAS_BUKU_\* edges staged** | **44 (84.6% acceptance)** |
+| `LINTAS_BUKU_PRASYARAT_UNTUK` | 16 (36.4%) |
+| `LINTAS_BUKU_MEMPERDALAM` | 10 (22.7%) |
+| `LINTAS_BUKU_APLIKASI_DARI` | 9 (20.5%) |
+| `LINTAS_BUKU_BERKAITAN_DENGAN` | 8 (18.2%) |
+| `LINTAS_BUKU_SAMA_DENGAN` | 1 (2.3%) |
+| Unique Concepts touched | 46 / 342 = 13.5% |
+| Confidence: ≥0.85 | 35 / 44 = 79.5% |
+| Confidence: <0.50 | 2 / 44 = 4.5% |
+
+**Domain coverage**: 34 Bio↔Kim (77.3%), 8 Fis↔Kim (18.2%), 2 Bio↔Fis (4.5%).
+Best Fisika representation of the three iterations so far. `APLIKASI_DARI`
+peaks at this threshold (20.5% vs 13% at iter 2), suggesting cross-disciplinary
+"application of" edges live in the 0.80 cosine band.
+
+**Status decision**: kept as a mid-band data point on the precision-recall
+sweep. Useful for Bab 4 figure showing the curve between iteration 1 and 2.
+
+### Iteration 4 — 2026-05-24 — `lintas_buku_edges.t090_k5.json` (NOT staged)
+
+Status: **abandoned at Find Similar step — too few candidates.**
+
+**Params attempted**: `threshold=0.90, top_k=5, scope=cross_all` (tight-corner
+of the sweep grid). Embedding step ran (full cache reuse). ANN retrieval
+surfaced **2 candidate pairs**:
+
+```
+DNA (Asam 2-Deoksiribonukleat, Kimia) ↔ DNA (Deoxyribonucleic Acid, Biologi)   sim=0.935
+DNA (Asam 2-Deoksiribonukleat, Kimia) ↔ Materi Genetik (Biologi)               sim=0.900
+```
+
+Both are in the DNA / molecular-biology cluster that ann-v1 reliably catches
+at every threshold. At this tight setting the only signal is "obvious DNA
+correspondence" — not enough new information to justify proceeding to the
+classify step (which would also be 100% cache hits from prior iterations,
+adding no fresh data).
+
+**Decision**: do not stage. The data point on the precision-recall curve at
+(t=0.90, k=5) is recorded here as "2 candidates surfaced" — sufficient to
+mark the curve's tight endpoint without producing a redundant JSON file.
+
+**No JSON file written** for this iteration — derivation.md is the canonical
+record.
+
+### Iteration 5 (planned) — `lintas_buku_edges.t070_k20.json`
+
+`threshold=0.70, top_k=20` — loose-corner endpoint of the sweep. Expected
+~120–180 candidate pairs based on the monotonic growth observed so far
+(15 → 52 → 101 across iter 1 / 3 / 2 respectively).
+
 ## Comparison to baselines (as of iteration 1)
 
 Compared against the friend's notebook methodology output —
