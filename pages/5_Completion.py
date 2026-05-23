@@ -543,22 +543,36 @@ if existing_similar:
     )
 
     # Yhoga staging output path (canonical experiment folder).
-    default_yhoga_output = (
+    # Default points at the per-sweep audit filename derived from the current
+    # threshold/top_k sliders so consecutive sweep runs don't clobber each other.
+    yhoga_default_dir = (
         "experiments/knowledge_graph_states/completion-experiments/"
-        "ann-classifier-v1/lintas_buku_edges.json"
+        "ann-classifier-v1/"
     )
-    yhoga_output_path = (
-        st.text_input(
+    yhoga_default_name = f"lintas_buku_edges.t{int(threshold*100):03d}_k{int(top_k)}.json"
+    default_yhoga_output = yhoga_default_dir + yhoga_default_name
+    yhoga_output_path = None
+    yhoga_overwrite = False
+    if schema_name == "yhoga":
+        yhoga_output_path = st.text_input(
             "JSON staging path",
             value=default_yhoga_output,
             help=(
-                "LINTAS_BUKU_* edges are written here for audit. Replay into "
-                "Neo4j via `python experiments/scripts/replay_completion.py <path>`."
+                "LINTAS_BUKU_* edges are written here for audit. Default follows "
+                "the convention lintas_buku_edges.tNN_kMM.json (per-iteration). "
+                "Replay into Neo4j via "
+                "`python experiments/scripts/replay_completion.py <path>`."
             ),
         )
-        if schema_name == "yhoga"
-        else None
-    )
+        yhoga_overwrite = st.checkbox(
+            "Overwrite if file exists",
+            value=False,
+            help=(
+                "Off (default): refuses to overwrite existing files — prevents "
+                "silently clobbering canonical lintas_buku_edges.json or a "
+                "previous sweep run. On: explicitly allow overwrite."
+            ),
+        )
 
     col_classify, col_info = st.columns([1, 2])
     with col_classify:
@@ -593,23 +607,36 @@ if existing_similar:
                 if schema_name == "yhoga":
                     # Stage to JSON — do not touch Yhoga Neo4j here. Replay
                     # script handles the MERGE-into-Neo4j step separately.
-                    written = dump_lintas_buku_results(
-                        classified,
-                        output_path=yhoga_output_path,
-                        driver=driver,
-                        version="ann-classifier-v1",
-                        source_state="extraction-v2-reviewed",
-                        method="ann + classifier",
-                        params={
-                            "embed_model": selected_embedding_model,
-                            "chat_model": selected_chat_model,
-                            "threshold": float(threshold),
-                            "top_k": int(top_k),
-                            "scope": scope_mode,
-                            "selected_doc": selected_doc,
-                            "batch_size": int(classify_batch_size),
-                        },
-                    )
+                    try:
+                        written = dump_lintas_buku_results(
+                            classified,
+                            output_path=yhoga_output_path,
+                            driver=driver,
+                            version="ann-classifier-v1",
+                            source_state="extraction-v2-reviewed",
+                            method="ann + classifier",
+                            params={
+                                "embed_model": selected_embedding_model,
+                                "chat_model": selected_chat_model,
+                                "threshold": float(threshold),
+                                "top_k": int(top_k),
+                                "scope": scope_mode,
+                                "selected_doc": selected_doc,
+                                "batch_size": int(classify_batch_size),
+                            },
+                            overwrite=yhoga_overwrite,
+                        )
+                    except FileExistsError as fe:
+                        driver.close()
+                        progress_bar.empty()
+                        st.error(
+                            f"⚠️ Refused to overwrite existing file.\n\n{fe}\n\n"
+                            f"Either rename the staging path or tick "
+                            f"**Overwrite if file exists** and click Classify again. "
+                            f"Your classified pairs are still in memory — re-clicking "
+                            f"Classify after fixing the path/flag is a cache hit."
+                        )
+                        st.stop()
                     driver.close()
                     progress_bar.empty()
                     st.success(

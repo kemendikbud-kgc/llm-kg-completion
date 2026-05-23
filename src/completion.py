@@ -1306,6 +1306,7 @@ def dump_lintas_buku_results(
     method: str = "ann + classifier",
     params: dict | None = None,
     captured_from: str = "Yhoga Neo4j Aura Free instance",
+    overwrite: bool = False,
 ) -> int:
     """Write a friend-llm-shaped JSON dump of classified LINTAS_BUKU_* edges.
 
@@ -1313,6 +1314,11 @@ def dump_lintas_buku_results(
     the schema in ``experiments/knowledge_graph_states/completion-experiments/
     friend-llm/lintas_buku_edges.json`` so the two completion experiments are
     text-diffable.
+
+    **Refuses to overwrite an existing file by default** — pass ``overwrite=True``
+    to opt in. This protects the canonical ``lintas_buku_edges.json`` pointer
+    against silent clobbering during sweep workflows where the staging path is
+    typically a per-iteration audit file (``lintas_buku_edges.tNN_kMM.json``).
 
     Args:
         results: Output of ``classify_similar_pairs`` (each dict carries
@@ -1327,13 +1333,24 @@ def dump_lintas_buku_results(
         params: Hyperparameter dict (embed_model, chat_model, threshold,
             top_k, scope). Pass-through for audit.
         captured_from: Free-text source label.
+        overwrite: If False (default), raises ``FileExistsError`` when the
+            target path already exists. Set True to clobber.
 
     Returns the number of LINTAS_BUKU_* edges written.
+
+    Raises:
+        FileExistsError: ``output_path`` already exists and ``overwrite`` is False.
     """
     from datetime import date
     from pathlib import Path
 
     out_path = Path(output_path)
+    if out_path.exists() and not overwrite:
+        raise FileExistsError(
+            f"Refusing to overwrite existing file: {out_path}. "
+            f"Pass overwrite=True to clobber, or pick a different "
+            f"staging filename (convention: lintas_buku_edges.tNN_kMM.json)."
+        )
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     real_edges = [
