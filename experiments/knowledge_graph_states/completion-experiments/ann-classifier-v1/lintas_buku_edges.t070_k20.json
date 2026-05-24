@@ -1,0 +1,1909 @@
+{
+  "version": "ann-classifier-v1",
+  "source_state": "extraction-v2-reviewed",
+  "date_captured": "2026-05-24",
+  "captured_from": "Yhoga Neo4j Aura Free instance",
+  "method": "ann + classifier",
+  "params": {
+    "embed_model": "gemini/gemini-embedding-001",
+    "chat_model": "gemini/gemini-2.5-flash",
+    "threshold": 0.7,
+    "top_k": 20,
+    "scope": "cross_all",
+    "selected_doc": null,
+    "batch_size": 10
+  },
+  "edge_count": 125,
+  "edge_type_breakdown": {
+    "LINTAS_BUKU_PRASYARAT_UNTUK": 52,
+    "LINTAS_BUKU_MEMPERDALAM": 32,
+    "LINTAS_BUKU_BERKAITAN_DENGAN": 23,
+    "LINTAS_BUKU_APLIKASI_DARI": 17,
+    "LINTAS_BUKU_SAMA_DENGAN": 1
+  },
+  "edges": [
+    {
+      "rel_type": "LINTAS_BUKU_SAMA_DENGAN",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (Deoxyribonucleic Acid)",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Kedua konsep merujuk pada molekul DNA yang sama, meskipun dijelaskan dari perspektif kimia dan biologi.",
+        "relation_type": "SAMA_DENGAN",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Materi Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman DNA dari sudut pandang kimia memperdalam pengertian tentang komposisi dan sifat materi genetik secara biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gen",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang struktur kimia DNA adalah prasyarat untuk memahami gen sebagai segmen fungsional dari DNA.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "DNA (Deoxyribonucleic Acid)",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep DNA dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai unit penyusun dasarnya.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kromosom",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman DNA (Kimia) sebagai penyusun utama adalah prasyarat untuk memahami struktur dan fungsi kromosom (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Gen",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep gen dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai unit penyusun urutan informasi genetik.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Kode Genetik",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep kode genetik dalam biologi merupakan penerapan dari konsep nukleotida kimia sebagai dasar pengkodean informasi.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Potensial Elektrode",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Potensial Elektrode dalam kimia adalah manifestasi spesifik dari konsep Potensial Listrik yang lebih umum dalam fisika, terkait perbedaan tegangan pada elektroda.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Potensial Elektrode Standar",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Potensial Elektrode Standar (Kimia) adalah kasus spesifik atau aplikasi dari konsep Potensial Listrik (Fisika) dalam konteks elektrokimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Defleksi Gerak Muatan",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Elektroforesis",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep Defleksi Gerak Muatan dalam fisika adalah prasyarat untuk memahami prinsip kerja Elektroforesis dalam kimia yang memisahkan partikel bermuatan.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Replikasi DNA",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman DNA dari sudut pandang kimia memperdalam pengertian tentang mekanisme replikasi DNA secara biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Biodegradable Plastic",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Biodegradasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Biodegradable Plastic adalah jenis material yang dirancang untuk mengalami proses Biodegradasi, sebuah konsep biologis tentang penguraian bahan organik.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Potensial Listrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep potensial listrik dari Fisika memberikan dasar pemahaman tentang voltase atau energi listrik yang terlibat dalam reaksi elektrokimia di Kimia.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Arus Listrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pelapisan Logam (Electroplating)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep Arus Listrik dalam fisika adalah prasyarat fundamental untuk memahami bagaimana proses Pelapisan Logam (Electroplating) dalam kimia dapat terjadi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Arus Listrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Elektroforesis",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Elektroforesis (Kimia) adalah penerapan konsep arus listrik (Fisika) untuk memisahkan partikel koloid bermuatan.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fotoelektron",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Elektrode",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan elektron dan logam, namun dalam konteks fenomena yang berbeda (emisi fotolistrik vs. reaksi redoks di antarmuka larutan).",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Biodegradasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Degradasi Plastik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep Biodegradasi dalam biologi memperdalam pemahaman tentang salah satu mekanisme utama Degradasi Plastik dalam kimia, yaitu penguraian secara biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Gaya Gerak Listrik (GGL) Sel Elektrokimia",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Listrik",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Gaya Gerak Listrik (GGL) Sel Elektrokimia (Kimia) adalah penerapan atau manifestasi spesifik dari konsep potensial listrik (Fisika) dalam konteks sel elektrokimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Defleksi Gerak Muatan",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Elektrolisis",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang defleksi gerak muatan oleh medan listrik (Fisika) adalah prasyarat untuk memahami pergerakan ion dalam proses elektrolisis (Kimia).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Efek Fotolistrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Elektrode",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan logam dan pelepasan elektron, tetapi melalui mekanisme yang berbeda (cahaya vs. reaksi redoks).",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Senyawa Organik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman senyawa organik dari Kimia adalah dasar untuk memahami pembentukan senyawa tersebut dalam Teori Evolusi Kimia di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Materi Genetik",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Materi Genetik dalam biologi tersusun atas DNA yang monomernya adalah Nukleotida, konsep kimia yang fundamental untuk memahami struktur genetik.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Potensial Listrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sel Volta",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep potensial listrik (Fisika) memperdalam pemahaman tentang bagaimana sel Volta (Kimia) menghasilkan energi listrik dalam bentuk tegangan.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep asam amino dari Kimia merupakan dasar untuk memahami perannya sebagai produk awal dalam Teori Evolusi Kimia di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Defleksi Gerak Muatan",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pelapisan Logam (Electroplating)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman Defleksi Gerak Muatan dalam fisika adalah prasyarat untuk memahami pergerakan ion dalam proses Pelapisan Logam (Electroplating) di kimia.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Energi Aktivasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep Energi Aktivasi dalam biologi (dan kimia umum) adalah prasyarat untuk memahami mengapa Reaksi Elektrokimia memerlukan energi untuk memulai atau berlangsung.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Enzim dalam biologi adalah salah satu jenis Protein, yang merupakan makromolekul organik yang dipelajari dalam kimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sintesis Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang struktur kimia DNA (Kimia) memperdalam pemahaman tentang bagaimana informasi genetiknya digunakan dalam sintesis protein (Biologi).",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Elektroforesis",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Medan Listrik pada Pelat Paralel",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep medan listrik pada pelat paralel (Fisika) adalah prasyarat untuk memahami bagaimana medan listrik digunakan dalam elektroforesis (Kimia).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Kromosom",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Nukleotida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Nukleotida (Kimia) adalah monomer penyusun DNA, yang merupakan komponen utama kromosom (Biologi), menjadikannya prasyarat fundamental.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fungsi Kerja Logam (W0)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Potensial Elektrode",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Kedua konsep mengukur aspek kecenderungan logam melepaskan elektron, meskipun dalam konteks fisika kuantum dan elektrokimia yang berbeda.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sintesis Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang struktur dan komposisi protein dari Kimia adalah prasyarat untuk memahami proses kompleks sintesis protein dalam Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Bioteknologi Modern",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA dari Kimia adalah prasyarat untuk memahami dasar teknologi rekayasa genetika dalam Bioteknologi Modern.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "GGL Sel",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Hukum II Kirchhoff (Hukum Tegangan Kirchhoff)",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "GGL Sel (Kimia) adalah sumber tegangan yang perilakunya dalam rangkaian listrik dapat dianalisis menggunakan Hukum II Kirchhoff (Fisika).",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Metabolisme",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep reaksi elektrokimia dari Kimia dapat memperdalam pemahaman tentang transfer elektron dan energi dalam proses metabolisme biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Dogma Sentral Biologi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA dari Kimia adalah prasyarat untuk memahami peran DNA dalam aliran informasi genetik pada Dogma Sentral Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Bioremediasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi dan Reduksi Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep oksidasi dan reduksi organik dari Kimia memperdalam pemahaman mekanisme kimia yang terjadi dalam proses bioremediasi biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pati",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Fotosintesis (Biologi) menjelaskan proses biologis yang menghasilkan glukosa, yang kemudian disimpan sebagai pati (Kimia), sehingga memperdalam pemahaman tentang asal pati.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.85,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Bioremediasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Degradasi Plastik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Bioremediasi adalah aplikasi biologis dari konsep degradasi plastik, khususnya yang terjadi secara biologis.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Mutasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur kimia DNA dari Kimia adalah prasyarat fundamental untuk memahami konsep mutasi sebagai perubahan pada materi genetik dalam Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Energi Aktivasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Spontan",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep reaksi spontan dari Kimia memperdalam pemahaman tentang energi aktivasi yang diperlukan untuk memulai reaksi biokimia.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Holoenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang protein dari Kimia adalah prasyarat untuk memahami komponen protein (apoenzim) dalam struktur holoenzim di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "DNA (Kimia) adalah cetak biru genetik yang mengkodekan informasi untuk sintesis enzim (Biologi), dan enzim berperan penting dalam proses yang melibatkan DNA.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pembelahan Sel",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA dari Kimia adalah prasyarat untuk memahami replikasi dan distribusi materi genetik selama pembelahan sel di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kode Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang asam amino dari Kimia adalah prasyarat untuk memahami bagaimana kode genetik menentukan urutan asam amino dalam protein.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Biodegradasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi dan Reduksi Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Biodegradasi (Biologi) adalah proses biologis yang secara fundamental melibatkan reaksi oksidasi dan reduksi organik (Kimia) pada tingkat molekuler.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Kromosom",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep protein dalam Kimia memperdalam pemahaman tentang protein histon sebagai komponen struktural kromosom dalam Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fungsi Kerja Logam (W0)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pelapisan Logam (Electroplating)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan logam dan elektron, namun dalam konteks fenomena berbeda: efek fotolistrik (Fisika) dan elektrokimia (Kimia).",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Dioda dan Light-Emitting Diode (LED)",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Elektrode",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Keduanya adalah komponen yang berhubungan dengan aliran listrik dan elektron, namun dalam konteks aplikasi dan fenomena yang berbeda.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.6,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA dari Kimia adalah prasyarat untuk memahami bagaimana DNA berfungsi sebagai cetakan dalam proses transkripsi di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Unit Ulang Monomer",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Enzim adalah polimer (protein) yang tersusun dari unit ulang monomer (asam amino), sehingga konsep ini berkaitan secara struktural.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Oksidasi dan Reduksi Organik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep oksidasi dan reduksi organik dari Kimia memperdalam pemahaman tentang reaksi kimia yang mendasari Teori Evolusi Kimia.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gugus Fungsi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman gugus fungsi dalam Kimia adalah prasyarat untuk memahami mekanisme kerja dan interaksi enzim di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Energi Aktivasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Esterifikasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep energi aktivasi menjelaskan mengapa reaksi kimia, termasuk esterifikasi, membutuhkan energi awal untuk berlangsung.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Metabolisme",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi dan Reduksi Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep oksidasi dan reduksi organik dalam Kimia memperdalam pemahaman tentang reaksi redoks yang terjadi dalam metabolisme di Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kromosom",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Asam amino adalah monomer penyusun protein histon, yang merupakan komponen kromosom; pemahaman Kimia adalah prasyarat Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Reaksi Elektrokimia",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Reaksi elektrokimia memperdalam pemahaman bagaimana energi listrik halilintar memicu pembentukan senyawa organik dalam teori evolusi kimia.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Energi Aktivasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Spontanitas Reaksi Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Energi aktivasi berkaitan dengan laju reaksi, sedangkan spontanitas reaksi elektrokimia berkaitan dengan kelayakan termodinamika.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kode Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA adalah prasyarat untuk memahami bagaimana kode genetik disimpan dan diekspresikan.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Metabolisme",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Spontan",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep reaksi spontan dalam Kimia memperdalam pemahaman tentang arah dan energi reaksi-reaksi yang terjadi dalam metabolisme di Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi dan Reduksi Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman dasar tentang oksidasi dan reduksi organik (Kimia) adalah prasyarat untuk memahami mekanisme fosforilasi oksidatif (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kemiripan DNA",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur DNA dari Kimia adalah prasyarat untuk memahami konsep kemiripan DNA dan implikasinya dalam Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep protein (Kimia) memperdalam pemahaman tentang translasi (Biologi) dengan menjelaskan struktur dan fungsi produk akhir yang dihasilkan oleh proses tersebut.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman asam amino sebagai monomer protein adalah prasyarat untuk memahami produk dan mekanisme proses translasi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Polimer Sintetik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sintesis Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan proses pembentukan makromolekul (polimer) dari unit-unit yang lebih kecil, meskipun jenis polimer dan mekanismenya berbeda.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sintesis Protein",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang asam amino sebagai monomer protein (Kimia) adalah prasyarat untuk memahami proses sintesis protein (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karbohidrat (Sakarida)",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur dan sifat kimia karbohidrat (Kimia) memperdalam pemahaman tentang produk utama proses fotosintesis (Biologi).",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Oksidasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep dasar oksidasi (Kimia) adalah prasyarat fundamental untuk memahami proses fosforilasi oksidatif (Biologi) yang melibatkan reaksi redoks.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Biodegradable Plastic",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Bioremediasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Bioremediasi (Biologi) memperdalam pemahaman tentang bagaimana plastik biodegradable (Kimia) dapat terurai melalui proses biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Foton",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Fotosintesis",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep foton dari Fisika memperdalam pemahaman tentang sifat energi cahaya yang diserap dan diubah dalam proses fotosintesis pada Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Kode Genetik",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman kode genetik adalah prasyarat untuk memahami bagaimana urutan asam amino dalam protein ditentukan.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Penyuntingan Genom (Genome Editing)",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur kimia DNA (Kimia) adalah prasyarat untuk memahami mekanisme penyuntingan genom (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 1.0,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Nukleotida",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman nukleotida sebagai penyusun mRNA adalah prasyarat untuk memahami bagaimana mRNA berfungsi sebagai cetakan translasi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Efek Fotolistrik",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Fotosintesis",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Kedua konsep berkaitan dengan interaksi energi cahaya dengan materi, meskipun dalam konteks dan mekanisme yang sangat berbeda di Fisika dan Biologi.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Mitosis",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur kimia DNA (Kimia) adalah prasyarat untuk memahami bagaimana materi genetik tersebut direplikasi dan didistribusikan selama mitosis (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Hidrokarbon",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Evolusi Kimia",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang hidrokarbon (Kimia) adalah prasyarat untuk memahami senyawa organik awal yang terlibat dalam teori evolusi kimia (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Selulosa",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep selulosa dari kimia memperdalam pemahaman tentang salah satu produk akhir dari glukosa hasil fotosintesis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Klasifikasi Semikonduktor",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Polimer Anorganik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Kedua konsep membahas klasifikasi material, namun fokusnya berbeda antara sifat elektronik semikonduktor dan struktur kimia polimer anorganik.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.4,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Cahaya Tampak",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Hamburan Cahaya Koloid",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang cahaya tampak (Fisika) adalah prasyarat untuk memahami interaksinya dengan partikel koloid dalam fenomena hamburan cahaya (Kimia).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Brønsted-Lowry",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Karakteristik Inti Atom",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang proton sebagai partikel subatomik dalam inti atom (Fisika) adalah prasyarat untuk memahami konsep donor proton (H+) dalam asam Brønsted-Lowry (Kimia).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Termistor",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Termoset",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Keduanya memiliki awalan \"term-\" yang merujuk pada suhu, namun konsep dan aplikasinya berbeda secara fundamental di Fisika dan Kimia.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.3,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Oksidasi dan Reduksi Organik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Siklus Krebs",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep oksidasi dan reduksi organik (Kimia) adalah prasyarat untuk memahami reaksi-reaksi yang terjadi dalam Siklus Krebs (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Enzim Fermentasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang protein dari Kimia adalah prasyarat untuk memahami struktur dan fungsi enzim fermentasi dalam Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Polimer",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep polimer (Kimia) adalah prasyarat untuk memahami pembentukan polimer RNA dari DNA selama transkripsi (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Respirasi Seluler",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sel Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Respirasi seluler melibatkan rantai transpor elektron yang prinsip kerjanya mirip sel elektrokimia dalam mengubah energi kimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "GGL Sel",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Respirasi Seluler",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep GGL sel dalam kimia dapat memperdalam pemahaman tentang perbedaan potensial redoks yang mendorong aliran elektron dalam respirasi seluler.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Nukleotida",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang nukleotida (Kimia) adalah prasyarat untuk memahami bagaimana unit-unit ini dirangkai selama proses transkripsi (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Epigenetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur dan sifat kimia DNA dari perspektif kimia adalah prasyarat untuk memahami bagaimana perubahan epigenetik memengaruhi fungsi DNA.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Oksidasi Senyawa Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Fosforilasi oksidatif dalam Biologi adalah penerapan spesifik dari prinsip reaksi oksidasi senyawa organik yang dipelajari dalam Kimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Oksidasi dan Reduksi Organik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Respirasi Seluler",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep oksidasi dan reduksi organik dalam kimia adalah prasyarat untuk memahami reaksi redoks yang terjadi selama respirasi seluler dalam biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang protein (Kimia) adalah prasyarat untuk memahami peran enzim RNA polimerase (protein) dalam proses transkripsi (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Efek Induktif",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Inhibitor Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Efek induktif dalam kimia dapat memengaruhi sifat molekul inhibitor enzim, yang kemudian memengaruhi interaksinya dengan enzim.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.6,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sel Volta",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep sel volta dalam kimia dapat memperdalam pemahaman tentang bagaimana transfer elektron dan reaksi redoks berperan dalam konversi energi pada fotosintesis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Redoks",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Fosforilasi oksidatif dalam Biologi adalah penerapan prinsip reaksi redoks dari Kimia dalam konteks transpor elektron.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Reaksi Polimerisasi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang reaksi polimerisasi secara kimia merupakan prasyarat untuk memahami mekanisme pembentukan RNA dalam proses transkripsi biologis.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Setengah Reaksi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep setengah reaksi dari Kimia adalah alat analisis yang berkaitan dengan reaksi redoks yang mendasari fosforilasi oksidatif Biologi.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.75,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Aktivitas Ion",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Inhibitor Enzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep aktivitas ion dalam kimia dapat memperdalam pemahaman tentang bagaimana ion-ion tertentu dapat berfungsi sebagai inhibitor enzim dalam sistem biologis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Gugus Fungsi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Holoenzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang gugus fungsi (Kimia) adalah prasyarat untuk memahami sifat kimia gugus prostetik yang esensial dalam holoenzim (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Bilangan Oksidasi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Fosforilasi Oksidatif",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang bilangan oksidasi dalam kimia adalah prasyarat untuk memahami perubahan redoks yang mendasari proses fosforilasi oksidatif dalam biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Bilangan Oksidasi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Klasifikasi Semikonduktor",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Konsep bilangan oksidasi menjelaskan transfer elektron dalam reaksi kimia, sementara klasifikasi semikonduktor berkaitan dengan sifat elektronik material dan doping.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.4,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Polimer Alam",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Transkripsi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang DNA dan RNA sebagai polimer alam dari sudut pandang kimia adalah prasyarat untuk memahami perannya dalam proses transkripsi biologis.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "GGL Sel",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gametogenesis",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep GGL sel berkaitan dengan energi listrik dari reaksi kimia, sedangkan gametogenesis adalah proses biologis pembentukan sel kelamin.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.3,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Fotosintesis",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Monosakarida",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang monosakarida seperti glukosa dari sudut pandang kimia memperdalam pemahaman tentang produk utama yang dihasilkan dalam proses fotosintesis.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Klasifikasi Semikonduktor",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Polimer Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Klasifikasi semikonduktor berkaitan dengan sifat elektronik material anorganik, sedangkan polimer organik membahas makromolekul berbasis karbon.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.3,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Basa Lewis",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Kode Genetik",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Basa Lewis adalah konsep kimia tentang donor pasangan elektron, sementara kode genetik adalah urutan basa nitrogen sebagai unit informasi biologis.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.4,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Gametogenesis",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang struktur dan sifat kimia DNA adalah prasyarat untuk memahami perannya sebagai materi genetik dalam proses gametogenesis.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Protein",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Teori Induced Fit",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman protein sebagai makromolekul kimia adalah prasyarat untuk memahami mekanisme kerja enzim yang dijelaskan oleh Teori Induced Fit.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Respirasi Seluler",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Sel Volta",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman konversi energi kimia melalui reaksi redoks pada sel Volta memperdalam prinsip dasar respirasi seluler.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Gerbang Logika Dasar",
+      "source_grade": "Fisika Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Notasi Sel Standar",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Kedua konsep ini berasal dari disiplin ilmu yang sangat berbeda dan tidak memiliki keterkaitan kurikuler yang jelas.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.2,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Asam Amino",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Holoenzim",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman tentang asam amino (Kimia) adalah prasyarat untuk memahami struktur protein (apoenzim) yang merupakan bagian dari holoenzim (Biologi).",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Elektrode",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Fosforilasi Oksidatif",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman peran elektrode dalam transfer elektron dan reaksi redoks kimia memperdalam pemahaman transpor elektron pada fosforilasi oksidatif.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.6,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Setengah Reaksi",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Siklus Krebs",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman setengah reaksi dalam kimia membantu menganalisis dan memperdalam pemahaman reaksi redoks yang terjadi pada tahapan Siklus Krebs.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.85,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Holoenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Identifikasi Gugus Fungsi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman gugus fungsi dari Kimia adalah prasyarat untuk memahami struktur kimia gugus prostetik dalam holoenzim di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Inhibitor Enzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Protein",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep protein dari Kimia memperdalam pemahaman tentang struktur enzim (protein) dan bagaimana inhibitor berinteraksi dengannya di Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "DNA (Asam 2-Deoksiribonukleat)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Pemahaman struktur kimia DNA adalah prasyarat untuk memahami bagaimana informasi genetiknya diekspresikan melalui proses translasi dalam biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Holoenzim",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Koagulasi",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Konsep koagulasi dari Kimia memperdalam pemahaman tentang bagaimana kerusakan struktur protein enzim (holoenzim) dapat terjadi di Biologi.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Reaksi Oksidasi Senyawa Organik",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Siklus Krebs",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Siklus Krebs dalam biologi adalah penerapan prinsip-prinsip reaksi oksidasi senyawa organik yang dipelajari dalam kimia untuk menghasilkan energi.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.95,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Enzim Fermentasi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Etanol",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Enzim fermentasi di Biologi adalah agen biologis yang mengkatalisis produksi etanol, sebuah senyawa kimia.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Reduksi Senyawa Organik",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Pemahaman reaksi reduksi dari Kimia adalah prasyarat untuk memahami mekanisme redoks dalam fosforilasi oksidatif di Biologi.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_APLIKASI_DARI",
+      "source_label": "Concept",
+      "source_name": "Fosforilasi Oksidatif",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Reaksi Elektrokimia",
+      "target_grade": "Kimia Kelas XII",
+      "properties": {
+        "description": "Fosforilasi oksidatif adalah aplikasi biologis dari prinsip reaksi elektrokimia yang melibatkan transfer elektron untuk menghasilkan energi dalam sel.",
+        "relation_type": "APLIKASI_DARI",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Etanol",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Produksi Tempe",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Etanol adalah produk fermentasi alkohol, sementara produksi tempe adalah contoh lain dari proses fermentasi yang melibatkan mikroorganisme.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.7,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_BERKAITAN_DENGAN",
+      "source_label": "Concept",
+      "source_name": "Elektrolisis",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Fosforilasi Oksidatif",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Keduanya melibatkan transfer elektron dan energi dalam konteks elektrokimia, meskipun elektrolisis menggunakan energi listrik dan fosforilasi oksidatif menghasilkannya.",
+        "relation_type": "BERKAITAN_DENGAN",
+        "confidence": 0.8,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_PRASYARAT_UNTUK",
+      "source_label": "Concept",
+      "source_name": "Monomer",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep monomer dari kimia adalah prasyarat untuk memahami bagaimana translasi membentuk polipeptida dari unit-unit asam amino.",
+        "relation_type": "PRASYARAT_UNTUK",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Polimer Alam (Biopolimer)",
+      "source_grade": "Kimia Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Translasi",
+      "target_grade": "Biologi Kelas XII",
+      "properties": {
+        "description": "Konsep polimer alam (biopolimer) dari kimia memperdalam pemahaman bahwa polipeptida yang dihasilkan translasi adalah jenis protein.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.9,
+        "method": "ann-classifier-v1"
+      }
+    },
+    {
+      "rel_type": "LINTAS_BUKU_MEMPERDALAM",
+      "source_label": "Concept",
+      "source_name": "Ilmu Pendukung Bioteknologi",
+      "source_grade": "Biologi Kelas XII",
+      "target_label": "Concept",
+      "target_name": "Pemanfaatan Gelombang Mikro",
+      "target_grade": "Fisika Kelas XII",
+      "properties": {
+        "description": "Pemanfaatan gelombang mikro (Fisika) memperdalam pemahaman bahwa fisika adalah ilmu pendukung bioteknologi (Biologi) dengan memberikan contoh aplikasi teknologi fisika.",
+        "relation_type": "MEMPERDALAM",
+        "confidence": 0.85,
+        "method": "ann-classifier-v1"
+      }
+    }
+  ],
+  "instance_counts_at_capture": {
+    "Grade": 3,
+    "Chapter": 17,
+    "Subtopic": 81,
+    "Concept": 342,
+    "ConceptTarget": 418,
+    "total_relationships": 1246
+  }
+}
