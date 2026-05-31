@@ -4,3 +4,7 @@
 [submodule "experiments/yhoga/kg-completion"]
 	path = experiments/yhoga/kg-completion
 	url = https://github.com/Kemendickbud/kg-completion
+[submodule "final-kg"]
+	path = final-kg
+	url = https://github.com/Kemendickbud/final-kg.git
+	branch = feat/final-consensus
