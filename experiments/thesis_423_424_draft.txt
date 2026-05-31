@@ -1,0 +1,123 @@
+============================================================
+4.2.3 Pembahasan Kualitatif Hasil KGC
+============================================================
+
+Bagian ini membahas secara kualitatif kualitas relasi lintas-buku yang ditemukan oleh pipeline Graph Completion, menganalisis pola kesalahan model LLM, dan mengidentifikasi faktor-faktor yang memengaruhi akurasi ekstraksi.
+
+--- Kualitas Relasi Lintas-Buku yang Ditemukan ---
+
+Pada konfigurasi threshold = 0.80 dan top_k = 10, pipeline berhasil menemukan 44 relasi lintas-buku dari total 65.703 kemungkinan pasangan. Distribusi tipe relasi menunjukkan dominasi PRASYARAT_UNTUK (16 edge, 36,4%), diikuti MEMPERDALAM (10 edge, 22,7%), APLIKASI_DARI (9 edge, 20,5%), BERKAITAN_DENGAN (8 edge, 18,2%), dan SAMA_DENGAN (1 edge, 2,3%). Dominasi PRASYARAT_UNTUK mengindikasikan bahwa jembatan lintas-disiplin dalam kurikulum sains kelas XII lebih banyak bersifat prasyarat pengetahuan daripada aplikasi atau analogi.
+
+Dari 44 edge, 7 memiliki skor confidence = 1.0 (16%), menunjukkan keyakinan tinggi LLM terhadap relasi tersebut. Contoh relasi dengan confidence tertinggi meliputi:
+- DNA (Asam 2-Deoksiribonukleat) [Kimia] → Gen [Biologi]: PRASYARAT_UNTUK (conf = 1.0). Pemahaman struktur kimia DNA merupakan fondasi untuk memahami fungsi gen secara biologis.
+- Potensial Elektrode [Kimia] → Potensial Listrik [Fisika]: APLIKASI_DARI (conf = 1.0). Konsep potensial elektrode dalam elektrokimia merupakan aplikasi langsung dari konsep potensial listrik dalam fisika.
+- Enzim [Biologi] → Protein [Kimia]: APLIKASI_DARI (conf = 1.0). Enzim merupakan manifestasi fungsional dari protein dalam konteks biologis.
+- Fosforilasi Oksidatif [Biologi] → Oksidasi [Kimia]: PRASYARAT_UNTUK (conf = 1.0). Pemahaman reaksi oksidasi secara kimia diperlukan sebelum mempelajari fosforilasi oksidatif dalam metabolisme.
+
+Satu-satunya relasi bertipe SAMA_DENGAN yang ditemukan adalah DNA (Asam 2-Deoksiribonukleat) [Kimia] ↔ DNA (Deoxyribonucleic Acid) [Biologi] dengan confidence 1.0. Temuan ini mengonfirmasi bahwa pipeline mampu mendeteksi entitas identik yang diajarkan di dua disiplin berbeda dengan terminologi yang sedikit berbeda.
+
+--- Analisis Relasi Berpotensi False Positive ---
+
+Sebanyak 5 edge memiliki confidence < 0.7, yang mengindikasikan potensi false positive:
+- Gerbang Logika Dasar [Fisika] ↔ Notasi Sel Standar [Kimia]: BERKAITAN_DENGAN (conf = 0.2). Relasi ini merupakan contoh false positive yang jelas — kemiripan embedding terjadi akibat kedua konsep sama-sama melibatkan notasi simbolik, namun tidak ada hubungan kurikuler bermakna.
+- Klasifikasi Semikonduktor [Fisika] ↔ Polimer Anorganik [Kimia]: BERKAITAN_DENGAN (conf = 0.4). Kemiripan kemungkinan didorong oleh kesamaan konteks material/bahan, namun hubungan substantifnya lemah.
+- Efek Fotolistrik [Fisika] ↔ Fotosintesis [Biologi]: BERKAITAN_DENGAN (conf = 0.7). Keduanya melibatkan kata "foto" (cahaya) dan interaksi foton dengan materi, tetapi mekanisme dan konteksnya sangat berbeda.
+
+Temuan ini mengonfirmasi peran penting label fallback BERKAITAN_DENGAN sebagai penanda relasi yang lemah atau ambigu. Dari 8 edge bertipe BERKAITAN_DENGAN, mayoritas memiliki confidence lebih rendah dibandingkan tipe lainnya, menunjukkan bahwa LLM menggunakan label ini ketika tidak yakin terhadap arah atau tipe relasi yang lebih spesifik.
+
+--- Analisis Pola Kesalahan Ekstraksi (Error Analysis) ---
+
+Analisis feedback pakar mengungkapkan beberapa pola kesalahan sistematis pada pipeline ekstraksi LLM:
+
+Kesalahan faktual agen biologis. Pada Kimia, triple mengenai produksi etanol menyatakan "bakteri memfermentasi karbohidrat" padahal seharusnya "ragi (Saccharomyces cerevisiae)." Kesalahan ini termasuk dalam kategori hallucination faktual yang berbahaya karena terlihat plausibel namun salah secara fundamental.
+
+Pencampuran konsep teknis. Triple mengenai pemurnian tembaga menyatakan bahwa electroplating digunakan untuk pemurnian tembaga, padahal proses yang benar adalah elektrorefining. Kedua konsep memang melibatkan elektrolisis, namun tujuan dan mekanismenya berbeda.
+
+Definisi yang terlalu luas. Expert-fisika-6 mencatat beberapa definisi yang menimbulkan bias, misalnya definisi konstanta Coulomb yang "terlalu luas" tanpa menyebutkan jenis konstantanya. Feedback umum dari expert ini menekankan: "Penjelasannya dipastikan jangan ada bias... Lebih ke penulisan, notasi, dan definisi nya perlu dicek dan dirapihkan kembali."
+
+Under-extraction formula dan rumus. Expert-fisika-4 mengusulkan 15 missing triples, di mana 10 di antaranya (67%) merupakan formula/rumus yang tidak berhasil diekstrak oleh LLM. Ini menunjukkan bahwa LLM cenderung mengekstrak konsep deskriptif namun melewatkan relasi kuantitatif berbasis persamaan matematika. Contoh: rumus efisiensi transformator (η), nilai efektif arus AC (I_ef), panjang gelombang minimum sinar-X (λ_min), dan rumus peluruhan radioaktif (N_t).
+
+--- Analisis Koreksi dan Kategori Feedback ---
+
+Dari 222 komentar expert-fisika-4, analisis tematik menunjukkan distribusi:
+- Penjelasan/konfirmasi rumus: 78 komentar (35%) — mayoritas bersifat validasi bahwa rumus sudah benar.
+- Klarifikasi definisi: 52 komentar (23%) — penajaman definisi konsep.
+- Koreksi notasi: 45 komentar (20%) — perbaikan penulisan simbol dan satuan.
+- Peringatan bias: 28 komentar (13%) — potensi misleading pada pembaca.
+- Penambahan konteks: 19 komentar (9%) — konteks tambahan yang perlu disertakan.
+
+Pola ini mengindikasikan bahwa kekuatan utama LLM terletak pada ekstraksi struktur konseptual (87% rated correct), namun kelemahan terletak pada presisi notasi dan formulasi matematis.
+
+--- Dampak KGC terhadap Kualitas Graf ---
+
+Pipeline KGC berhasil menambahkan 44 jembatan lintas-buku yang sebelumnya tidak ada. Secara kualitatif, mayoritas relasi ini bermakna pedagogis dan dapat dipertanggungjawabkan secara ilmiah. Namun, keberadaan false positive (terutama pada confidence rendah) menggarisbawahi pentingnya threshold yang tepat dan validasi pakar sebagai filter akhir.
+
+
+============================================================
+4.2.4 Analisis Komparatif Antar-Domain Sains
+============================================================
+
+Bagian ini membandingkan performa pipeline ekstraksi dan completion pada ketiga mata pelajaran untuk mengidentifikasi pola yang bergantung pada domain (domain-dependent patterns).
+
+--- Perbandingan Kualitas Ekstraksi ---
+
+Berdasarkan rating dari seluruh reviewer, ketiga mata pelajaran menunjukkan tingkat akurasi ekstraksi yang berbeda:
+
+Tabel 4.x Perbandingan Akurasi Ekstraksi per Mata Pelajaran
+
+| Mata Pelajaran | Reviewer       | Correct | Partial | Missing | Wrong | Akurasi (%) |
+|----------------|----------------|---------|---------|---------|-------|-------------|
+| Biologi        | expert-bio-4   | 151     | 0       | 0       | 0     | 100.0       |
+| Biologi        | expert-bio-6   | 143     | 6       | 2       | 0     | 94.7        |
+| Fisika         | expert-fis-4   | 239     | 0       | 1       | 0     | 99.6        |
+| Fisika         | expert-fis-6   | 172     | 40      | 28      | 3     | 71.7        |
+| Kimia          | expert-kim-6   | 137     | 6       | 19      | 4     | 82.5        |
+
+Biologi memiliki akurasi tertinggi secara konsisten (94,7-100%), diikuti Fisika yang menunjukkan variabilitas tinggi antar-reviewer (71,7-99,6%), dan Kimia di posisi terendah (82,5%). Variabilitas pada Fisika mengindikasikan bahwa standar evaluasi expert-fisika-6 lebih ketat dibandingkan expert-fisika-4, terutama pada aspek notasi dan presisi definisi.
+
+--- Faktor Penyebab Perbedaan Antar-Domain ---
+
+Kompleksitas konten matematis. Kimia dan Fisika memiliki proporsi konten kuantitatif (rumus, persamaan, konstanta) yang lebih tinggi dibandingkan Biologi. Dari 15 missing triples yang diusulkan expert-fisika-4, 10 (67%) berupa rumus yang tidak terekstrak. Ini menunjukkan bahwa LLM lebih efektif mengekstrak relasi konseptual-naratif (dominan di Biologi) dibandingkan relasi formula-kuantitatif (dominan di Fisika dan Kimia).
+
+Asumsi ideal yang tidak eksplisit. Expert-kimia-6 mengidentifikasi bahwa banyak triple Kimia mengasumsikan kondisi ideal (koefisien aktivitas γ = 1, larutan encer) tanpa menyebutkannya secara eksplisit. Misalnya, definisi pH seharusnya "berdasarkan aktivitas ion hidrogen (aH+)," bukan konsentrasi. LLM gagal menangkap nuansa ini karena buku ajar sendiri seringkali menyederhanakan penjelasan.
+
+Terminologi multilingual. Beberapa konsep seperti DNA memiliki penamaan berbeda antar-buku (DNA (Deoxyribonucleic Acid) di Biologi vs DNA (Asam 2-Deoksiribonukleat) di Kimia). Pipeline berhasil mendeteksi kesamaan ini (SAMA_DENGAN, confidence 1.0), namun perbedaan terminologi berpotensi menyebabkan under-detection pada konsep lain yang penamaan lintas-bukunya tidak se-transparan DNA.
+
+--- Perbandingan Densitas Konsep ---
+
+Tabel 4.x Densitas Konsep per Bab
+
+| Mata Pelajaran | Jumlah Bab | Jumlah Konsep | Konsep per Bab | Relasi per Konsep |
+|----------------|------------|---------------|----------------|-------------------|
+| Biologi        | 4          | 85            | 21.3           | 1.78              |
+| Fisika         | 9          | 134           | 14.9           | 1.96              |
+| Kimia          | 4          | 144           | 36.0           | 1.38              |
+
+Kimia memiliki densitas konsep tertinggi (36,0 konsep/bab) namun rasio relasi per konsep terendah (1,38). Tingginya densitas disebabkan oleh kontribusi 27 expert-proposed concepts dari expert-kimia-6 pada tahap v2, yang menambahkan konsep-konsep kuantitatif seperti hukum Nernst, hukum Faraday, dan vulkanisasi. Rendahnya rasio relasi mengindikasikan bahwa banyak konsep Kimia bersifat atomik (berdiri sendiri) tanpa relasi yang kaya, berbeda dengan Fisika di mana konsep-konsep cenderung saling terhubung melalui rantai rumus.
+
+Biologi memiliki densitas moderat (21,3 konsep/bab) dengan distribusi yang tidak merata: Bab Evolusi memiliki 30 konsep (tertinggi), sementara Bab Enzim dan Metabolisme hanya 10 konsep. Ketidakmerataan ini mencerminkan cakupan materi yang berbeda — Evolusi mencakup banyak teori, tokoh, dan bukti, sedangkan Enzim berfokus pada sedikit konsep inti dengan penjelasan mendalam.
+
+--- Distribusi Jembatan Lintas-Buku ---
+
+Tabel 4.x Distribusi Relasi Lintas-Buku per Pasangan Mapel
+
+| Pasangan Mapel      | Jumlah Edge | Persentase | Relasi Dominan          |
+|---------------------|-------------|------------|-------------------------|
+| Kimia → Biologi     | 23          | 52.3%      | PRASYARAT_UNTUK (12)    |
+| Fisika → Kimia      | 12          | 27.3%      | APLIKASI_DARI (4)       |
+| Fisika → Biologi    | 9           | 20.5%      | MEMPERDALAM (3)         |
+
+Pasangan Kimia-Biologi mendominasi dengan 23 edge (52,3%), yang secara kurikuler masuk akal karena Biokimia merupakan irisan alami antara Kimia dan Biologi. Konsep-konsep seperti DNA, nukleotida, protein, dan asam amino menjadi jembatan utama. Dominasi tipe PRASYARAT_UNTUK pada pasangan ini menunjukkan bahwa pemahaman dasar kimia organik dan makromolekul diperlukan sebelum mempelajari konsep genetika dan metabolisme.
+
+Pasangan Fisika-Kimia memiliki 12 edge (27,3%), di mana relasi khas meliputi Potensial Listrik → Potensial Elektrode (APLIKASI_DARI) dan Arus Listrik → Electroplating (PRASYARAT_UNTUK). Ini mencerminkan penerapan prinsip fisika dalam konteks elektrokimia.
+
+Pasangan Fisika-Biologi memiliki jumlah terendah (9 edge, 20,5%), yang mengindikasikan bahwa hubungan langsung antara fisika dan biologi dalam kurikulum kelas XII relatif terbatas. Relasi yang ditemukan umumnya melibatkan konsep energi (Foton → Fotosintesis) dan elektronika biologi (Efek Fotolistrik ↔ Fotosintesis).
+
+--- Sensitivitas Parameter terhadap Domain ---
+
+Parameter sweep menunjukkan bahwa penurunan threshold dari 0.85 ke 0.70 meningkatkan jumlah edge secara drastis (13 → 125), namun dengan komposisi tipe yang berubah:
+- Pada threshold ketat (0.85): hanya 13 edge, 4 di antaranya PRASYARAT_UNTUK — hanya relasi paling kuat yang lolos.
+- Pada threshold longgar (0.70): 125 edge, namun BERKAITAN_DENGAN naik dari 2 menjadi 23, mengindikasikan masuknya relasi yang lebih lemah dan ambigu.
+- Tipe SAMA_DENGAN konsisten hanya 1 edge di semua konfigurasi, menunjukkan bahwa entitas identik lintas-buku sangat jarang dalam kurikulum yang telah di-localize.
+
+Temuan ini mengimplikasikan bahwa threshold optimal berada di kisaran 0.75-0.80, di mana jumlah relasi bermakna cukup tinggi (44-77) tanpa terlalu banyak noise dari BERKAITAN_DENGAN fallback.
