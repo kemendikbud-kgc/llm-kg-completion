@@ -1,0 +1,9 @@
+﻿konsep_A,mapel_A,relasi,konsep_B,mapel_B,confidence,penjelasan_LLM
+penjumlahan kecepatan relativistik,Fisika,BERKAITAN_DENGAN,sifat koligatif,Kimia,0.1,Konsep-konsep ini berasal dari cabang ilmu yang sangat berbeda dan tidak memiliki keterkaitan konseptual langsung atau aplikasi timbal balik.
+Enzim,Biologi,BERKAITAN_DENGAN,sel elektrokimia,Kimia,0.1,Konsep enzim (Biologi) dan sel elektrokimia (Kimia) berasal dari bidang studi yang berbeda dan tidak memiliki keterkaitan konseptual langsung.
+Setengah Reaksi,Kimia,BERKAITAN_DENGAN,Waktu Paruh (t½),Fisika,0.1,Konsep setengah reaksi (Kimia) dan waktu paruh (Fisika) berasal dari bidang studi yang berbeda dan tidak memiliki keterkaitan konseptual langsung.
+dilatasi waktu relativistik,Fisika,BERKAITAN_DENGAN,elektrolisis,Kimia,0.1,Konsep dilatasi waktu relativistik (Fisika) dan elektrolisis (Kimia) berasal dari bidang studi yang berbeda dan tidak memiliki keterkaitan konseptual langsung.
+Fotoelektron,Fisika,BERKAITAN_DENGAN,Pelapisan Logam (Electroplating),Kimia,0.1,Konsep fotoelektron (Fisika) dan pelapisan logam (Kimia) berasal dari bidang studi yang berbeda dan tidak memiliki keterkaitan konseptual langsung.
+Gerbang Logika Dasar,Fisika,BERKAITAN_DENGAN,Notasi Sel Standar,Kimia,0.2,Kedua konsep ini berasal dari disiplin ilmu yang sangat berbeda dan tidak memiliki keterkaitan kurikuler yang jelas.
+Bilangan Oksidasi,Kimia,BERKAITAN_DENGAN,Klasifikasi Semikonduktor,Fisika,0.3,"Bilangan oksidasi (Kimia) adalah konsep kimia, sedangkan klasifikasi semikonduktor (Fisika) lebih berkaitan dengan fisika material, dengan hubungan yang sangat tidak langsung."
+Basa Lewis,Kimia,BERKAITAN_DENGAN,Kode Genetik,Biologi,0.4,"Basa Lewis adalah konsep kimia tentang donor pasangan elektron, sementara kode genetik adalah urutan basa nitrogen sebagai unit informasi biologis."
