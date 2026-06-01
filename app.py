@@ -374,6 +374,11 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                     "isPrerequisiteOf": "🔴",
                     "supports": "🟡",
                     "analogousTo": "🟢",
+                    "LINTAS_BUKU_SAMA_DENGAN": "🟣",
+                    "LINTAS_BUKU_PRASYARAT_UNTUK": "🟥",
+                    "LINTAS_BUKU_APLIKASI_DARI": "🟦",
+                    "LINTAS_BUKU_MEMPERDALAM": "🟩",
+                    "LINTAS_BUKU_BERKAITAN_DENGAN": "🟧",
                 }
                 if typed_rels:
                     for rel in typed_rels[:30]:
@@ -388,7 +393,11 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                         )
                     if len(typed_rels) > 30:
                         st.info(f"Showing 30 of {len(typed_rels)} typed relationships.")
-                    st.caption("🔴 isPrerequisiteOf · 🟡 supports · 🟢 analogousTo")
+                    st.caption(
+                        "🔴 isPrerequisiteOf · 🟡 supports · 🟢 analogousTo · "
+                        "🟣 LINTAS_BUKU_SAMA_DENGAN · 🟥 PRASYARAT_UNTUK · "
+                        "🟦 APLIKASI_DARI · 🟩 MEMPERDALAM · 🟧 BERKAITAN_DENGAN"
+                    )
                 else:
                     st.info(
                         "No typed relationships yet. Run Step 5 classification to create them."
@@ -456,17 +465,34 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
                         "isPrerequisiteOf": "#E91E63",
                         "supports": "#FFC107",
                         "analogousTo": "#00BCD4",
+                        "LINTAS_BUKU_SAMA_DENGAN": "#9C27B0",
+                        "LINTAS_BUKU_PRASYARAT_UNTUK": "#D32F2F",
+                        "LINTAS_BUKU_APLIKASI_DARI": "#1976D2",
+                        "LINTAS_BUKU_MEMPERDALAM": "#388E3C",
+                        "LINTAS_BUKU_BERKAITAN_DENGAN": "#F57C00",
                     }
                     for rel in typed_rels:
-                        if rel["source"] in seen_nodes and rel["target"] in seen_nodes:
-                            edges.append(
-                                Edge(
-                                    source=rel["source"],
-                                    target=rel["target"],
-                                    color=typed_colors.get(rel["rel_type"], "#9E9E9E"),
-                                    width=2,
+                        # Cross-book (LINTAS_BUKU) endpoints may live outside the
+                        # current scope's seen_nodes; add them so the edge renders.
+                        for endpoint in (rel["source"], rel["target"]):
+                            if endpoint not in seen_nodes:
+                                nodes.append(
+                                    Node(
+                                        id=endpoint,
+                                        label=endpoint[:20],
+                                        size=20,
+                                        color="#4CAF50",
+                                    )
                                 )
+                                seen_nodes.add(endpoint)
+                        edges.append(
+                            Edge(
+                                source=rel["source"],
+                                target=rel["target"],
+                                color=typed_colors.get(rel["rel_type"], "#9E9E9E"),
+                                width=2,
                             )
+                        )
 
                     config = Config(
                         width=800,
@@ -481,7 +507,9 @@ with st.expander("🔍 Knowledge Graph Explorer", expanded=False):
 
                     st.caption(
                         "🟢 Konsep | 🔵 SubKonsep | 🟠 SIMILAR_TO (dashed) | "
-                        "🩷 isPrerequisiteOf | 🟡 supports | 🩵 analogousTo"
+                        "🩷 isPrerequisiteOf | 🟡 supports | 🩵 analogousTo | "
+                        "🟣 LINTAS_BUKU_SAMA_DENGAN | 🟥 PRASYARAT_UNTUK | "
+                        "🟦 APLIKASI_DARI | 🟩 MEMPERDALAM | 🟧 BERKAITAN_DENGAN"
                     )
                     agraph(nodes=nodes, edges=edges, config=config)
                 else:

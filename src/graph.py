@@ -619,6 +619,7 @@ def get_typed_relationships(driver) -> list:
                               'BAGIAN_DARI', 'MENYEBABKAN', 'BERGANTUNG_PADA',
                               'MENDEFINISIKAN', 'MEMPENGARUHI', 'BERINTERAKSI_DENGAN',
                               'DIFORMULASIKAN_SEBAGAI']
+               OR type(r) STARTS WITH 'LINTAS_BUKU'
             RETURN a.name AS source, b.name AS target,
                    type(r) AS rel_type, r.confidence AS confidence, r.description AS description
             ORDER BY rel_type, source
