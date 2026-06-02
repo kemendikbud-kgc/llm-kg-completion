@@ -39,7 +39,17 @@ RATING_LABELS = ("correct", "partial", "wrong", "missing")
 
 
 def get_redis_url() -> str:
-    """Resolve the Redis URL from env (KG_REVIEW_REDIS_URL) or the project default."""
+    """Resolve the Redis URL from env (KG_REVIEW_REDIS_URL) or the project default.
+
+    Loads a local .env if python-dotenv is available, so KG_REVIEW_REDIS_URL set
+    there is honored without manual exporting.
+    """
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+    except ModuleNotFoundError:
+        pass
     return os.getenv("KG_REVIEW_REDIS_URL", _DEFAULT_URL)
 
 
