@@ -30,3 +30,9 @@ experiments/.cache/
 # Neo4j Aura binary snapshots — pointers (.ref files) are in git instead.
 # See experiments/knowledge_graph_states/*/snapshot.backup.ref
 *.backup
+# Scratch / one-shot temp artifacts
+_*.json
+_*.ipynb
+*_tmp.ipynb
+kgc_tmp.ipynb
+pipe_tmp.ipynb
