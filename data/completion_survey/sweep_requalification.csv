@@ -1,0 +1,118 @@
+﻿id,konsep_A,konsep_B,pasangan_mapel,relasi,cosine,rank_A->B,rank_B->A,best_rank,computable,t85_k5,t80_k10,t75_k15,t70_k20,valid,type_ok,direction
+LB001,DNA (Asam 2-Deoksiribonukleat),Penyuntingan Genom (Genome Editing),Biologi <-> Kimia,PRASYARAT_UNTUK,0.693,31,15,15,True,False,False,True,True,Ya,Benar,Benar
+LB002,Gugus Fungsi,Holoenzim,Biologi <-> Kimia,PRASYARAT_UNTUK,0.674,103,13,13,True,False,False,True,True,Ya,Benar,Benar
+LB003,Energi Aktivasi,Fungsi Kerja Logam (W0),Biologi <-> Fisika,BERKAITAN_DENGAN,0.6959,20,21,20,True,False,False,False,True,Ya,Benar,Benar
+LB004,Protein,Translasi,Biologi <-> Kimia,MEMPERDALAM,0.7005,27,4,4,True,True,True,True,True,Ya,Benar,Terbalik
+LB005,Potensial Elektrode,muatan kapasitor keping sejajar dan hubungan medan dan potensial listrik pelat paralel,Fisika <-> Kimia,APLIKASI_DARI,,,,,False,False,False,False,False,Tidak,Benar,Benar
+LB006,Elektrode,Fosforilasi Oksidatif,Biologi <-> Kimia,MEMPERDALAM,0.6699,47,11,11,True,False,False,True,True,Ya,Benar,Benar
+LB007,Respirasi Seluler,Sel Volta,Biologi <-> Kimia,MEMPERDALAM,0.6712,18,58,18,True,False,False,False,True,Ya,Benar,Benar
+LB008,alat ukur listrik,ggl sel,Fisika <-> Kimia,PRASYARAT_UNTUK,,,,,False,False,False,False,False,Ya,Salah,Benar
+LB009,DNA (Asam 2-Deoksiribonukleat),Kromosom,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7868,5,2,2,True,True,True,True,True,Ya,Benar,Benar
+LB010,Polimer Sintetik,Sintesis Protein,Biologi <-> Kimia,BERKAITAN_DENGAN,0.6996,39,18,18,True,False,False,False,True,Ya,Benar,Benar
+LB011,Fosforilasi Oksidatif,Reaksi Reduksi Senyawa Organik,Biologi <-> Kimia,MEMPERDALAM,0.661,14,92,14,True,False,False,True,True,Ya,Benar,Benar
+LB012,Asam Amino,Translasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7003,35,5,5,True,True,True,True,True,Ya,Benar,Benar
+LB013,Elektrode Hidrogen Standar,Potensial Listrik,Fisika <-> Kimia,APLIKASI_DARI,0.7182,20,31,20,True,False,False,False,True,Ya,Benar,Benar
+LB014,Potensial Listrik,Reaksi Elektrokimia,Fisika <-> Kimia,MEMPERDALAM,0.7516,15,23,15,True,False,False,True,True,Ya,Benar,Benar
+LB015,Fosforilasi Oksidatif,Reduksi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6571,20,111,20,True,False,False,False,True,Ya,Benar,Terbalik
+LB016,Potensial Listrik,Sel Volta,Fisika <-> Kimia,MEMPERDALAM,0.7388,22,15,15,True,False,False,True,True,Ya,Benar,Benar
+LB017,Hukum II Kirchhoff (Hukum Tegangan Kirchhoff),ggl sel,Fisika <-> Kimia,PRASYARAT_UNTUK,,,,,False,False,False,False,False,Ya,Benar,Benar
+LB018,Monomer,Translasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6574,124,16,16,True,False,False,False,True,Ya,Benar,Benar
+LB019,Bilangan Oksidasi,Fosforilasi Oksidatif,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6735,94,10,10,True,False,True,True,True,Ya,Benar,Benar
+LB020,Enzim,Gugus Fungsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.707,19,45,19,True,False,False,False,True,Ya,Benar,Terbalik
+LB021,Fotoelektron,Fotosintesis,Biologi <-> Fisika,BERKAITAN_DENGAN,0.681,42,16,16,True,False,False,False,True,Ya,Benar,Benar
+LB022,Fungsi Kerja Logam (W0),Pelapisan Logam (Electroplating),Fisika <-> Kimia,BERKAITAN_DENGAN,0.7101,12,30,12,True,False,False,True,True,Ya,Benar,Benar
+LB023,Nukleotida,Translasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6924,17,7,7,True,False,True,True,True,Ya,Benar,Benar
+LB024,DNA (Asam 2-Deoksiribonukleat),Replikasi DNA,Biologi <-> Kimia,MEMPERDALAM,0.7533,6,3,3,True,True,True,True,True,Ya,Benar,Benar
+LB025,Holoenzim,Koagulasi,Biologi <-> Kimia,MEMPERDALAM,0.6644,17,70,17,True,False,False,False,True,Ya,Benar,Benar
+LB026,Potensial Elektrode Standar,Potensial Listrik,Fisika <-> Kimia,APLIKASI_DARI,0.7601,8,9,8,True,False,True,True,True,Ya,Benar,Benar
+LB027,Biodegradable Plastic,Biodegradasi,Biologi <-> Kimia,APLIKASI_DARI,0.753,10,7,7,True,False,True,True,True,Ya,Benar,Benar
+LB028,Sistem Elektronika,sel elektrokimia,Fisika <-> Kimia,BERKAITAN_DENGAN,,,,,False,False,False,False,False,Ya,Benar,Benar
+LB029,DNA (Asam 2-Deoksiribonukleat),Mitosis,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6896,38,15,15,True,False,False,True,True,Ya,Benar,Benar
+LB030,Energi Aktivasi,Reaksi Elektrokimia,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7372,6,30,6,True,False,True,True,True,Ya,Benar,Benar
+LB031,DNA (Deoxyribonucleic Acid),Nukleotida,Biologi <-> Kimia,APLIKASI_DARI,0.7868,4,2,2,True,True,True,True,True,Ya,Benar,Benar
+LB032,Polimer,Translasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6554,177,21,21,True,False,False,False,False,Ya,Benar,Benar
+LB033,Fosforilasi Oksidatif,Reaksi Redoks,Biologi <-> Kimia,PRASYARAT_UNTUK,0.679,8,79,8,True,False,True,True,True,Ya,Benar,Terbalik
+LB034,Enzim,Protein,Biologi <-> Kimia,APLIKASI_DARI,0.7347,8,11,8,True,False,True,True,True,Ya,Benar,Benar
+LB035,Asam Amino,Kode Genetik,Biologi <-> Kimia,PRASYARAT_UNTUK,0.713,18,8,8,True,False,True,True,True,Ya,Benar,Benar
+LB036,Fosforilasi Oksidatif,Reaksi Oksidasi Senyawa Organik,Biologi <-> Kimia,MEMPERDALAM,0.6831,6,43,6,True,False,True,True,True,Ya,Benar,Terbalik
+LB037,DNA (Asam 2-Deoksiribonukleat),Kode Genetik,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7036,25,10,10,True,False,True,True,True,Ya,Benar,Benar
+LB038,Hidrokarbon,Teori Evolusi Kimia,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6884,47,18,18,True,False,False,False,True,Ya,Benar,Benar
+LB039,DNA (Asam 2-Deoksiribonukleat),Enzim,Biologi <-> Kimia,BERKAITAN_DENGAN,0.7135,20,15,15,True,False,False,True,True,Ya,Benar,Benar
+LB040,Enzim Fermentasi,Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6864,11,44,11,True,False,False,True,True,Ya,Benar,Terbalik
+LB041,Inhibitor Enzim,Isomer,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6664,17,122,17,True,False,False,False,True,Ya,Benar,Terbalik
+LB042,Kode Genetik,Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6932,12,37,12,True,False,False,True,True,Ya,Benar,Benar
+LB043,Nukleotida,Transkripsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6849,23,12,12,True,False,False,True,True,Ya,Benar,Benar
+LB044,Asam Amino,Sintesis Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6981,37,19,19,True,False,False,False,True,Ya,Benar,Benar
+LB045,Asam Amino,Kromosom,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7057,28,14,14,True,False,False,True,True,Ya,Benar,Benar
+LB046,Respirasi Seluler,ggl sel,Biologi <-> Kimia,MEMPERDALAM,,,,,False,False,False,False,False,Ya,Benar,Terbalik
+LB047,Protein,Transkripsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6829,50,14,14,True,False,False,True,True,Ya,Benar,Benar
+LB048,DNA (Asam 2-Deoksiribonukleat),Kemiripan DNA,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7021,28,16,16,True,False,False,False,True,Ya,Benar,Benar
+LB049,Klasifikasi Semikonduktor,Polimer Anorganik,Fisika <-> Kimia,BERKAITAN_DENGAN,0.6868,7,43,7,True,False,True,True,True,Ya,Benar,Benar
+LB050,DNA (Asam 2-Deoksiribonukleat),Dogma Sentral Biologi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7161,15,8,8,True,False,True,True,True,Ya,Benar,Benar
+LB051,Materi Genetik,Nukleotida,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7399,12,5,5,True,True,True,True,True,Ya,Benar,Terbalik
+LB052,Kode Genetik,Nukleotida,Biologi <-> Kimia,APLIKASI_DARI,0.7699,2,4,2,True,True,True,True,True,Ya,Benar,Benar
+LB053,Inhibitor Enzim,Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6679,15,67,15,True,False,False,True,True,Ya,Benar,Terbalik
+LB054,Polimer Alam (Biopolimer),Translasi,Biologi <-> Kimia,MEMPERDALAM,0.6563,86,18,18,True,False,False,False,True,Ya,Benar,Benar
+LB055,Protein,Teori Induced Fit,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6716,62,15,15,True,False,False,True,True,Ya,Benar,Benar
+LB056,Enzim,Unit Ulang Monomer,Biologi <-> Kimia,BERKAITAN_DENGAN,0.7081,17,30,17,True,False,False,False,True,Ya,Benar,Benar
+LB057,Kromosom,Protein,Biologi <-> Kimia,MEMPERDALAM,0.7116,12,23,12,True,False,False,True,True,Ya,Benar,Terbalik
+LB058,Kromosom,Nukleotida,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7267,8,7,7,True,False,True,True,True,Ya,Benar,Terbalik
+LB059,Gugus Fungsi,Inhibitor Enzim,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6625,130,26,26,True,False,False,False,False,Ya,Benar,Benar
+LB060,Efek Fotolistrik,Fotosintesis,Biologi <-> Fisika,MEMPERDALAM,0.6899,41,8,8,True,False,True,True,True,Ya,Benar,Benar
+LB061,Gaya Gerak Listrik (GGL) Sel Elektrokimia,Potensial Listrik,Fisika <-> Kimia,APLIKASI_DARI,0.7442,17,18,17,True,False,False,False,True,Ya,Benar,Benar
+LB062,Enzim Fermentasi,Etanol,Biologi <-> Kimia,APLIKASI_DARI,0.6635,18,58,18,True,False,False,False,True,Ya,Benar,Terbalik
+LB063,Arus Listrik,Elektroforesis,Fisika <-> Kimia,APLIKASI_DARI,0.7464,19,17,17,True,False,False,False,True,Ya,Benar,Terbalik
+LB064,Fosforilasi Oksidatif,Sel Volta,Biologi <-> Kimia,MEMPERDALAM,0.6568,21,93,21,True,False,False,False,False,Ya,Benar,Terbalik
+LB065,Protein,Sintesis Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7232,16,11,11,True,False,False,True,True,Ya,Benar,Benar
+LB066,Fotosintesis,Monosakarida,Biologi <-> Kimia,MEMPERDALAM,0.6728,24,16,16,True,False,False,False,True,Ya,Benar,Terbalik
+LB067,Fosforilasi Oksidatif,Reaksi Elektrokimia,Biologi <-> Kimia,MEMPERDALAM,0.6597,16,156,16,True,False,False,False,True,Ya,Benar,Terbalik
+LB068,Fotosintesis,Pati,Biologi <-> Kimia,MEMPERDALAM,0.716,3,6,3,True,True,True,True,True,Ya,Benar,Benar
+LB069,Metabolisme,Reaksi Elektrokimia,Biologi <-> Kimia,BERKAITAN_DENGAN,0.719,10,40,10,True,False,True,True,True,Ya,Benar,Benar
+LB070,Energi Aktivasi,Reaksi Polimerisasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6956,21,59,21,True,False,False,False,False,Ya,Benar,Benar
+LB071,Fotosintesis,Selulosa,Biologi <-> Kimia,MEMPERDALAM,0.6875,10,32,10,True,False,True,True,True,Ya,Benar,Terbalik
+LB072,Arus Listrik,Pelapisan Logam (Electroplating),Fisika <-> Kimia,APLIKASI_DARI,0.7514,17,8,8,True,False,True,True,True,Ya,Benar,Terbalik
+LB073,Holoenzim,Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7136,6,22,6,True,False,True,True,True,Ya,Benar,Terbalik
+LB074,alat ukur listrik,sel elektrokimia,Fisika <-> Kimia,PRASYARAT_UNTUK,,,,,False,False,False,False,False,Ya,Salah,Benar
+LB075,DNA (Asam 2-Deoksiribonukleat),Mutasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7145,18,17,17,True,False,False,False,True,Ya,Benar,Benar
+LB076,Potensial Elektrode,Potensial Listrik,Fisika <-> Kimia,APLIKASI_DARI,0.7667,14,7,7,True,False,True,True,True,Ya,Benar,Benar
+LB077,Oksidasi,Siklus Krebs,Biologi <-> Kimia,MEMPERDALAM,0.6482,133,20,20,True,False,False,False,True,Ya,Benar,Benar
+LB078,Reaksi Polimerisasi,Transkripsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6767,84,16,16,True,False,False,False,True,Ya,Benar,Benar
+LB079,Bioteknologi Modern,DNA (Asam 2-Deoksiribonukleat),Biologi <-> Kimia,PRASYARAT_UNTUK,0.7217,12,12,12,True,False,False,True,True,Ya,Benar,Terbalik
+LB080,Gen,Nukleotida,Biologi <-> Kimia,APLIKASI_DARI,0.7753,5,3,3,True,True,True,True,True,Ya,Benar,Benar
+LB081,DNA (Asam 2-Deoksiribonukleat),Pembelahan Sel,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7131,21,13,13,True,False,False,True,True,Ya,Benar,Benar
+LB082,Senyawa Organik,Teori Evolusi Kimia,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7421,12,3,3,True,True,True,True,True,Ya,Benar,Benar
+LB083,Fotosintesis,Karbohidrat (Sakarida),Biologi <-> Kimia,MEMPERDALAM,0.6983,6,33,6,True,False,True,True,True,Ya,Benar,Terbalik
+LB084,Energi Aktivasi,Spontanitas Reaksi Elektrokimia,Biologi <-> Kimia,BERKAITAN_DENGAN,0.7039,14,29,14,True,False,False,True,True,Ya,Benar,Benar
+LB085,Energi Aktivasi,reaksi spontan,Biologi <-> Kimia,MEMPERDALAM,,,,,False,False,False,False,False,Ya,Benar,NA
+LB086,Holoenzim,Identifikasi Gugus Fungsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6677,15,81,15,True,False,False,True,True,Ya,Benar,Terbalik
+LB087,Reaksi Elektrokimia,Teori Evolusi Kimia,Biologi <-> Kimia,MEMPERDALAM,0.7055,59,10,10,True,False,True,True,True,Ya,Benar,Benar
+LB088,Energi Aktivasi,Reaksi Esterifikasi,Biologi <-> Kimia,MEMPERDALAM,0.7061,13,24,13,True,False,False,True,True,Ya,Benar,Benar
+LB089,Asam Amino,Holoenzim,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6707,64,14,14,True,False,False,True,True,Ya,Benar,Benar
+LB090,Fotosintesis,Sel Volta,Biologi <-> Kimia,MEMPERDALAM,0.6811,15,48,15,True,False,False,True,True,Ya,Benar,Terbalik
+LB091,DNA (Asam 2-Deoksiribonukleat),Translasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6653,75,13,13,True,False,False,True,True,Ya,Benar,Benar
+LB092,DNA (Asam 2-Deoksiribonukleat),Gametogenesis,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6715,63,19,19,True,False,False,False,True,Ya,Benar,Benar
+LB093,Asam Amino,Teori Evolusi Kimia,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7375,7,4,4,True,True,True,True,True,Ya,Benar,Benar
+LB094,Setengah Reaksi,Siklus Krebs,Biologi <-> Kimia,MEMPERDALAM,0.6677,91,11,11,True,False,False,True,True,Ya,Benar,Benar
+LB095,alat ukur listrik,elektrolit,Fisika <-> Kimia,PRASYARAT_UNTUK,,,,,False,False,False,False,False,Ya,Benar,Benar
+LB096,Bioremediasi,Degradasi Plastik,Biologi <-> Kimia,APLIKASI_DARI,0.7155,10,13,10,True,False,True,True,True,Ya,Benar,Terbalik
+LB097,Defleksi Gerak Muatan,Pelapisan Logam (Electroplating),Fisika <-> Kimia,PRASYARAT_UNTUK,0.7375,23,11,11,True,False,False,True,True,Ya,Benar,Benar
+LB098,alat ukur listrik,jembatan garam,Fisika <-> Kimia,BERKAITAN_DENGAN,,,,,False,False,False,False,False,Ya,Benar,Benar
+LB099,DNA (Asam 2-Deoksiribonukleat),DNA (Deoxyribonucleic Acid),Biologi <-> Kimia,SAMA_DENGAN,0.871,1,1,1,True,True,True,True,True,Ya,Benar,Benar
+LB100,Polimer Alam,Transkripsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6726,67,19,19,True,False,False,False,True,Ya,Benar,Benar
+LB101,Fosforilasi Oksidatif,Setengah Reaksi,Biologi <-> Kimia,MEMPERDALAM,0.6755,9,76,9,True,False,True,True,True,,,
+LB102,DNA (Asam 2-Deoksiribonukleat),Transkripsi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.7089,23,8,8,True,False,True,True,True,,,
+LB103,Biodegradasi,Degradasi Plastik,Biologi <-> Kimia,MEMPERDALAM,0.7455,9,7,7,True,False,True,True,True,,,
+LB104,Potensial Listrik,Spontanitas Reaksi Elektrokimia,Fisika <-> Kimia,PRASYARAT_UNTUK,0.7149,33,21,21,True,False,False,False,False,,,
+LB105,alat ukur listrik,elektrolisis,Fisika <-> Kimia,PRASYARAT_UNTUK,,,,,False,False,False,False,False,,,
+LB106,Reaksi Oksidasi Senyawa Organik,Siklus Krebs,Biologi <-> Kimia,APLIKASI_DARI,0.664,76,12,12,True,False,False,True,True,,,
+LB107,Metabolisme,reaksi spontan,Biologi <-> Kimia,MEMPERDALAM,,,,,False,False,False,False,False,,,
+LB108,DNA (Asam 2-Deoksiribonukleat),Gen,Biologi <-> Kimia,PRASYARAT_UNTUK,0.799,4,3,3,True,True,True,True,True,,,
+LB109,DNA (Asam 2-Deoksiribonukleat),Epigenetik,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6837,42,19,19,True,False,False,False,True,,,
+LB110,Etanol,Produksi Tempe,Biologi <-> Kimia,BERKAITAN_DENGAN,0.6585,70,17,17,True,False,False,False,True,,,
+LB111,Biodegradable Plastic,Bioremediasi,Biologi <-> Kimia,MEMPERDALAM,0.6954,27,16,16,True,False,False,False,True,,,
+LB112,Ilmu Pendukung Bioteknologi,Pemanfaatan Gelombang Mikro,Biologi <-> Fisika,BERKAITAN_DENGAN,0.6443,43,18,18,True,False,False,False,True,,,
+LB113,Foton,Fotosintesis,Biologi <-> Fisika,MEMPERDALAM,0.6936,24,7,7,True,False,True,True,True,,,
+LB114,DNA (Asam 2-Deoksiribonukleat),Materi Genetik,Biologi <-> Kimia,MEMPERDALAM,0.8002,3,4,3,True,True,True,True,True,,,
+LB115,Defleksi Gerak Muatan,Elektroforesis,Fisika <-> Kimia,PRASYARAT_UNTUK,0.7544,16,14,14,True,False,False,True,True,,,
+LB116,Fosforilasi Oksidatif,Oksidasi,Biologi <-> Kimia,PRASYARAT_UNTUK,0.6954,4,48,4,True,False,True,True,True,,,
+LB117,DNA (Asam 2-Deoksiribonukleat),Sintesis Protein,Biologi <-> Kimia,PRASYARAT_UNTUK,0.728,10,10,10,True,False,True,True,True,,,
