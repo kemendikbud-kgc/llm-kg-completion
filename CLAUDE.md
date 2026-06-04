@@ -57,3 +57,4 @@ Thesis artifacts live in Google Drive. Use the `gws` CLI (see `.claude/skills/gw
   - Fetch: `gws docs documents get --params '{"documentId":"1NUFWP1JHmpH-c_glTlm4t6fzcwJjqAM1BmGS1BzeSGM"}' --format json`
   - Local cache (gitignored): `.thesis-clean.json` / `.thesis-verify.json`
   - Edits use `batchUpdate` with `writeControl.requiredRevisionId` to prevent collision with concurrent edits in the browser.
+  - **Always write thesis-doc drafts in Markdown** (headings `#`, **bold**, `|` tables, etc.) — Google Docs accepts pasted Markdown and converts it. Use real Unicode (→, κ, em-dash); do not flatten to ASCII.
