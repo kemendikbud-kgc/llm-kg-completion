@@ -1,0 +1,3 @@
+## HASIL PENELITIAN DAN PEMBAHASAN
+
+Bab ini memaparkan hasil penerapan kerangka kerja Knowledge Graph Completion berbasis Large Language Model yang telah dirancang pada bab sebelumnya, mulai dari pembangunan *knowledge graph* melalui pipeline ekstraksi, konstruksi, dan *completion*, hingga evaluasi kualitasnya. Mengikuti kerangka *Design Science Research* (DSR), pembahasan disusun dengan menyajikan hasil tiap tahapan pipeline beserta artefak yang dihasilkannya (Subbab 4.1), yang kemudian dilanjutkan dengan evaluasi struktural graf, validasi pakar, dan pembahasan kualitatif atas kualitas relasi lintas-buku yang ditemukan (Subbab 4.2).

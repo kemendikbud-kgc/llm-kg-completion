@@ -1,0 +1,28 @@
+Validasi Pakar atas Relasi Lintas-Buku
+
+Untuk menilai kualitas relasi lintas-buku secara langsung, himpunan relasi hasil Graph Completion divalidasi oleh pakar melalui instrumen survei lintas-buku (Fase 2). Setiap relasi A -[TIPE]-> B dinilai pada tiga aspek terpisah: (1) validitas - apakah konsep A dan B benar-benar berkaitan (Ya/Tidak); (2) ketepatan tipe - apakah label relasi yang diusulkan tepat (Benar/Salah); dan (3) ketepatan arah - apakah arah relasi A->B sudah benar (Benar/Terbalik/NA untuk relasi simetris). Penyajian bersifat score-blind dan acak agar pakar tidak ter-anchor pada skor kepercayaan model.
+
+Validasi tahap awal (pilot) ini dilakukan oleh satu pakar atas 100 dari 117 relasi kandidat pada konfigurasi pra-sweep (threshold = 0,70; top_k = 20). Hasil per-aspek menunjukkan validitas 99% (99 dari 100 relasi dinilai benar-benar berkaitan), ketepatan tipe 98% (98 dari 100), namun ketepatan arah hanya 74% (74 Benar, 25 Terbalik, 1 NA). Uji kesepakatan antar-pakar (Cohen's kappa) belum dihitung pada tahap ini karena baru tersedia satu penilai, dan dijadwalkan setelah penilai kedua tersedia.
+
+Temuan utama validasi ini adalah bahwa arah relasi merupakan sumber kesalahan dominan, bukan keberadaan atau tipe relasi. Sistem sangat andal dalam menemukan keterkaitan lintas-buku yang nyata (99%) dan dalam melabeli tipenya (98%), tetapi salah menentukan arah pada satu dari empat relasi. Kesalahan arah ini bersifat sistematis: dari 25 relasi terbalik, 22 di antaranya menempatkan konsep Biologi sebagai sumber, padahal arah yang benar umumnya Kimia->Biologi - konsep kimia berperan sebagai prasyarat/fondasi yang diperdalam atau dibutuhkan oleh proses biologis. Tipe MEMPERDALAM paling rentan (ketepatan arah 56%), sementara tipe simetris (BERKAITAN_DENGAN, SAMA_DENGAN) mencapai 100% karena arah tidak relevan.
+
+Perlu ditekankan bahwa validitas relasi telah mendekati titik jenuh bahkan pada ambang permisif 0,70; dengan demikian pengetatan parameter (lihat analisis parameter sweep) terutama menukar recall dengan noise, bukan meningkatkan presisi keberadaan relasi. Sebaliknya, kesalahan arah bukan persoalan ambang - relasi terbalik tetap merupakan pasangan berkemiripan tinggi yang valid - sehingga penanganannya memerlukan perbaikan pada prompt klasifikasi atau kanonikalisasi arah pasca-proses (Kimia->Biologi untuk tipe PRASYARAT_UNTUK dan MEMPERDALAM), bukan penyetelan threshold.
+
+
+Tabel 4.x - Hasil validasi pakar atas relasi lintas-buku per konfigurasi parameter
+
+Konfigurasi                              | Jumlah edge | Validitas | Ketepatan tipe | Ketepatan arah
+0,70 / k20 (pilot, disurvei)             | 125         | 99%       | 98%            | 74%
+0,75 / k15 (kanonik - menunggu sweep)    | menunggu    | -         | -              | -
+
+
+====================================================================
+CATATAN SAAT MENEMPATKAN (hapus blok ini sebelum submit):
+- Titik sisip: setelah paragraf SAMA_DENGAN (idx 655 saat ini), sebelum 4.2.3.2.
+- Rekonsiliasi manual: paragraf pembuka 4.2.3.1 yang lama masih menyebut run
+  0,80/k10 -> 44 edge. Angka di draft ini memakai himpunan kandidat disurvei
+  0,70/k20. Setelah sweep threshold lebih tinggi dijalankan, perbarui paragraf
+  44-edge lama DAN baris tabel 0,75/k15 bersamaan agar satu cerita parameter.
+- Jangan difinalkan dulu: nilai kappa, jumlah edge kanonik, dan baris 0,75/k15
+  sengaja dikosongkan - diisi setelah sweep + penilai kedua.
+====================================================================
