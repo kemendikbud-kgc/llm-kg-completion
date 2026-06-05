@@ -8,3 +8,6 @@
 	path = final-kg
 	url = https://github.com/Kemendickbud/final-kg.git
 	branch = feat/final-consensus
+[submodule "ta-latex"]
+	path = ta-latex
+	url = https://github.com/tegar-wahyu/ta-latex.git
