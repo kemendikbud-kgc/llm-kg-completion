@@ -58,3 +58,29 @@ Thesis artifacts live in Google Drive. Use the `gws` CLI (see `.claude/skills/gw
   - Local cache (gitignored): `.thesis-clean.json` / `.thesis-verify.json`
   - Edits use `batchUpdate` with `writeControl.requiredRevisionId` to prevent collision with concurrent edits in the browser.
   - **Always write thesis-doc drafts in Markdown** (headings `#`, **bold**, `|` tables, etc.) — Google Docs accepts pasted Markdown and converts it. Use real Unicode (→, κ, em-dash); do not flatten to ASCII.
+
+## Overleaf / `ta-latex` submodule (thesis LaTeX source — canonical)
+
+`ta-latex/` is a git submodule (`tegar-wahyu/ta-latex`) linked to Overleaf via **Overleaf GitHub Sync**. The LaTeX source is canonical (the Google Doc is now a legacy draft). Commit/push **inside** `ta-latex` (its own remote); the parent repo only bumps the submodule pointer occasionally.
+
+**Constraints (the gotchas):**
+- Overleaf syncs **only `main`** and can **push directly to `main`** (co-authors editing in the Overleaf UI). It ignores PRs/feature branches.
+- **PR branches are invisible in Overleaf until merged** — only `main` shows.
+- **Do NOT enable branch protection on `main`** — it would block Overleaf's direct push.
+- Golden rule: **sync one direction at a time; always `git pull origin main` before editing.** One writer-of-record per file.
+
+**PR lane (default for AI/git-authored edits — Bab ports, structural changes, figures):**
+```bash
+cd ta-latex
+git checkout main && git pull origin main      # sync first
+git checkout -b feat/<thing>
+#   ...edit bab-*.tex, add images/...  (write LF, not CRLF)
+git add -A && git commit -m "..."
+git push -u origin feat/<thing>
+gh pr create --base main ...                    # review / optional latexmk CI
+#   merge PR → then in Overleaf: Menu → GitHub → Pull
+```
+Quick fixes / Overleaf-side edits go **direct to `main`** (the other lane).
+
+- Write files with **LF** line endings (Python `open(...,newline='\n')`) — Windows default CRLF creates whole-file diffs.
+- Cannot compile LaTeX locally — **verify the build in Overleaf** after each pull.
