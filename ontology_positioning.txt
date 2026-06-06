@@ -1,0 +1,338 @@
+================================================================
+ONTOLOGY POSITIONING — two-tier representation:
+  Tier 1 = descriptive content model (extraction)
+  Tier 2 = shallow pedagogical inference (cross-book completion)
+Resolves lecturer comments #30/#31/#32 (what is the ontology / KG relation).
+Doc: 1NUFWP1JHmpH-c_glTlm4t6fzcwJjqAM1BmGS1BzeSGM  | §3.5 Skema Ontologi (¶515-524)
+Drafted 2026-06-04. Revised 2026-06-06 (two-tier pivot). STATUS: DRAFT — not applied.
+================================================================
+
+THE PROBLEM (verified on-page + verified against artifacts)
+----------------------------------------------------------
+1. ¶518 defines the ontology only mechanically ("konsistensi struktur dan
+   vokabulari"). It never states WHAT the ontology models — descriptive vs
+   prescriptive. That silence is the root of lecturer #30-32.
+
+2. ¶520 OVER-CLAIMS. Current text:
+   "...tiga relasi pedagogis tambahan — NEXT_CHAPTER (urutan baca), PRASYARAT
+   (ketergantungan pembelajaran), dan MEMPERSIAPKAN (kebalikan logis dari
+   PRASYARAT) — yang mengkodекан struktur pedagogis buku teks."
+   -> "pedagogis", "urutan baca", "ketergantungan pembelajaran" = prescriptive
+   learning-sequence language inside what is supposed to be a content model.
+
+3. Relation vocab reinforces the risk: PRASYARAT_UNTUK, LINTAS_BUKU_PRASYARAT_UNTUK,
+   MEMPERSIAPKAN, NEXT_CHAPTER all SOUND like prescribed order.
+
+4. The single-tier "everything is descriptive" framing previously drafted is too
+   weak. Verified against artifacts:
+   - ~70% of LINTAS_BUKU edge `description` fields explicitly contain "pemahaman"
+     / "memahami" (epistemic, learner-centred wording).
+   - Classifier prompt uses persona "ahli kurikulum" / "ahli kurikulum sains".
+   - 5 of 5 LINTAS_BUKU_* labels (`PRASYARAT_UNTUK`, `MEMPERDALAM`, etc.) are
+     pedagogically framed.
+   A pure descriptive relabel without re-classification would put descriptive
+   labels on epistemic edge text — visibly inconsistent.
+
+5. Conversely, Tier-1 within-book extraction IS honestly descriptive: edges
+   originate from per-chunk LLM extraction over textbook PDF prose, no learner
+   persona, no "pemahaman" framing in the edge descriptions.
+
+CONCLUSION: the two halves of the pipeline are doing different work. Honest
+positioning must bifurcate.
+
+
+THE POSITIONING STANCE (the one decision to lock)
+-------------------------------------------------
+The pipeline operates in TWO methodologically distinct tiers:
+
+  TIER 1 — EXTRACTION = DESCRIPTIVE CONTENT MODEL
+    Grade → Chapter → Subtopic → Concept hierarchy + within-book semantic
+    relations + chapter-level structural relations (NEXT_CHAPTER, PRASYARAT,
+    MEMPERSIAPKAN). Models what concepts the textbooks contain and how the
+    source materials relate them. Sejalan dengan tradisi "domain module" pada
+    generasi otomatis dari buku teks elektronik (Larrañaga et al., 2014).
+
+  TIER 2 — COMPLETION = SHALLOW PEDAGOGICAL INFERENCE
+    LINTAS_BUKU_* edges built on top of Tier 1. Proposes candidate cross-book
+    bridges as single-hop pedagogical suggestions. Bounded by four explicit
+    "tidak" claims: tidak menyusun urutan multi-langkah, tidak memodelkan
+    Bloom, tidak mengintegrasikan learner state, tidak menghasilkan jalur
+    belajar terkomposisi.
+
+Consequences gained from stating this once:
+- Defends against "is this a validated learning path?" -> "No — Tier 2 produces
+  single-hop candidate suggestions, not composed paths; Tier 1 doesn't pre-
+  scribe at all."
+- Bounds metrics honestly:
+    Tier 1: ADC, TRR, structural density -> structural/content metrics, valid.
+    Tier 2: per-edge validity (existence + type + direction) per expert survey
+            -> valid per-edge claims, NO composed-path claim.
+- Answers lecturer #30-32 (what the ontology is + KG relation, with proper
+  tier separation).
+- The 74% direction validity in the Fase-2 pilot survey makes sense under
+  Tier-2's "pedagogical direction is harder than existence" rather than as a
+  quality dip in a descriptive frame.
+- Honesty about the LINTAS_BUKU edge `description` text being epistemic
+  ("pemahaman X adalah prasyarat...") — owned as Tier-2 inference, not papered
+  over.
+
+================================================================
+DRAFT E — Two-tier framing paragraph
+INSERT FIRST, immediately after the "...diformalkan sebagai ontologi OWL..."
+paragraph, BEFORE Draft A.
+================================================================
+Penelitian ini mengoperasikan ontologi dan graf dalam dua tier representasi
+yang dibedakan secara metodologis. **Tier ekstraksi** menghasilkan model
+konseptual deskriptif atas isi buku teks Kurikulum Merdeka: konsep, sub-bab,
+bab, dan keterkaitan semantik antar-konsep dalam satu buku direpresentasikan
+sebagaimana tersaji dalam sumber, sejalan dengan tradisi *domain module* pada
+generasi otomatis dari buku teks elektronik (Larrañaga et al., 2014). **Tier
+completion** menghasilkan kandidat keterkaitan lintas-buku (LINTAS_BUKU_*)
+sebagai inferensi pedagogis dangkal di atas tier ekstraksi: sistem mengusulkan
+jembatan antar-disiplin yang dapat dipertimbangkan, tetapi tidak menetapkannya
+sebagai jalur belajar.
+
+Predikat "dangkal" di sini bersifat operasional. Sistem hanya menginferensi
+keterkaitan single-hop antar dua konsep di buku berbeda; sistem tidak menyusun
+urutan multi-langkah lintas-disiplin, tidak memodelkan tingkat kognitif Bloom,
+tidak mengintegrasikan keadaan pembelajar (learner state), dan tidak
+menghasilkan jalur belajar terkomposisi. Pembatasan ini ditetapkan agar klaim
+penelitian sepadan dengan apa yang benar-benar dihasilkan pipeline, dan agar
+tier inferensial tetap dapat dipertanggungjawabkan tanpa harus memuat asumsi
+pedagogis yang lebih luas.
+
+[CITATION NOTE — add to Daftar Pustaka (issue #22):
+ - Larrañaga, M., Conde, Á., Calvo, I., Elorriaga, J. A., & Arruarte, A.
+   (2014). Automatic generation of the domain module from electronic
+   textbooks: Method and validation. IEEE Transactions on Learning
+   Technologies, 7(1), 69–82.
+ Verify DOI/page range against the actual article before final submission.]
+
+================================================================
+DRAFT A (REVISED) — Positioning statement
+INSERT after Draft E, before the "Hierarki struktural..." paragraph.
+================================================================
+Mengacu pada definisi Studer, Benjamins, dan Fensel (1998) yang memperluas
+gagasan Gruber (1993), ontologi dipahami sebagai spesifikasi formal dan
+eksplisit atas sebuah konseptualisasi bersama terhadap suatu domain. Dalam
+kerangka tersebut, ontologi penelitian ini diposisikan secara spesifik
+sebagai berikut: **lapisan struktural dan relasi dalam-buku** (Tier 1)
+merupakan model konseptual yang bersifat deskriptif atas isi materi
+kurikulum sains; **lapisan lintas-buku LINTAS_BUKU_*** (Tier 2) merupakan
+sugesti pedagogis dangkal hasil inferensi sistem di atas Tier 1.
+
+Pada Tier 1, ontologi merepresentasikan konsep-konsep sains beserta
+keterkaitan semantik di antaranya sebagaimana tersaji dalam buku teks, dan
+tidak dimaksudkan untuk merekomendasikan urutan maupun jalur belajar
+tertentu. Seluruh relasi berarah pada lapisan ini — termasuk PRASYARAT,
+MEMPERSIAPKAN, NEXT_CHAPTER, dan tipe semantik dalam-buku — dimaknai sebagai
+pernyataan tentang **organisasi materi dan ketergantungan konseptual yang
+dinyatakan oleh sumber**, yakni keputusan editorial penyusun buku teks. Ia
+bukan anjuran kronologis bagi siswa.
+
+Pada Tier 2, relasi LINTAS_BUKU_* dimaknai sebagai **kandidat keterkaitan
+pedagogis single-hop** antar-konsep di mata pelajaran berbeda. Walaupun
+labelnya terkesan preskriptif (mis. LINTAS_BUKU_PRASYARAT_UNTUK), ruang
+lingkupnya dibatasi pada usulan per-pasangan dan tidak dikomposisi menjadi
+urutan belajar. Dengan demikian klaim Tier 2 bersifat lokal — satu pasangan
+konsep pada satu waktu — dan tetap konsisten dengan pembatasan operasional
+yang ditetapkan pada Draft E.
+
+Vokabulari relasi dalam-buku pada Tier 1 bersifat **semi-tertutup**: delapan
+tipe utama (Tabel 3.1) ditetapkan secara normatif sebagai tulang punggung
+ontologi, sementara variasi label tambahan yang muncul pada tahap ekstraksi
+otomatis diperlakukan sebagai aliasing yang dipetakan ke vokabulari normatif
+pada tahap pasca-ekstraksi. Pemetaan ini didokumentasikan pada Lampiran X.
+Pembatasan ini menjaga klaim "spesifikasi formal" tetap sepadan dengan apa
+yang benar-benar tertegakkan oleh pipeline.
+
+[CITATION NOTE — add to Daftar Pustaka (issue #22):
+ - Gruber, T. R. (1993). A translation approach to portable ontology
+   specifications. Knowledge Acquisition, 5(2), 199–220.
+ - Studer, R., Benjamins, V. R., & Fensel, D. (1998). Knowledge engineering:
+   Principles and methods. Data & Knowledge Engineering, 25(1–2), 161–197.
+ Verify page numbers/volume against the actual articles before final
+ submission.]
+
+================================================================
+DRAFT B — Reconcile the "Grade -> Chapter -> ..." paragraph
+(replace the "relasi pedagogis / urutan baca" framing)
+Tier-1 layer (descriptive editorial sequencing).
+================================================================
+CURRENT (find — unique string):
+"Pada tingkat Chapter, terdapat tiga relasi pedagogis tambahan — NEXT_CHAPTER
+(urutan baca), PRASYARAT (ketergantungan pembelajaran), dan MEMPERSIAPKAN
+(kebalikan logis dari PRASYARAT) — yang mengkодекан struktur pedagogis buku teks."
+
+REPLACE:
+"Pada tingkat Chapter terdapat tiga relasi tambahan yang merekam organisasi
+materi sebagaimana disusun dalam buku teks, yaitu NEXT_CHAPTER (urutan
+penyajian antar-bab), PRASYARAT (ketergantungan konseptual antar-bab yang
+terdokumentasikan dalam teks sumber, baik secara eksplisit melalui rujukan
+langsung maupun secara terstruktural melalui urutan penyajian materi), dan
+MEMPERSIAPKAN (relasi inversi dari PRASYARAT). Ketiga relasi ini mengkodekan
+keputusan editorial penyusun buku — yakni bagaimana materi disajikan dalam
+sumber — dan bukan urutan pembelajaran yang dipreskripsikan bagi siswa."
+
+WHY: keeps every relation type; replaces "pedagogis / urutan baca /
+ketergantungan pembelajaran / struktur pedagogis" with "organisasi/penyajian
+materi + ketergantungan konseptual terdokumentasikan + keputusan editorial".
+"Tersirat" (which sounded inferential) is replaced with "terdokumentasikan +
+terstruktural" (evidential). Same data, honest claim, consistent with Draft A.
+(Note: original has a typo "mengkодекан" with Cyrillic chars — fixed to
+"mengkodekan" in the replacement; verify the live-doc string when building
+the batchUpdate find-target.)
+
+================================================================
+DRAFT C (SPLIT) — Two-caption pattern
+One caption per relation table; tier-aware wording.
+================================================================
+Tabel 3.1 (within-book / Tier 1) caption:
+"Catatan: relasi berarah dalam-buku (mis. BAGIAN_DARI, BERGANTUNG_PADA,
+PRASYARAT_UNTUK pada tingkat konsep) menyatakan ketergantungan/keterkaitan
+konseptual sebagaimana tersaji dalam materi sumber, bukan urutan
+pembelajaran yang dipreskripsikan."
+
+Tabel 3.2 (cross-book / Tier 2) caption:
+"Catatan: relasi LINTAS_BUKU_* merupakan kandidat keterkaitan pedagogis
+single-hop yang diusulkan oleh tier completion sebagai inferensi dangkal di
+atas Tier 1. Setiap edge dinilai per-pasangan; sistem tidak mengkomposisi
+edge-edge ini menjadi jalur belajar."
+
+================================================================
+DRAFT D (NEW) — TTL rdfs:comment normalization
+File: docs/yhoga-ontology.ttl
+Targets: prescriptive phrasing in TTL `rdfs:comment` strings that survives
+even after the thesis prose is fixed. Bifurcated per tier.
+================================================================
+
+TIER-1 (descriptive editorial sequencing):
+
+  :PRASYARAT (TTL line 84)
+    CURRENT: "Prasyarat pedagogis: Chapter A harus dipelajari sebelum Chapter B."
+    REPLACE: "Ketergantungan konseptual antar-bab sebagaimana terdokumentasikan
+      dalam teks sumber. Asimetris. Menyatakan keputusan editorial penyusun
+      buku, bukan urutan pembelajaran yang dipreskripsikan."
+
+  :MEMPERSIAPKAN (TTL line 90)
+    CURRENT: "Chapter A mempersiapkan pembelajar untuk Chapter B (kebalikan
+      logis dari PRASYARAT)."
+    REPLACE: "Relasi inversi dari PRASYARAT pada tingkat Chapter. Menyatakan
+      keputusan editorial penyusun buku, bukan rekomendasi urutan pembelajaran."
+
+  :ConceptTarget (TTL line 46) -- folded from current investigation
+    CURRENT: "Forward reference: konsep yang disebutkan sebagai target relasi
+      tetapi belum diekstrak sebagai Concept lengkap. Eksis sementara hingga
+      ekstraksi berikutnya meng-upgrade-nya menjadi Concept."
+    REPLACE: "Konsep yang disebutkan sebagai target relasi dalam ekstraksi
+      per-bab tetapi tidak terdapat dalam himpunan konsep terekstrak resmi
+      pada bab tersebut. Direpresentasikan sebagai kelas terpisah agar
+      struktur relasi tetap terjaga tanpa mencampurkan stub yang tidak
+      terdeskripsikan ke dalam himpunan Concept yang menjadi populasi formal
+      sistem. Tidak diembed dan tidak dijaring oleh tahap completion
+      lintas-buku."
+    REASON: current TTL promises an "upgrade later" pass that has never run
+    (verified 2026-06-06: 427 ConceptTarget nodes in Yhoga, 0 have matching
+    upgraded Concept). New wording acknowledges the design as permanent
+    scope separation, not in-progress work.
+
+TIER-2 (shallow pedagogical inference — own the inferential framing):
+
+  :LINTAS_BUKU_PRASYARAT_UNTUK (TTL line 171)
+    CURRENT: "Konsep A pada satu mata pelajaran adalah prasyarat pemahaman
+      konsep B pada mata pelajaran lain. Asimetris dan hierarkis (digunakan
+      dalam pengecekan siklus pedagogis lintas-disiplin)."
+    REPLACE: "Kandidat keterkaitan pedagogis single-hop: konsep A pada satu
+      mata pelajaran diinferensikan oleh sistem sebagai prasyarat konseptual
+      bagi pemahaman konsep B pada mata pelajaran lain. Asimetris. Sebagai
+      sugesti per-pasangan; tidak dikomposisi menjadi jalur belajar."
+
+  :LINTAS_BUKU_MEMPERDALAM (TTL line 177)
+    CURRENT: "Konsep A di satu buku memperdalam atau memperluas pemahaman
+      konsep B di buku lain (mis. 'Termodinamika' Fisika memperdalam 'Reaksi
+      Endoterm/Eksoterm' Kimia)."
+    REPLACE: "Kandidat keterkaitan pedagogis single-hop: konsep A pada satu
+      buku diinferensikan menyajikan tingkat granularitas atau cakupan yang
+      lebih luas terhadap konsep B di buku lain. Tidak menyatakan kedalaman
+      pembelajaran (depth of learning) bagi siswa."
+
+  :LINTAS_BUKU_APLIKASI_DARI (TTL line 165)
+    CURRENT: "Konsep A di satu buku merupakan penerapan konsep B di buku
+      lain (mis. 'Difusi' Biologi adalah aplikasi 'Gerak Brown' Fisika).
+      Asimetris."
+    REPLACE: "Kandidat keterkaitan pedagogis single-hop: konsep A pada satu
+      buku diinferensikan sebagai penerapan/manifestasi konsep B di buku
+      lain. Asimetris. Sebagai sugesti per-pasangan."
+
+  :LINTAS_BUKU_SAMA_DENGAN (TTL line 159) — already ontological-clean,
+    minor tightening only:
+    APPEND to existing comment: " Kandidat ekuivalensi semantik lintas-buku
+    yang diidentifikasi oleh sistem sebagai sugesti per-pasangan."
+
+  :LINTAS_BUKU_BERKAITAN_DENGAN (TTL line 183)
+    APPEND to existing comment: " Sebagai sugesti per-pasangan; tidak
+    dikomposisi menjadi jalur belajar."
+
+================================================================
+KNOCK-ON EFFECTS (keep the thesis internally consistent)
+================================================================
+- PCL metric: under two-tier framing, PCL is **a Tier-1 structural descriptor**
+  (kedalaman ketergantungan konseptual ANTAR-BAB / ANTAR-KONSEP sebagaimana
+  terstruktur dalam sumber). It is NOT a Tier-2 composed-path metric. If kept,
+  rename framing to "kedalaman ketergantungan konseptual terstruktural" and
+  drop any "learning path" wording.
+
+- Bab 1 ¶262 / Tujuan: "memvisualisasikan interkoneksi antarmateri" is
+  consistent (Tier-1 descriptive + Tier-2 visualizable suggestions).
+
+- Manfaat ¶280 "aliran pengetahuan (knowledge flow)" / "materi prasyarat":
+  reframe as "membantu guru MELIHAT keterkaitan terdokumentasikan (Tier 1)
+  dan SUGESTI lintas-disiplin yang dapat dipertimbangkan (Tier 2)". Avoid
+  "sistem merekomendasikan urutan".
+
+- TRR / ADC / cross-book linkage count: fully consistent.
+    TRR + ADC = Tier 1 structural metrics.
+    Cross-book linkage count = Tier 2 inferential output metric.
+
+- Survey instrument (lintas_buku_survey.csv): pertanyaan validitas Tier-2
+  edge harus berbingkai "apakah sistem benar dalam mengusulkan keterkaitan
+  konseptual antar A dan B?" dan bukan "apakah siswa perlu memahami A sebelum
+  B?". Audit current wording, rephrase if needed; 74% direction validity
+  metric should be reported with the per-edge / single-hop scope made
+  explicit.
+
+- 88-type within-book vocab sprawl (Tier 1): the semi-tertutup framing in
+  Draft A acknowledges this. To honour the framing, EITHER:
+    (a) document an alias-mapping table (Lampiran X) collapsing the 80
+        non-normative labels into the 8 normative types + a residual
+        "OTHER_SEMANTIC" bucket, OR
+    (b) state explicitly that the 8 types are normative-target and the
+        extras are LLM emissions retained for audit.
+  Choose before the Tabel 3.1 caption is finalized.
+
+================================================================
+EXECUTION (when approved)
+================================================================
+Order matters: insert framing first, then positioning, then localized fixes.
+
+  1. Draft E -> insertText (new paragraph immediately after "diformalkan
+     sebagai ontologi OWL..." sentence).
+  2. Draft A -> insertText (new paragraph immediately after Draft E).
+  3. Draft B -> replaceAllText (unique string — verify Cyrillic chars before
+     building the find-target).
+  4. Draft C (split) -> two captionInsert operations under Tabel 3.1 and
+     Tabel 3.2 respectively.
+  5. Draft D -> direct edit of docs/yhoga-ontology.ttl (this is a code-side
+     fix; not part of the batchUpdate sequence on the thesis doc).
+  6. Track under a new issue or fold into #21 / ontology comments #30-32.
+  7. Re-fetch revisionId immediately before each batchUpdate (gws docs
+     batchUpdate is collision-sensitive).
+
+Verification after apply:
+- Re-fetch .thesis-clean.json; confirm Draft E + A appear in §3.5; confirm
+  Draft B unique-string is gone (no false carryover).
+- Run a Tier-1 / Tier-2 word-frequency check on the new §3.5 to confirm
+  "pedagogis" only appears in Tier-2 paragraphs; "deskriptif" / "domain
+  module" only in Tier-1.
+- TTL: confirm Draft D edits applied, re-render the Tabel 3.x captions in
+  the thesis doc if they cite the TTL comment text verbatim.
