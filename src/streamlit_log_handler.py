@@ -8,12 +8,9 @@ import streamlit as st
 
 # Loggers from src/ modules that the handler should attach to.
 _SRC_LOGGERS = [
-    "src.extraction",
     "src.completion",
     "src.graph",
-    "src.ingestion",
     "src.cache",
-    "src.vision_extraction",
     "src.notify",
 ]
 
