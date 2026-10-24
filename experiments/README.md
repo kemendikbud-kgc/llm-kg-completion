@@ -28,8 +28,6 @@ reproducibility but not part of the regular pipeline.
 |---|---|
 | `check_yhoga_embeddings.py` | Whether the Yhoga upstream has `Concept.embedding` set (it doesn't). |
 | `compare_annv1_vs_new.py` | Head-to-head: `yhoga-ann-v1/` outputs vs `yhoga-boosted-peer/` `_expert_boosted` cross-book links. |
-| `diff_thesis_tabs.py` | Outline diff: thesis doc's `Main` vs `Formatted Main` tabs. |
-| `extract_bab4_dev.py`, `extract_thesis_sections.py` | Pull specific tabs/sections out of the thesis doc cache. |
 | `extract_yhoga_params.py` | Regex-scrape LLM/embedding/chunking params from Yhoga's notebooks. |
 
 ## Notes & methodology — `notes/`
